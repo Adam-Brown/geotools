@@ -234,7 +234,7 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
             final Set<String> words = new HashSet<String>();
             {
                 words.add("features");
-                words.add( ContentFeatureSource.this.getSchema().getTypeName() );
+                words.add(ContentFeatureSource.this.getSchema().getTypeName());
             }
             public ReferencedEnvelope getBounds() {
                 try {

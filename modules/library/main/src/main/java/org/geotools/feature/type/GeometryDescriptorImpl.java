@@ -32,7 +32,6 @@ public class GeometryDescriptorImpl extends AttributeDescriptorImpl
     public GeometryDescriptorImpl(GeometryType type, Name name, int min,
             int max, boolean isNillable, Object defaultValue) {
         super(type, name, min, max, isNillable, defaultValue);
-        
     }
 
     public GeometryType getType() {

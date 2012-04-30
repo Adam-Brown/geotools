@@ -276,11 +276,11 @@ public class FeatureTypeMapping {
                 FeatureTypeMapping inputMapping = getUnderlyingComplexMapping();
                 if (inputMapping != null) {
                     return getClientPropertyExpressions(inputMapping
-                            .getAttributeMappingsIgnoreIndex(parentPath), clientPropertyName,
-                            parentPath);
+	                    .getAttributeMappingsIgnoreIndex(parentPath), clientPropertyName, parentPath);
                 }
             }
         }
+        
         return expressions;
     }
 
@@ -337,7 +337,7 @@ public class FeatureTypeMapping {
                 }
             }
         }
+        
         return expressions;
     }
-
 }

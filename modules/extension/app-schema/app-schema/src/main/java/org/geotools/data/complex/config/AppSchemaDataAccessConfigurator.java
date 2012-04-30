@@ -147,7 +147,7 @@ public class AppSchemaDataAccessConfigurator {
      * Takes a config object and creates a set of mappings.
      * 
      * <p>
-     * In the process will parse xml schemas to geotools' Feature Model types and descriptors,
+     * In the process will parse xml schemas to geotools Feature Model types and descriptors,
      * connect to source datastores and build the mapping objects from source FeatureTypes to the
      * target ones.
      * </p>
@@ -184,15 +184,15 @@ public class AppSchemaDataAccessConfigurator {
      *             DOCUMENT ME!
      */
     private Set<FeatureTypeMapping> buildMappings() throws IOException {
-        // -parse target xml schemas, let parsed types on <code>registry</code>
+        // - parse target xml schemas, let parsed types on <code>registry</code>
         try {
             parseGmlSchemas();
             Map<String, DataAccess<FeatureType, Feature>> sourceDataStores = null;
             Set<FeatureTypeMapping> featureTypeMappings = null;
             try {
-                // -create source datastores
+                // - create source datastores
                 sourceDataStores = acquireSourceDatastores();
-                // -create FeatureType mappings
+                // - create FeatureType mappings
                 featureTypeMappings = createFeatureTypeMappings(sourceDataStores);
                 return featureTypeMappings;        
             } finally  {
@@ -229,6 +229,7 @@ public class AppSchemaDataAccessConfigurator {
                         break;
                     }
                 }
+                
                 if (!usedDataAccess) {
                     dataAccess.dispose();
                 }
@@ -491,6 +492,7 @@ public class AppSchemaDataAccessConfigurator {
             final Expression expression =  parseOgcCqlExpression(cqlExpression);            
             clientProperties.put(qName, expression);
         }
+
         return clientProperties;
     }
 
@@ -501,8 +503,7 @@ public class AppSchemaDataAccessConfigurator {
 
         DataAccess<FeatureType, Feature> sourceDataStore = sourceDataStores.get(dsId);
         if (sourceDataStore == null) {
-            throw new DataSourceException("datastore " + dsId + " not found for type mapping "
-                    + dto);
+            throw new DataSourceException("datastore " + dsId + " not found for type mapping " + dto);
         }
 
         AppSchemaDataAccessConfigurator.LOGGER.fine("asking datastore " + sourceDataStore
@@ -522,7 +523,7 @@ public class AppSchemaDataAccessConfigurator {
      * 
      * <p>
      * The list of file names to parse is obtained from config.getTargetSchemasUris(). If a file
-     * name contained in that list is a relative path (i.e., does not starts with file: or http:,
+     * name contained in that list is a relative path (i.e., does not start with file: or http:,
      * config.getBaseSchemasUrl() is used to resolve relative paths against.
      * </p>
      * 
@@ -532,30 +533,26 @@ public class AppSchemaDataAccessConfigurator {
         AppSchemaDataAccessConfigurator.LOGGER.finer("about to parse target schemas");
 
         final URL baseUrl = new URL(config.getBaseSchemasUrl());
-
         final List schemaFiles = config.getTargetSchemasUris();
 
-        EmfAppSchemaReader schemaParser;
-        schemaParser = EmfAppSchemaReader.newInstance();
+        EmfAppSchemaReader schemaParser = EmfAppSchemaReader.newInstance();
         schemaParser.setResolver(buildResolver());
 
         // create a single type registry for all the schemas in the config
         typeRegistry = new FeatureTypeRegistry(namespaces);
-
         schemaURIs = new HashMap<String, String>(schemaFiles.size());
-        String nameSpace;
-        String schemaLocation;
+
         for (Iterator it = schemaFiles.iterator(); it.hasNext();) {
-            schemaLocation = (String) it.next();
+        	String namespace;
+            String schemaLocation = (String) it.next();
             final URL schemaUrl = resolveResourceLocation(baseUrl, schemaLocation);
-            AppSchemaDataAccessConfigurator.LOGGER.fine("parsing schema "
-                    + schemaUrl.toExternalForm());
+            AppSchemaDataAccessConfigurator.LOGGER.fine("parsing schema " + schemaUrl.toExternalForm());
 
-            nameSpace = schemaParser.findSchemaNamespace(schemaUrl);
+            namespace = schemaParser.findSchemaNamespace(schemaUrl);
             schemaLocation = schemaUrl.toExternalForm();
-            schemaURIs.put(nameSpace, schemaLocation);
+            schemaURIs.put(namespace, schemaLocation);
 
-            SchemaIndex schemaIndex = schemaParser.parse(nameSpace, schemaLocation);
+            SchemaIndex schemaIndex = schemaParser.parse(namespace, schemaLocation);
             // add the resolved EMF schema so typeRegistry can find the needed type tree when it's
             // asked for the mapped FeatureType
             typeRegistry.addSchemas(schemaIndex);

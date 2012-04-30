@@ -191,10 +191,12 @@ public class EmfAppSchemaReader {
         } finally {
             input.close();
         }
+        
         if (targetNamespace == null) {
             throw new IllegalArgumentException(
-                    "Input document does not specifies a targetNamespace");
+                    "Input document does not specify a targetNamespace");
         }
+        
         return targetNamespace;
     }
 

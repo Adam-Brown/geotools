@@ -79,7 +79,7 @@ public final class DataAccessFinder {
      * object.
      * 
      * @param params
-     *            A Map object which contains a defenition of the resource to
+     *            A Map object which contains a definition of the resource to
      *            connect to. for file based resources the property 'url' should
      *            be set within this Map.
      * 
@@ -106,7 +106,7 @@ public final class DataAccessFinder {
             fac = (DataAccessFactory) ps.next();
             boolean canProcess = false;
             try {
-                canProcess = fac.canProcess(params);
+            	canProcess = fac.canProcess(params);
             } catch (Throwable t) {
                 LOGGER.log(Level.WARNING, "Problem asking " + fac.getDisplayName()
                         + " if it can process request:" + t, t);
@@ -114,6 +114,7 @@ public final class DataAccessFinder {
                 // canProcess
                 continue;
             }
+            
             if (canProcess) {
                 boolean isAvailable = false;
                 try {
@@ -127,6 +128,7 @@ public final class DataAccessFinder {
                 }
                 if (isAvailable) {
                     try {
+                    	
                         return fac.createDataStore(params);
                     } catch (IOException couldNotConnect) {
                         canProcessButNotAvailable = couldNotConnect;
@@ -142,6 +144,7 @@ public final class DataAccessFinder {
                 }
             }
         }
+        
         if (canProcessButNotAvailable != null) {
             throw canProcessButNotAvailable;
         }
@@ -149,7 +152,7 @@ public final class DataAccessFinder {
     }
 
     /**
-     * Finds all implemtaions of DataAccessFactory which have registered using
+     * Finds all implementations of DataAccessFactory which have registered using
      * the services mechanism, regardless weather it has the appropriate
      * libraries on the classpath.
      * 
@@ -189,11 +192,9 @@ public final class DataAccessFinder {
     public static synchronized Iterator<DataAccessFactory> getAvailableDataStores() {
 
         FactoryRegistry serviceRegistry = getServiceRegistry();
-        Set<DataAccessFactory> availableDS = getAvailableDataStores(serviceRegistry,
-                DataAccessFactory.class);
+        Set<DataAccessFactory> availableDS = getAvailableDataStores(serviceRegistry, DataAccessFactory.class);
 
-        Iterator<DataStoreFactorySpi> availableDataStores = DataStoreFinder
-                .getAvailableDataStores();
+        Iterator<DataStoreFactorySpi> availableDataStores = DataStoreFinder.getAvailableDataStores();
         while (availableDataStores.hasNext()) {
             availableDS.add(availableDataStores.next());
         }

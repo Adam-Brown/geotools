@@ -31,23 +31,24 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
 /**
- * 
+ *
  *
  * @source $URL$
  */
 public class SimpleFeatureBuilderTest extends TestCase {
 
 	SimpleFeatureBuilder builder;
-	
+
 	protected void setUp() throws Exception {
 		SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
 		typeBuilder.setName( "test" );
 		typeBuilder.add( "point", Point.class, (CoordinateReferenceSystem) null );
+
 		typeBuilder.add( "integer", Integer.class );
 		typeBuilder.add( "float", Float.class );
-		
+
 		SimpleFeatureType featureType = typeBuilder.buildFeatureType();
-		
+
 		builder = new SimpleFeatureBuilder(featureType);
 		builder.setValidating(true);
 	}
@@ -62,7 +63,7 @@ public class SimpleFeatureBuilderTest extends TestCase {
 		assertNotNull( feature );
 		
 		assertEquals( 3, feature.getAttributeCount() );
-		
+
 		assertTrue( gf.createPoint( new Coordinate( 0, 0) ).equals( feature.getAttribute( "point" ) ) );
 		assertEquals( new Integer( 1 ) , feature.getAttribute( "integer" ) );
 		assertEquals( new Float( 2.0 ) , feature.getAttribute( "float" ) );
@@ -132,11 +133,10 @@ public class SimpleFeatureBuilderTest extends TestCase {
 	    SimpleFeature feature = builder.buildFeature("fid");
 	    
 	    try {
-	        builder.set( "integer", "foo" );    
+	        builder.set( "integer", "foo" );
 	        fail( "should have failed" );
 	    }
 	    catch( Exception e ) {}
-	    
 	}
 	
 	public void testCreateFeatureWithLength() throws Exception {
@@ -157,7 +157,7 @@ public class SimpleFeatureBuilderTest extends TestCase {
         }catch (Exception e) {
             // good
 	    }
-    } 
+    }
 	
 	public void testCreateFeatureWithRestriction() throws Exception {
 	    FilterFactory fac = CommonFactoryFinder.getFilterFactory(null);

@@ -109,7 +109,7 @@ public interface DataAccess<T extends FeatureType, F extends Feature> {
      * Creates storage for a new <code>featureType</code>.
      *
      * <p>
-     * The provided <code>featureType</code> we be accessable by the typeName
+     * The provided <code>featureType</code> we be accessible by the typeName
      * provided by featureType.getTypeName().
      * </p>
      *

@@ -644,7 +644,7 @@ public abstract class AbstractWFSStrategy extends WFSStrategy {
         }
 
         URL baseUrl = getOperationURL(operation, GET);
-
+        
         URL finalURL = URIs.buildURL(baseUrl, requestParams);
         requestDebug("Built GET request for ", operation, ": ", finalURL);
         System.err.println(finalURL.toExternalForm());

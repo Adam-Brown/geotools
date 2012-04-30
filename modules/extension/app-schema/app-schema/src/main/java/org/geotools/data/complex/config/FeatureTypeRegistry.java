@@ -36,6 +36,7 @@ import org.eclipse.xsd.XSDAttributeUse;
 import org.eclipse.xsd.XSDAttributeUseCategory;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.geotools.feature.Types;
 import org.geotools.feature.type.ComplexFeatureTypeFactoryImpl;
@@ -159,7 +160,7 @@ public class FeatureTypeRegistry {
     }
     
     /**
-     * Destroy all schema Indexes. VERY important to that this is called
+     * Destroy all schema Indexes. VERY important that this is called
      * to avoid memory leaks, because schema indexes are kept alive otherwise
      * by static schema's and in this way keep other schema's alive
      */
@@ -182,6 +183,7 @@ public class FeatureTypeRegistry {
                 LOGGER.log(Level.WARNING, e.getMessage());
             }
         }
+        
         return descriptor;
     }
 
@@ -199,9 +201,11 @@ public class FeatureTypeRegistry {
                 break;
             }
         }
+        
         if (elemDecl == null) {
             throw new IllegalArgumentException("No top level element found in schemas: " + qname);
         }
+        
         return elemDecl;
     }
 
@@ -214,7 +218,6 @@ public class FeatureTypeRegistry {
         AttributeType type = (AttributeType) typeRegistry.get(typeName);
         if (type == null) {
             XSDTypeDefinition typeDef = getTypeDefinition(typeName);
-
             LOGGER.finest("Creating attribute type " + typeDef.getQName());
             type = createType(typeDef, crs, attMappings);
             LOGGER.finest("Registering attribute type " + type.getName());
@@ -223,21 +226,26 @@ public class FeatureTypeRegistry {
             // typeDef.getQName()
             // + " as it already exists in the registry");
         }
+        
         return type;
     }
 
     private XSDTypeDefinition getTypeDefinition(Name typeName) {
         QName qName = Types.toQName(typeName);
         XSDTypeDefinition typeDefinition = null;
+        
         for (SchemaIndex schemaIndex : schemas) {
             typeDefinition = schemaIndex.getTypeDefinition(qName);
+            
             if (typeDefinition != null) {
                 break;
             }
         }
+
         if (typeDefinition == null) {
             throw new IllegalArgumentException("XSD type definition not found in schemas: " + qName);
         }
+        
         return typeDefinition;
     }
 
@@ -266,7 +274,6 @@ public class FeatureTypeRegistry {
         int maxOccurs = container == null ? Integer.MAX_VALUE : Schemas.getMaxOccurs(container, elemDecl);
                 
         return createAttributeDescriptor( container, elemDecl, minOccurs, maxOccurs, crs, attMappings, true);
-        
     }
 
     private AttributeDescriptor createAttributeDescriptor(final XSDComplexTypeDefinition container,

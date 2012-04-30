@@ -82,11 +82,11 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  *   <li>{@link #createTypeNames()}
  *   <li>{@link #createFeatureSource(ContentEntry)}
  * </ul>
- * The following methods may also be overriden:
+ * The following methods may also be overridden:
  * <ul>
  *   <li>{@link #createContentState(ContentEntry)}
  * </ul>
- * The following methods may be overriden but <b>only</b> to narrow the return 
+ * The following methods may be overridden but <b>only</b> to narrow the return 
  * type to a specific subclass of {@link ContentFeatureSource}.
  * <ul>
  *   <li>{@link #getFeatureSource(String)}
@@ -102,7 +102,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * @source $URL$
  */
 public abstract class ContentDataStore implements DataStore {
-
     /**
      * writer flags
      */
@@ -183,7 +182,6 @@ public abstract class ContentDataStore implements DataStore {
         this.typeFactory = typeFactory;
     }
 
-    
     /**
      * Sets the factory used to create features.
      */
@@ -282,7 +280,7 @@ public abstract class ContentDataStore implements DataStore {
 
     public ServiceInfo getInfo() {
         DefaultServiceInfo info = new DefaultServiceInfo();
-        info.setDescription("Features from "+getClass().getSimpleName() );
+        info.setDescription("Features from " + getClass().getSimpleName());
         info.setSchema( FeatureTypes.DEFAULT_NAMESPACE );
         return info;
     }
@@ -328,7 +326,7 @@ public abstract class ContentDataStore implements DataStore {
      * <p>
      * This method calls through to <code>getFeatureSource(typeName).getSchema()</code>
      * </p>
-     * 
+     *
      * @see DataStore#getSchema(String)
      */
     public final SimpleFeatureType getSchema(String typeName)
@@ -381,12 +379,12 @@ public abstract class ContentDataStore implements DataStore {
      */
     public ContentFeatureSource getFeatureSource(Name typeName, Transaction tx)
         throws IOException {
-    	
+
         ContentEntry entry = ensureEntry(typeName);
 
         ContentFeatureSource featureSource = createFeatureSource(entry);
         featureSource.setTransaction(tx);
-        
+
 //        if ( tx != Transaction.AUTO_COMMIT ) {
 //            //setup the transaction state
 //            synchronized (tx) {
@@ -395,7 +393,7 @@ public abstract class ContentDataStore implements DataStore {
 //                }
 //            }
 //        }
-        
+
         return featureSource;
     }
     
@@ -411,10 +409,10 @@ public abstract class ContentDataStore implements DataStore {
         throws IOException {
         
         if ( query.getTypeName() == null ) {
-            throw new IllegalArgumentException( "Query does not specify type.");
+            throw new IllegalArgumentException("Query does not specify type.");
         }
         
-        return getFeatureSource(query.getTypeName(),tx).getReader( query );
+        return getFeatureSource(query.getTypeName(), tx).getReader(query);
     }
 
     /**
@@ -425,12 +423,10 @@ public abstract class ContentDataStore implements DataStore {
      * in a {@link FeatureWriter}.
      * </p>
      */
-    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(String typeName, Filter filter,
-        Transaction tx) throws IOException {
+    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(String typeName, Filter filter, Transaction tx) throws IOException {
         
         ContentFeatureStore featureStore = ensureFeatureStore(typeName,tx);
-        return featureStore.getWriter( filter , WRITER_UPDATE | WRITER_ADD );
-        
+        return featureStore.getWriter(filter, WRITER_UPDATE | WRITER_ADD);
     }
  
     /**

@@ -18,11 +18,11 @@ package org.geotools.data;
 
 import java.io.IOException;
 
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
-import org.geotools.data.simple.SimpleFeatureSource;
 
 
 /**
@@ -41,8 +41,8 @@ import org.geotools.data.simple.SimpleFeatureSource;
  * @source $URL$
  * @version $Id$
  */
-public interface DataStore extends DataAccess<SimpleFeatureType, SimpleFeature>{
-   
+public interface DataStore extends DataAccess<SimpleFeatureType, SimpleFeature> {
+
     /**
      * Applies a new schema to the given feature type. This can be used
      * to add or remove properties. The resulting update will be persistent.
@@ -223,5 +223,4 @@ public interface DataStore extends DataAccess<SimpleFeatureType, SimpleFeature>{
      *         is handled by the {@code DataStore} in a different fashion
      */
     LockingManager getLockingManager();
-
 }

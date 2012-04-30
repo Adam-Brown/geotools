@@ -111,9 +111,9 @@ public interface DataStoreFactorySpi extends DataAccessFactory {
      *        - the type of the database to connect to, e.g. postgis, mysql
      *
      * @return The created DataStore, this may be null if the required resource
-     *         was not found or if insufficent parameters were given. Note
+     *         was not found or if insufficient parameters were given. Note
      *         that canProcess() should have returned false if the problem is
-     *         to do with insuficent parameters.
+     *         to do with insufficient parameters.
      *
      * @throws IOException if there were any problems setting up (creating or
      *         connecting) the datasource.
@@ -121,17 +121,17 @@ public interface DataStoreFactorySpi extends DataAccessFactory {
     DataStore createDataStore(Map<String, java.io.Serializable> params) throws IOException;
 
     //    /**
-    //     * Construct a simple MetadataEntity providing internationlization information
+    //     * Construct a simple MetadataEntity providing internationalization information
     //     * for the data source that *would* be created by createDataStore.
     //     * <p>
     //     * Suitable for use by CatalogEntry, unknown if this will make
     //     * a DataStore behind the scenes or not. It is possible it will
-    //     * communicate with the data source though (hense the IOException).
+    //     * communicate with the data source though (hence the IOException).
     //     * </p>
     //     * @param params The full set of information needed to construct a live
     //     *        data store
     //     * @return MetadataEntity with descriptive information (including
-    //     *         internationlization support). 
+    //     *         internationalization support). 
     //     * @throws IOException
     //     */
     //    DataSourceMetadataEnity createMetadata( Map params ) throws IOException;

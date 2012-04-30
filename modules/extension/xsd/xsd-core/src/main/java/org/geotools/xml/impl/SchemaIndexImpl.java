@@ -219,7 +219,7 @@ public class SchemaIndexImpl implements SchemaIndex {
                             childName = new QName(parent.getTargetNamespace(), child.getName());
                         } else if (parent.getType().getTargetNamespace() != null) {
                             childName = new QName(parent.getType().getTargetNamespace(),
-                                    child.getName());
+                            child.getName());
                         } else {
                             childName = new QName(null, child.getName());
                         }

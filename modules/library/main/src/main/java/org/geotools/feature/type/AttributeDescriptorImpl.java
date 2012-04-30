@@ -31,7 +31,7 @@ import org.opengis.feature.type.Name;
  */
 public class AttributeDescriptorImpl extends PropertyDescriptorImpl 
 	implements AttributeDescriptor {
-	
+
 	protected final Object defaultValue;
 	
 	public AttributeDescriptorImpl(
@@ -52,7 +52,7 @@ public class AttributeDescriptorImpl extends PropertyDescriptorImpl
 	
     public int hashCode(){
 		return super.hashCode() ^ 
-		    (defaultValue != null ? defaultValue.hashCode() : 0 ); 
+		    (defaultValue != null ? defaultValue.hashCode() : 0); 
 	}
 	
 	public boolean equals(Object o){

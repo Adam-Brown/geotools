@@ -12,9 +12,9 @@ import java.util.Map;
 import org.apache.commons.collections.map.CaseInsensitiveMap;
 
 public class URIs {
-
     public static URL buildURL(URL baseURL, Map<String, String> kvp) {
-        String uri = buildURL(baseURL.toExternalForm(), null, kvp);
+   		String uri = buildURL(baseURL.toExternalForm(), null, kvp);
+
         try {
             return new URL(uri);
         } catch (MalformedURLException e) {
@@ -27,11 +27,10 @@ public class URIs {
     }
 
     public static String buildURL(final String baseURL, String path, Map<String, String> kvp) {
-
-        // prepare modifiable parameters
+    	// prepare modifiable parameters
         StringBuilder baseURLBuffer = new StringBuilder(baseURL);
         StringBuilder pathBuffer = new StringBuilder(path != null ? path : "");
-
+        
         Map<String, String> kvpBuffer = new LinkedHashMap<String, String>();
         if (kvp != null) {
             kvpBuffer.putAll(kvp);
@@ -48,13 +47,14 @@ public class URIs {
                 String encoded = urlEncode(value);
                 params.append(encoded);
             }
+            
             params.append("&");
         }
         if (params.length() > 1) {
             params.setLength(params.length() - 1);
             result = appendQueryString(result, params.toString());
         }
-
+        
         return result;
     }
 
@@ -69,7 +69,7 @@ public class URIs {
      * @return A full url with the context path appended.
      */
     public static String appendContextPath(String url, String contextPath) {
-        if (url.endsWith("/")) {
+    	if (url.endsWith("/")) {
             url = url.substring(0, url.length() - 1);
         }
 
@@ -77,7 +77,7 @@ public class URIs {
             contextPath = contextPath.substring(1);
         }
 
-        return url + "/" + contextPath;
+        return url + (contextPath.isEmpty() ? "" : "/" + contextPath);
     }
 
     /**

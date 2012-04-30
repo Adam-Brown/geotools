@@ -69,15 +69,13 @@ public class AppSchemaCache {
     /**
      * Filenames used to recognise a GeoServer data directory if automatic configuration is enabled.
      */
-    private static final String[] GEOSERVER_DATA_DIRECTORY_FILENAMES = { "global.xml", "wcs.xml",
-            "wfs.xml", "wms.xml" };
+    private static final String[] GEOSERVER_DATA_DIRECTORY_FILENAMES = { "global.xml", "wcs.xml", "wfs.xml", "wms.xml" };
 
     /**
      * Subdirectories used to recognise a GeoServer data directory if automatic configuration is
      * enabled.
      */
-    private static final String[] GEOSERVER_DATA_DIRECTORY_SUBDIRECTORIES = { "styles",
-            "workspaces" };
+    private static final String[] GEOSERVER_DATA_DIRECTORY_SUBDIRECTORIES = { "styles", "workspaces" };
 
     /**
      * Name of the subdirectory of a GeoServer data directory (or other directory) used for the
@@ -216,6 +214,7 @@ public class AppSchemaCache {
                 LOGGER.warning("Unexpected download URL protocol: " + protocol);
                 return null;
             }
+
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setUseCaches(false);
             connection.connect();
@@ -225,6 +224,7 @@ public class AppSchemaCache {
                         location.toString()));
                 return null;
             }
+            
             // read all the blocks into a list
             InputStream input = null;
             List<byte[]> blocks = new LinkedList<byte[]>();
@@ -255,17 +255,20 @@ public class AppSchemaCache {
                     }
                 }
             }
+
             // concatenate all the blocks
             int totalCount = 0;
             for (byte[] b : blocks) {
                 totalCount += b.length;
             }
-            byte[] bytes = new byte[totalCount];
+            
+            byte[] bytes = new byte[totalCount];            
             int position = 0;
             for (byte[] b : blocks) {
                 System.arraycopy(b, 0, bytes, position, b.length);
                 position += b.length;
             }
+            
             return bytes;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -281,10 +284,11 @@ public class AppSchemaCache {
      * @return the canonical local file URL of the schema, or null if not found
      */
     public String resolveLocation(String location) {
-        String path = AppSchemaResolver.getSimpleHttpResourcePath(location);
+        String path = AppSchemaResolver.getSimpleHttpResourcePath(location, true);
         if (path == null) {
             return null;
         }
+
         String relativePath = path.substring(1);
         File file;
         try {
@@ -292,6 +296,7 @@ public class AppSchemaCache {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         if (file.exists()) {
             return DataUtilities.fileToURL(file).toExternalForm();
         } else if (isDownloadAllowed()) {
@@ -299,6 +304,7 @@ public class AppSchemaCache {
             if (bytes == null) {
                 return null;
             }
+
             store(file, bytes);
             LOGGER.info("Cached application schema: " + location);
             return DataUtilities.fileToURL(file).toExternalForm();

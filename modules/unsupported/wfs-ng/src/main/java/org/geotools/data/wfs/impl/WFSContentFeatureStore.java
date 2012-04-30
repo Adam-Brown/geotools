@@ -252,7 +252,7 @@ class WFSContentFeatureStore extends ContentFeatureStore {
         }
 
         if (contentState.hasListener()) {
-            // issue notificaiton
+            // issue notification
             FeatureEvent event = new FeatureEvent(this, Type.CHANGED, affectedBounds, filter);
             contentState.fireFeatureEvent(event);
         }

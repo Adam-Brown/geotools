@@ -44,6 +44,7 @@ public class WFSContentState extends ContentState {
                     remoteStateKeeper = new WFSRemoteTransactionState(dataStore);
                     tx.putState(dataStore, remoteStateKeeper);
                 }
+                
                 WFSLocalTransactionState localTransactionState = getLocalTransactionState();
                 remoteStateKeeper.watch(localTransactionState);
             }

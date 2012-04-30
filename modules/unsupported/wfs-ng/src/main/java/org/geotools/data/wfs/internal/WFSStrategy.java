@@ -175,7 +175,7 @@ public abstract class WFSStrategy extends Specification {
     /**
      * Returns the union of the default CRS and the other supported CRS's of the given feature type
      * as declared in the corresponding FeatureType element in the capabilities document, as well as
-     * any globally supported CRS identifier declared as a parameter of the GetFeature oepration in
+     * any globally supported CRS identifier declared as a parameter of the GetFeature operation in
      * the capabilities document.
      * 
      * @param typeName

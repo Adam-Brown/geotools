@@ -57,6 +57,15 @@ public class AppSchemaResolverTest {
         Assert.assertEquals("/org/example/schemas/exampleml/exml.xsd", path);
     }
 
+    @Test
+    public void getSimpleHtpResourcePath_KeepQueryTrue_ReturnPathHasQueryComponent() {
+        String path = AppSchemaResolver
+            .getSimpleHttpResourcePath("http://schemas.example.org/wfs?request=GetFeature&typename=sa:LocatedSpecimen&featureid=sa_LocatedSpecimen.2110193", true);
+
+        Assert.assertEquals(
+    		"/org/example/schemas/wfs/0dd5330a4f06ea193985897a2cfd65d3.xsd", path);
+    }
+
     /**
      * Test an https URL.
      */

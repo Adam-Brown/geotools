@@ -86,8 +86,7 @@ public abstract class AbstractRequest implements Request{
 	        // Doing this preserves all of the query parameters while
 	        // enforcing the mandatory ones
 	        if (onlineResource.getQuery() != null) {
-	            StringTokenizer tokenizer = new StringTokenizer(onlineResource.getQuery(),
-	                    "&"); //$NON-NLS-1$
+	            StringTokenizer tokenizer = new StringTokenizer(onlineResource.getQuery(), "&"); //$NON-NLS-1$
 	
 	            while (tokenizer.hasMoreTokens()) {
 	                String token = tokenizer.nextToken();
@@ -122,7 +121,8 @@ public abstract class AbstractRequest implements Request{
             this.onlineResource = new URL(urlWithoutQuery);
         } catch (MalformedURLException e) {
             throw new RuntimeException("Error parsing URL. This is likely a bug in the code.");
-        }        
+        }
+        
         initService();
         initRequest();
         initVersion();

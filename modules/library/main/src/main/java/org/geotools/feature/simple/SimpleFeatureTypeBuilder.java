@@ -85,7 +85,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * attribute state is reset after a call to {@link #add}.
  * </p>
  * <p>
- * A default geometry for the feature type can be specified explictly via 
+ * A default geometry for the feature type can be specified explicitly via 
  * {@link #setDefaultGeometry(String)}. However if one is not set the first
  * geometric attribute ({@link GeometryType}) added will be resulting default.
  * So if only specifying a single geometry for the type there is no need to 
@@ -753,8 +753,8 @@ public class SimpleFeatureTypeBuilder {
 	public void addAll( AttributeDescriptor[] descriptors ) {
             if (descriptors != null) {
 	        for ( AttributeDescriptor ad : descriptors ) {
-	            add( ad );
-                }
+	            add(ad);
+            }
 	    }
 	}
 	
@@ -906,7 +906,7 @@ public class SimpleFeatureTypeBuilder {
     }
 
     /**
-     * Creates a new list instance, this default impelementation returns {@link ArrayList}.
+     * Creates a new list instance, this default implementation returns {@link ArrayList}.
      */
     @SuppressWarnings("rawtypes")
     protected List newList() {

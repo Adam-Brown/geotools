@@ -173,7 +173,7 @@ public class WFSDataStoreFactory extends AbstractDataStoreFactory {
     }
 
     /** Access with {@link WFSDataStoreFactory#getParametersInfo() */
-    private static final WFSFactoryParam<?>[] parametersInfo = new WFSFactoryParam[13];
+    private static final WFSFactoryParam<?>[] parametersInfo = new WFSFactoryParam[14];
 
     /**
      * Mandatory DataStore parameter indicating the URL for the WFS GetCapabilities document.

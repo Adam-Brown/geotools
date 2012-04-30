@@ -43,7 +43,8 @@ public abstract class WFSRequest extends AbstractRequest implements Request {
         this.config = config;
         this.strategy = strategy;
         this.handle = strategy.newRequestHandle(operation);
-
+        
+        
         switch (config.getPreferredMethod()) {
         case HTTP_POST:
             this.doPost = strategy.supportsOperation(operation, POST);
@@ -61,7 +62,6 @@ public abstract class WFSRequest extends AbstractRequest implements Request {
         setProperty(SERVICE, "WFS");
         setProperty(VERSION, strategy.getVersion());
         setProperty(REQUEST, operation.getName());
-
     }
 
     public String getOutputFormat() {
@@ -147,7 +147,7 @@ public abstract class WFSRequest extends AbstractRequest implements Request {
         if (requiresPost()) {
             return super.getFinalURL();
         }
-
+        
         URL finalURL = strategy.buildUrlGET(this);
         return finalURL;
     }

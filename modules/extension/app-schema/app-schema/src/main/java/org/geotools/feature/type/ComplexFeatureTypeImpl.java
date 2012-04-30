@@ -89,8 +89,7 @@ public class ComplexFeatureTypeImpl extends UniqueNameFeatureTypeImpl {
      *            Set of descriptors
      */
     public ComplexFeatureTypeImpl(ComplexFeatureTypeImpl type, Collection<PropertyDescriptor> schema) {
-        super(type.name, schema, null, type.isAbstract, type.restrictions,
-                (AttributeType) type.superType, type.description);
+        super(type.name, schema, null, type.isAbstract, type.restrictions, (AttributeType) type.superType, type.description);
         this.schema = schema;
         this.userData.putAll(type.userData);
     }

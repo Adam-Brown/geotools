@@ -57,8 +57,9 @@ public abstract class AbstractFeatureFactoryImpl implements FeatureFactory {
 	 * Factory used to create CRS objects
 	 */
     CRSFactory crsFactory;
+    
     /**
-     * Factory used to create geomtries
+     * Factory used to create geometries
      */
     GeometryFactory  geometryFactory;
     

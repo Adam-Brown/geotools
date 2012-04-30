@@ -700,7 +700,7 @@ public class Types extends org.geotools.feature.type.Types {
     }
 
     /**
-     * Takes a prefixed attribute name and returns an {@link Name} by looking which namespace
+     * Takes a prefixed attribute name and returns a {@link Name} by looking which namespace
      * belongs the prefix to in {@link AppSchemaDataAccessDTO#getNamespaces()}.
      * 
      * @param prefixedName

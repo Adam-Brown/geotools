@@ -228,6 +228,7 @@ public final class WFS_1_1_0_DataStore implements WFSDataStore {
                 builder.setDefaultGeometry(defaultGeometry.getLocalName());
                 builder.setCRS(defaultGeometry.getCoordinateReferenceSystem());
             }
+            
             final SimpleFeatureType adaptedFeatureType = builder.buildFeatureType();
             ftype = adaptedFeatureType;
             byTypeNameTypes.put(prefixedTypeName, ftype);

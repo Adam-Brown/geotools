@@ -37,12 +37,12 @@ import org.geotools.factory.Factory;
  * equivalence. By this is mean that two XML Schemas represented using this
  * interface should have the same SET of declarations. There is no guarantee
  * that the Schema represented matches the original document with respect to
- * orderwithin the sets, except where order is explicitly defined (Sequence,
+ * order within the sets, except where order is explicitly defined (Sequence,
  * Choice).
  * </p>
  * 
  * <p>
- * This method must be inplemented within extensions:  public static Schema
+ * This method must be implemented within extensions:  public static Schema
  * getInstance();. It will be used by the Schema factory to  load the required
  * extensions into memory.
  * </p>
@@ -81,7 +81,7 @@ public interface Schema extends Factory {
      * <p>
      * This method is intended to provide a list of public AttributeGroups
      * defined by this Schema. The definition of 'public AttributeGroups'
-     * should be interpreted as the set of AttributeGroups availiable when
+     * should be interpreted as the set of AttributeGroups available when
      * creating an instance document, extending the schema, or importing the
      * schema.
      * </p>
@@ -96,7 +96,7 @@ public interface Schema extends Factory {
      * <p>
      * This method is intended to provide a list of public Attributes defined
      * by this Schema. The definition of 'public Attributes' should be
-     * interpreted as the set of Attributes availiable when creating an
+     * interpreted as the set of Attributes available when creating an
      * instance document, extending the schema, or importing the schema.
      * </p>
      *
@@ -122,7 +122,7 @@ public interface Schema extends Factory {
      * <p>
      * This method is intended to provide a list of public ComplexTypes defined
      * by this Schema. The definition of 'public ComplexTypes' should be
-     * interpreted as the set of ComplexTypes availiable when creating an
+     * interpreted as the set of ComplexTypes available when creating an
      * instance document, extending the schema, or importing the schema.
      * </p>
      *
@@ -135,7 +135,7 @@ public interface Schema extends Factory {
      * <p>
      * This method is intended to provide a list of public Elements defined by
      * this Schema. The definition of 'public Elements' should be interpreted
-     * as the set of Elements availiable when creating an instance document,
+     * as the set of Elements available when creating an instance document,
      * extending the schema, or importing the schema.
      * </p>
      *
@@ -161,7 +161,7 @@ public interface Schema extends Factory {
      * <p>
      * This method is intended to provide a list of public Groups defined by
      * this Schema. The definition of 'public Groups' should be interpreted as
-     * the set of Groups availiable when creating an instance document,
+     * the set of Groups available when creating an instance document,
      * extending the schema, or importing the schema.
      * </p>
      *
@@ -182,7 +182,7 @@ public interface Schema extends Factory {
      * <p>
      * This method is intended to provide a list of public Imports defined by
      * this Schema. The definition of 'public Imports' should be interpreted
-     * as the set of Imports availiable when creating an instance document,
+     * as the set of Imports available when creating an instance document,
      * extending the schema, or importing the schema.
      * </p>
      *
@@ -203,7 +203,7 @@ public interface Schema extends Factory {
      * <p>
      * This method is intended to provide a list of public SimpleTypes defined
      * by this Schema. The definition of 'public SimpleTypes' should be
-     * interpreted as the set of SimpleTypes availiable when creating an
+     * interpreted as the set of SimpleTypes available when creating an
      * instance document, extending the schema, or importing the schema.
      * </p>
      *
@@ -237,7 +237,7 @@ public interface Schema extends Factory {
     /**
      * <p>
      * This looks to see if the URI passed in is represented by this Schema.
-     * Often this method uses some heuritics on the list of included URIs.
+     * Often this method uses some heuristics on the list of included URIs.
      * This allows one Schema to represent one targetNamespace, but be
      * potentially represented in more than one file.
      * </p>

@@ -54,6 +54,7 @@ class WFSRemoteTransactionState implements State {
         if (null == localState) {
             throw new IllegalStateException("Not watching " + typeName);
         }
+
         WFSDiff diff = localState.getLocalTransactionState().getDiff();
         return diff;
     }
@@ -166,6 +167,7 @@ class WFSRemoteTransactionState implements State {
 
                 insert.add(remoteFeature);
             }
+
             transactionRequest.add(insert);
         }
 

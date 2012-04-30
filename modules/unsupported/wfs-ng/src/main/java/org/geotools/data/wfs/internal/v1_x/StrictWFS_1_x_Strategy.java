@@ -468,6 +468,7 @@ public class StrictWFS_1_x_Strategy extends AbstractWFSStrategy {
         if (null == eType) {
             throw new IllegalArgumentException("Type name not found: " + typeName);
         }
+        
         return new FeatureTypeInfoImpl(eType);
     }
 

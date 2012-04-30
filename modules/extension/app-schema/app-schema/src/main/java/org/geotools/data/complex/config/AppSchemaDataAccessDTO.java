@@ -33,7 +33,7 @@ import org.geotools.util.CheckedHashSet;
 /**
  * Configuration object for a {@link org.geotools.data.complex.AppSchemaDataAccess}.
  * <p>
- * This configuration object contains all the needed elements for a AppSchemaDataAccess to aquire the
+ * This configuration object contains all the needed elements for a AppSchemaDataAccess to acquire the
  * source and target FeatureTypes, and apply the mappings between attributes to serve community
  * schemas.
  * </p>

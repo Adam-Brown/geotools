@@ -22,7 +22,7 @@ import org.opengis.util.InternationalString;
  * A property type defines information about the value of a property. This
  * includes:
  * <ul>
- *   <li>java class of the value of the property ((also known as the property "binding")
+ *   <li>java class of the value of the property (also known as the property "binding")
  *   <li>any restrictions on the value of the property
  *   <li>a description of the property
  *   <li>if the type is abstract or not
@@ -204,7 +204,7 @@ public interface PropertyType {
      *
      * @return A map of user data.
      */
-    Map<Object,Object> getUserData();
+    Map<Object, Object> getUserData();
 
     /**
      * Equality based on property {@link #getName()}.

@@ -75,10 +75,12 @@ public class WFSContentDataStore extends ContentDataStore {
             if (!XMLConstants.DEFAULT_NS_PREFIX.equals(remoteTypeName.getPrefix())) {
                 localTypeName = remoteTypeName.getPrefix() + "_" + localTypeName;
             }
+
             Name typeName = new NameImpl(namespaceURI, localTypeName);
             names.add(typeName);
             this.names.put(typeName, remoteTypeName);
         }
+
         return names;
     }
 
@@ -90,9 +92,8 @@ public class WFSContentDataStore extends ContentDataStore {
      */
     @Override
     protected ContentFeatureSource createFeatureSource(final ContentEntry entry) throws IOException {
-        ContentFeatureSource source;
-
-        source = new WFSContentFeatureSource(entry, client);
+        
+    	ContentFeatureSource source = new WFSContentFeatureSource(entry, client);
 
         final QName remoteTypeName = getRemoteTypeName(entry.getName());
 
@@ -107,6 +108,7 @@ public class WFSContentDataStore extends ContentDataStore {
         if (names.isEmpty()) {
             createTypeNames();
         }
+        
         QName qName = names.get(localTypeName);
         if (null == qName) {
             throw new NoSuchElementException(localTypeName.toString());
@@ -115,15 +117,12 @@ public class WFSContentDataStore extends ContentDataStore {
     }
 
     public FeatureType getRemoteFeatureType(final QName remoteTypeName) throws IOException {
-
         FeatureType remoteFeatureType;
-
         final String lockObj = remoteTypeName.toString().intern();
 
         synchronized (lockObj) {
             remoteFeatureType = remoteFeatureTypes.get(remoteTypeName);
             if (remoteFeatureType == null) {
-
                 DescribeFeatureTypeRequest request = client.createDescribeFeatureTypeRequest();
                 request.setTypeName(remoteTypeName);
 
@@ -151,5 +150,19 @@ public class WFSContentDataStore extends ContentDataStore {
     public WFSClient getWfsClient() {
         return client;
     }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

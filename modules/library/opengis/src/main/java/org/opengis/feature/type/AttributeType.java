@@ -22,7 +22,7 @@ import org.opengis.feature.Attribute;
  * <h3>Identifiablily</h3>
  * An attribute may be "identifiable". When this is the case the attribute has a
  * unique identifier associated with it. See {@link Attribute#getID()}. The type
- * of the attribute specifies wether it is identifiable or not ({@link #isIdentified()}.
+ * of the attribute specifies whether it is identifiable or not ({@link #isIdentified()}.
  * </p>
  *
  * @author Jody Garnett, Refractions Research
@@ -32,7 +32,6 @@ import org.opengis.feature.Attribute;
  * @source $URL$
  */
 public interface AttributeType extends PropertyType {
-
     /**
      * Indicates if the type is identified or not.
      * <p>
