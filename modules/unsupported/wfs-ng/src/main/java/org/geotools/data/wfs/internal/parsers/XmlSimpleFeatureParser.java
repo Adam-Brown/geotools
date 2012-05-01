@@ -159,7 +159,6 @@ public class XmlSimpleFeatureParser extends XmlFeatureParser<SimpleFeature, Simp
         Object parsedValue;
         if (type instanceof GeometryType) {
             parser.nextTag();
-
             try {
                 parsedValue = parseGeom();
             } catch (NoSuchAuthorityCodeException e) {
