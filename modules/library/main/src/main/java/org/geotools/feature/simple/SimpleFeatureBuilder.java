@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureBuilder;
+import org.geotools.feature.type.FeatureTypeImpl;
 import org.geotools.feature.type.Types;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.util.Converters;
@@ -48,7 +49,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * <code>
  *  <pre>
  *  //type of features we would like to build ( assume schema = (geom:Point,name:String) )
- *  SimpleFeatureType featureType = ...  
+ *  SimpleFeatureType featureType = ...
  * 
  *   //create the builder
  *  SimpleFeatureBuilder builder = new SimpleFeatureBuilder();
@@ -145,20 +146,19 @@ public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeature, SimpleFe
     
     /** pointer for next attribute */
     int next;
-    
+
     Map<Object, Object>[] userData;
-    
+
     Map<Object, Object> featureUserData;
-    
+
     boolean validating;
-    
+
     public SimpleFeatureBuilder(SimpleFeatureType featureType) {
         this(featureType, CommonFactoryFinder.getFeatureFactory(null));
     }
 
     public SimpleFeatureBuilder(SimpleFeatureType featureType, FeatureFactory factory) {
-        this.featureType = featureType;
-        this.factory = factory;
+    	super(featureType, factory);
 
         if(featureType instanceof SimpleFeatureTypeImpl) {
             index = ((SimpleFeatureTypeImpl) featureType).index;
@@ -168,20 +168,12 @@ public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeature, SimpleFe
 
         reset();
     }
-    
+
     public void reset() {
         values = new Object[featureType.getAttributeCount()];
         next = 0;
         userData = null;
         featureUserData = null;
-    }
-    
-    /**
-     * Returns the simple feature type used by this builder as a feature template
-     * @return
-     */
-    public SimpleFeatureType getFeatureType() {
-        return featureType;
     }
     
     /**
@@ -295,27 +287,6 @@ public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeature, SimpleFe
         values[index] = convert(value, descriptor);
         if(validating)
             Types.validate(descriptor, values[index]);
-    }
-
-    private Object convert(Object value, AttributeDescriptor descriptor) {
-        // make sure the type of the value and the binding of the type match up
-        if ( value != null ) {
-            Class<?> target = descriptor.getType().getBinding(); 
-            Object converted = Converters.convert(value, target);
-            if(converted != null)
-                value = converted;
-        } else {
-            //if the content is null and the descriptor says isNillable is false, 
-            // then set the default value
-            if (!descriptor.isNillable()) {
-                value = descriptor.getDefaultValue();
-                if ( value == null ) {
-                    //no default value, try to generate one
-                    value = DataUtilities.defaultValue(descriptor.getType().getBinding());
-                }
-            }
-        }
-        return value;
     }
 
     /**
@@ -539,7 +510,7 @@ public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeature, SimpleFe
      * </p>
      * @param feature The original feature.
      * @param SimpleFeatureBuilder A builder for the target feature type
-     *  
+     *
      * @return The copied feature, with a new type.
      * @since 2.5.3
      */

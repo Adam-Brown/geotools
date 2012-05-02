@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 import org.geotools.data.DataSourceException;
+import org.geotools.feature.complex.ComplexFeatureBuilder;
 import org.geotools.feature.type.AttributeTypeImpl;
 import org.geotools.feature.type.ComplexFeatureTypeImpl;
 import org.geotools.feature.type.ComplexTypeImpl;
@@ -38,6 +39,8 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<Feature, FeatureTy
 			QName featureDescriptorName)
 			throws IOException {
 		super (getFeatureResponseStream, targetType, featureDescriptorName);
+
+		this.builder = new ComplexFeatureBuilder(this.targetType);
 
 		// TODO: this casting is temporary - there's no getDescriptors() method on the FeatureType interface
 		// so I have to read it as a ComplexFeatureTypeImpl to access that method. Not sure why the method
@@ -88,11 +91,12 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<Feature, FeatureTy
                 	PropertyDescriptor descriptor = expectedProperties.get(tagName);
 
                 	if (descriptor != null) {
-	                	// TODO: The simple one just has simple objects passed in here like strings or whatever
-	                	// what should I pass in for complex features? Or should you create the complex feature part here
+	                	// TODO: The simple one just has simple objects passed in here like strings or whatever.
+	                	// What should I pass in for complex features? Or should you create the complex feature part here
 	                	// and then pass that in?
                 		if (tagName.compareTo("mineName") == 0) {
 	                        attributeValue = parseAttributeValue();
+
 	                        // builder.set(descriptor.getLocalName(), attributeValue);
 		                }
                 	}
