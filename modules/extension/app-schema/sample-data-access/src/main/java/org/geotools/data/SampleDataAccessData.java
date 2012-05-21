@@ -165,7 +165,7 @@ public class SampleDataAccessData {
                 // Two sample MappedFeature from an old British Geological Survey test suite.
                 // See also mappedPolygons.properties and GeoSciMLTest.java in app-schema module.
                 add(createMappedFeature(
-                        "mf1",
+                		"mf1",
                         "651",
                         "GUNTHORPE FORMATION",
                         "Gunthorpe specification description",
@@ -194,5 +194,4 @@ public class SampleDataAccessData {
             throw new RuntimeException(e);
         }
     }
-
 }

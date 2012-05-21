@@ -76,7 +76,6 @@ public class ComplexFeatureTypeImpl extends UniqueNameFeatureTypeImpl {
                 add(ComplexFeatureConstants.FEATURE_CHAINING_LINK);
             };
         }, defaultGeometry, isAbstract, restrictions, superType, description);
-
         this.schema = schema;
     }
 

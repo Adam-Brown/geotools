@@ -27,7 +27,7 @@ import org.opengis.feature.type.PropertyType;
 
 /**
  * Implementation of Property.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
  *
  *
@@ -40,10 +40,12 @@ public abstract class PropertyImpl implements Property {
      * content of the property
      */
     protected Object value;
+  
     /**
      * descriptor of the property
      */
     protected PropertyDescriptor descriptor;
+    
     /**
      * user data
      */

@@ -102,6 +102,7 @@ public class ComplexAttributeImpl extends AttributeImpl implements ComplexAttrib
     public Property getProperty(String name) {
         for ( Iterator p = getValue().iterator(); p.hasNext(); ) {
             Property property = (Property) p.next();
+            
             if ( property.getName().getLocalPart().equals( name ) ) {
                 return property;
             }
@@ -139,7 +140,7 @@ public class ComplexAttributeImpl extends AttributeImpl implements ComplexAttrib
         return clone;
     }
 //    public List/* <Property> */get(Name name) {
-//        // JD: this is a farily lenient check, should we be stricter about
+//        // JD: this is a fairly lenient check, should we be stricter about
 //        // matching up the namespace
 //        List/* <Property> */childs = new LinkedList/* <Property> */();
 //        

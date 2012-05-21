@@ -158,7 +158,7 @@ public class SimpleFeatureBuilderTest extends TestCase {
             // good
 	    }
     }
-	
+
 	public void testCreateFeatureWithRestriction() throws Exception {
 	    FilterFactory fac = CommonFactoryFinder.getFilterFactory(null);
 

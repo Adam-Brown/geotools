@@ -137,7 +137,7 @@ public class AttributeImpl extends PropertyImpl implements Attribute {
 	}
 	
 	/**
-	 * Allows this Attribute to convert an argument to its prefered storage
+	 * Allows this Attribute to convert an argument to its preferred storage
 	 * type. If no parsing is possible, returns the original value. If a parse
 	 * is attempted, yet fails (i.e. a poor decimal format) throw the Exception.
 	 * This is mostly for use internally in Features, but implementors should

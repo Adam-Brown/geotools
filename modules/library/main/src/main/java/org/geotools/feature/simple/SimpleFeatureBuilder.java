@@ -39,6 +39,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -152,7 +153,25 @@ public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeature, SimpleFe
     Map<Object, Object> featureUserData;
 
     boolean validating;
-
+    
+    private Object convert(Object value, AttributeDescriptor descriptor) {
+        // make sure the type of the value and the binding of the type match up
+    	super.convert(value, descriptor);
+    	
+        if ( value == null ) {
+            // if the content is null and the descriptor says isNillable is false then set the default value:
+            if (!descriptor.isNillable()) {
+                value = descriptor.getDefaultValue();
+                if ( value == null ) {
+                    //no default value, try to generate one
+                    value = DataUtilities.defaultValue(descriptor.getType().getBinding());
+                }
+            }
+        }
+        
+        return value;
+    }
+    
     public SimpleFeatureBuilder(SimpleFeatureType featureType) {
         this(featureType, CommonFactoryFinder.getFeatureFactory(null));
     }
@@ -257,7 +276,6 @@ public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeature, SimpleFe
      * @throws IllegalArgumentException
      *             If no such attribute with the specified name exists.
      */
-    @Override
     public void set(String name, Object value) {
         int index = featureType.indexOf(name);
         if (index == -1) {
@@ -308,7 +326,7 @@ public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeature, SimpleFe
     public SimpleFeature buildFeature(String id) {
         // ensure id
         if (id == null) {
-            id = SimpleFeatureBuilder.createDefaultFeatureId();
+            id = FeatureBuilder.createDefaultFeatureId();
         }
 
         Object[] values = this.values;
@@ -343,35 +361,6 @@ public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeature, SimpleFe
     public SimpleFeature buildFeature(String id, Object[] values ) {
         addAll( values );
         return buildFeature( id );
-    }
-    
-    
-    /**
-     * Internal method for creating feature id's when none is specified.
-     */
-    public static String createDefaultFeatureId() {
-        // According to GML and XML schema standards, FID is a XML ID
-        // (http://www.w3.org/TR/xmlschema-2/#ID), whose acceptable values are those that match an
-        // NCNAME production (http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName):
-        // NCName ::= (Letter | '_') (NCNameChar)* /* An XML Name, minus the ":" */
-        // NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
-        // We have to fix the generated UID replacing all non word chars with an _ (it seems
-        // they area all ":")
-        //return "fid-" + NON_WORD_PATTERN.matcher(new UID().toString()).replaceAll("_");
-        // optimization, since the UID toString uses only ":" and converts long and integers
-        // to strings for the rest, so the only non word character is really ":"
-        return "fid-" + new UID().toString().replace(':', '_');
-    }
-    /**
-     * Internal method for a temporary FeatureId that can be assigned
-     * a real value after a commit.
-     * @param suggestedId suggested id
-     */
-    public static FeatureIdImpl createDefaultFeatureIdentifier( String suggestedId ) {
-    	if( suggestedId != null ){
-    		return new FeatureIdImpl( suggestedId );	
-    	}
-    	return new FeatureIdImpl( createDefaultFeatureId() );
     }
     
     

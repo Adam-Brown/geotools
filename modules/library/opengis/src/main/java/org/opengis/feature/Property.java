@@ -78,7 +78,6 @@ import org.opengis.feature.type.PropertyType;
  * @source $URL$
  */
 public interface Property {
-
     /**
      * The value or content of the property.
      * <p>
