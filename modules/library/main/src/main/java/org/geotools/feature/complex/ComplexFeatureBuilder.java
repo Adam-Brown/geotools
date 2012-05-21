@@ -55,7 +55,6 @@ public class ComplexFeatureBuilder extends FeatureBuilder<Feature, FeatureType> 
 			if (numberOfProperties < minOccurs) {
 				// If the value is nillable anyway then just default it null: 
 				if (propertyDescriptor.isNillable()) {
-//
 //					do {
 //						System.out.println("Adding null here for " + name);
 //
@@ -65,7 +64,7 @@ public class ComplexFeatureBuilder extends FeatureBuilder<Feature, FeatureType> 
 //						numberOfProperties++;
 //					} while (numberOfProperties < minOccurs);
 				}
-				
+
 				// TODO: I was wondering if you could have an if-else here to try to apply default values if they're set..
 				// it seems like a good idea but the only problem is that they're only present on the AttributeDescriptors...
 				else {
@@ -89,7 +88,84 @@ public class ComplexFeatureBuilder extends FeatureBuilder<Feature, FeatureType> 
 		return factory.createFeature(properties, this.featureType, id);	
 	}
 
-	public void append(Name name, Object value) {
+//	public void append(Name name, Object value) {
+//		PropertyDescriptor propertyDescriptor = featureType.getDescriptor(name);
+//
+//		// The 'name' must exist in the type, if not, throw an exception:
+//		if (propertyDescriptor == null) {
+//			throw new IllegalArgumentException(
+//				String.format(
+//					"The name '%s' is not a valid descriptor name for the type '%s'.",
+//					name,
+//					this.featureType.getName()));
+//		}
+//
+//		Object convertedValue;
+//
+//		Class<?> expectedClass = propertyDescriptor.getType().getBinding();
+//		if (value != null) {
+//			Class<?> providedClass = value.getClass();
+//
+//			// Make sure that the provided class and the expected class match or that the expectedClass is a base class of the providedClass:
+//			if (!providedClass.equals(expectedClass) && !expectedClass.isAssignableFrom(providedClass)) {
+//				throw new IllegalArgumentException(
+//					String.format(
+//						"The value provided is an object of '%s' but the method expects an object of '%s'.", 
+//						providedClass,
+//						expectedClass));
+//			}
+//
+//			convertedValue = super.convert(value, propertyDescriptor);
+//		}
+//		else { // value == null
+//			if (propertyDescriptor.isNillable()) {
+//				convertedValue = expectedClass.cast(null);
+//			}
+//			else {
+//				// A null reference has been provided for a non-nillable type.
+//				throw new IllegalArgumentException(
+//					String.format(
+//						"The value provided is a null reference but the property descriptor '%s' is non-nillable.",
+//						propertyDescriptor));
+//			}
+//		}
+//
+//		// At this point the converted value has been set so we must persist it to the object's state:
+//		ArrayList<Property> valueList;
+//
+//		if (values.containsKey(name)) {
+//			valueList = values.get(name);
+//			
+//			// Make sure that the list isn't already at capacity:
+//			int maxOccurs = propertyDescriptor.getMaxOccurs();
+//			if (valueList.size() == maxOccurs) {
+//				throw new IndexOutOfBoundsException(
+//					String.format(
+//						"You can't add another object with the name of '%s' because you already have the maximum number (%s) allowed by the property descriptor.",
+//						name,
+//						maxOccurs));
+//			}
+//		}
+//		else {
+//			valueList = new ArrayList<Property>();
+//			values.put(name, valueList);
+//		}
+//
+//		// Create the AttributeImpl or XXX depending on whether or not it's a 
+//		
+//		// TODO: I don't really know if it's even possible for there to be an attribute descriptor at this level -
+//		// won't it always be Complex?
+//		
+//		// TODO: I think this part is wrong... shouldn't you be passing in pre-built attributes / properties?
+//		if (AttributeDescriptor.class.isAssignableFrom(propertyDescriptor.getClass())) {
+//			valueList.add(new AttributeImpl(convertedValue, (AttributeDescriptor)propertyDescriptor, null)); // TODO: Null?
+//		}
+//		else {
+//			
+//		}
+//	}
+	
+	public void append(Name name, Property value) {
 		PropertyDescriptor propertyDescriptor = featureType.getDescriptor(name);
 
 		// The 'name' must exist in the type, if not, throw an exception:
@@ -101,26 +177,22 @@ public class ComplexFeatureBuilder extends FeatureBuilder<Feature, FeatureType> 
 					this.featureType.getName()));
 		}
 
-		Object convertedValue;
-
 		Class<?> expectedClass = propertyDescriptor.getType().getBinding();
 		if (value != null) {
-			Class<?> providedClass = value.getClass();
+			Class<?> providedClass = value.getType().getBinding();
 
 			// Make sure that the provided class and the expected class match or that the expectedClass is a base class of the providedClass:
 			if (!providedClass.equals(expectedClass) && !expectedClass.isAssignableFrom(providedClass)) {
 				throw new IllegalArgumentException(
 					String.format(
-						"The value provided is an object of '%s' but the method expects an object of '%s'.", 
+						"The value provided contains an object of '%s' but the method expects an object of '%s'.", 
 						providedClass,
 						expectedClass));
 			}
-
-			convertedValue = super.convert(value, propertyDescriptor);
 		}
 		else { // value == null
 			if (propertyDescriptor.isNillable()) {
-				convertedValue = expectedClass.cast(null);
+				value = (Property) expectedClass.cast(null);
 			}
 			else {
 				// A null reference has been provided for a non-nillable type.
@@ -152,18 +224,7 @@ public class ComplexFeatureBuilder extends FeatureBuilder<Feature, FeatureType> 
 			values.put(name, valueList);
 		}
 
-		// Create the AttributeImpl or XXX depending on whether or not it's a 
-		
-		// TODO: I don't really know if it's even possible for there to be an attribute descriptor at this level -
-		// won't it always be Complex?
-		
-		// TODO: I think this part is wrong... shouldn't you be passing in pre-built attributes / properties?
-		if (AttributeDescriptor.class.isAssignableFrom(propertyDescriptor.getClass())) {
-			valueList.add(new AttributeImpl(convertedValue, (AttributeDescriptor)propertyDescriptor, null)); // TODO: Null?
-		}
-		else {
-			
-		}
+		valueList.add(value);
 	}
 }
 

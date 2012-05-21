@@ -1,22 +1,19 @@
 package org.geotools.feature.complex;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.geotools.feature.AttributeImpl;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.feature.type.AttributeTypeImpl;
 import org.geotools.feature.type.FeatureTypeImpl;
-import org.geotools.feature.type.PropertyDescriptorImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import junit.framework.TestCase;
 import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
@@ -28,7 +25,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
-import junit.framework.TestCase;
 
 
 public class ComplexFeatureBuilderTests extends TestCase {
@@ -168,6 +164,10 @@ public class ComplexFeatureBuilderTests extends TestCase {
     // *****************************************************************************************
     // 
     private static GeometryFactory gm = new GeometryFactory();
+    
+    private static AttributeImpl londonBridge = new AttributeImpl("London Bridge", BRIDGENAME_DESCRIPTOR, null);
+    
+    private static AttributeImpl location = new AttributeImpl(gm.createPoint(new Coordinate(1, 3)), LOCATION_DESCRIPTOR, null);
 	
 	@Before
 	protected void setUp() {
@@ -181,7 +181,7 @@ public class ComplexFeatureBuilderTests extends TestCase {
 
 		// Act
 		try {
-			builder.append(new NameImpl("invalid_descriptor_name"), "test");
+			builder.append(new NameImpl("invalid_descriptor_name"), londonBridge);
 			fail("Expected IllegalArgumentException but it wasn't thrown.");
 		}
 		catch (IllegalArgumentException iae) {
@@ -208,11 +208,11 @@ public class ComplexFeatureBuilderTests extends TestCase {
 		
 		// Act
 		try {
-			builder.append(BRIDGE_NAME, 1); // Passing an int instead of string.
+			builder.append(LOCATION, londonBridge); // Passing in londonBridge instead of a location.
 			fail("Expected IllegalArgumentException but it wasn't thrown.");
 		}
 		catch (IllegalArgumentException iae) {
-			String expectedMessage = "The value provided is an object of 'class java.lang.Integer' but the method expects an object of 'class java.lang.String'.";
+			String expectedMessage = "The value provided contains an object of 'class java.lang.String' but the method expects an object of 'class com.vividsolutions.jts.geom.Geometry'.";
 			if (iae.getMessage().compareTo(expectedMessage) != 0) {
 				fail("Expected IllegalArgumentExceptionMessage to say: '" + expectedMessage + "' but got: '" + iae.getMessage() + "'");
 			}
@@ -255,23 +255,22 @@ public class ComplexFeatureBuilderTests extends TestCase {
 		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
 		
 		// Act
-		String expectedValue = "London Bridge";
-		builder.append(BRIDGE_NAME, expectedValue);
-		Object actualValue = builder.values.get(BRIDGE_NAME).get(0).getValue();
+		builder.append(BRIDGE_NAME, londonBridge);
+		Object actualValue = builder.values.get(BRIDGE_NAME).get(0);
 
 		// Assert	
-		Assert.assertSame(expectedValue, actualValue);
+		Assert.assertSame(londonBridge, actualValue);
 	}
 	
 	@Test
 	public void test_append_exceedMaxOccursLimit_throwsIndexOutOfBoundsException() {
 		// Arrange
 		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
-		builder.append(BRIDGE_NAME, "London Bridge");
+		builder.append(BRIDGE_NAME, londonBridge);
 
 		// Act
 		try {
-			builder.append(BRIDGE_NAME, "One too many names"); // Too many names
+			builder.append(BRIDGE_NAME, londonBridge); // Add it once too many times.
 			fail("Expected IndexOutOfBoundsException but it wasn't thrown.");
 		}
 		catch (IndexOutOfBoundsException iae) {
@@ -293,31 +292,31 @@ public class ComplexFeatureBuilderTests extends TestCase {
 		// Arrange
 		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
 
-		String expectedBridgeName = "London Bridge";
-		Point expectedLocation = gm.createPoint(new Coordinate(1, 3));
-		String expectedDescription = "description";
+		AttributeImpl description = new AttributeImpl("description", DESCRIPTION_DESCRIPTOR, null);
 
-		builder.append(BRIDGE_NAME, expectedBridgeName);
-		builder.append(LOCATION, expectedLocation);
-		builder.append(DESCRIPTION, expectedDescription);
+		builder.append(BRIDGE_NAME, londonBridge);
+		builder.append(LOCATION, location);
+		builder.append(DESCRIPTION, description);
 
 		// Act
 		Feature feature = builder.buildFeature("id");
 
 		// Assert
 		assertNotNull(feature);
-		assertSame(expectedBridgeName, feature.getProperty(BRIDGE_NAME).getValue());
-		assertSame(expectedLocation, feature.getProperty(LOCATION).getValue());
-		assertSame(expectedDescription, feature.getProperty(DESCRIPTION).getValue());
+		assertSame(londonBridge, feature.getProperty(BRIDGE_NAME));
+		assertSame(location, feature.getProperty(LOCATION));
+		assertSame(description, feature.getProperty(DESCRIPTION));
 	}
 
 	@Test
 	public void test_buildFeature_missingDescription_descriptionDefaultsToNull() {
+		// TODO: this may not be a valid test because it might not be possible to coalesce to null. 
+		
 		// Arrange
 		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
 
-		builder.append(BRIDGE_NAME, "London Bridge");
-		builder.append(LOCATION, gm.createPoint(new Coordinate(1, 3)));
+		builder.append(BRIDGE_NAME, londonBridge);
+		builder.append(LOCATION, location);
 
 		// Act
 		Feature feature = builder.buildFeature("id");
@@ -332,7 +331,7 @@ public class ComplexFeatureBuilderTests extends TestCase {
 		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
 
 		// Deliberately not setting location
-		builder.append(BRIDGE_NAME, "London Bridge");
+		builder.append(BRIDGE_NAME, londonBridge);
 
 		// Act
 		try {
@@ -355,21 +354,18 @@ public class ComplexFeatureBuilderTests extends TestCase {
 
 	@Test
 	public void test_buildFeature_validCyclicType_buildsFeature() {
+		// TODO: figure out the best way to build cyclic types
+				
 		// Arrange
 		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(GEOLOGICALUNITTYPE_TYPE);
 
-		builder.append(OCCURRENCE_NAME, );
-
-		// here's the difficulty with cyclic types
+		// builder.append(OCCURRENCE_NAME, );
 
 		// Act
 		Feature feature = builder.buildFeature("id");
 
 		// Assert
-		assertNotNull(feature);
-		assertSame(expectedBridgeName, feature.getProperty(BRIDGE_NAME).getValue());
-		assertSame(expectedLocation, feature.getProperty(LOCATION).getValue());
-		assertSame(expectedDescription, feature.getProperty(DESCRIPTION).getValue());
+		fail("Unfinished");
 	}	
 }
 
