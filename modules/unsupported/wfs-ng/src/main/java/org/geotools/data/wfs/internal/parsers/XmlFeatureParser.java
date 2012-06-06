@@ -40,11 +40,9 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public abstract class XmlFeatureParser<F extends Feature, FT extends FeatureType> implements GetParser<F> {
+public abstract class XmlFeatureParser<FT extends FeatureType, F extends Feature> implements GetParser<F> {
 
 	protected FT targetType;
-	
-	protected FeatureBuilder<F, FT> builder;
 	
 	private GeometryFactory geomFac = new GeometryFactory();
 	

@@ -23,9 +23,6 @@ import org.opengis.filter.Filter;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-
-
 
 public class ComplexFeatureBuilderTests extends TestCase {
 	// -----------------------
@@ -253,7 +250,7 @@ public class ComplexFeatureBuilderTests extends TestCase {
 	public void test_append_validNameValidValue_valueShouldBeAddedToTheMap() {
 		// Arrange
 		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
-		
+
 		// Act
 		builder.append(BRIDGE_NAME, londonBridge);
 		Object actualValue = builder.values.get(BRIDGE_NAME).get(0);
@@ -355,7 +352,7 @@ public class ComplexFeatureBuilderTests extends TestCase {
 	@Test
 	public void test_buildFeature_validCyclicType_buildsFeature() {
 		// TODO: figure out the best way to build cyclic types
-				
+
 		// Arrange
 		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(GEOLOGICALUNITTYPE_TYPE);
 
@@ -368,8 +365,6 @@ public class ComplexFeatureBuilderTests extends TestCase {
 		fail("Unfinished");
 	}	
 }
-
-
 
 
 

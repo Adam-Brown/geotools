@@ -132,7 +132,7 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  * @source $URL$
  */
-public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeature, SimpleFeatureType> { 
+public class SimpleFeatureBuilder extends FeatureBuilder<SimpleFeatureType, SimpleFeature> { 
     /**
      * logger
      */

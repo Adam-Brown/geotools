@@ -11,7 +11,7 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 
-public abstract class FeatureBuilder<F extends Feature, FT extends FeatureType> {
+public abstract class FeatureBuilder<FT extends FeatureType, F extends Feature> {
 	/** the feature type */
     protected FT featureType;
 

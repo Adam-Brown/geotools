@@ -92,14 +92,13 @@ public class WFSDataStoreFactory extends WFSDataAccessFactory implements DataSto
             throws IOException {
 
         WFSContentDataStore dataStore = new WFSContentDataStore(getWFSClient(params));
-        
+
         // factories
         dataStore.setFilterFactory(CommonFactoryFinder.getFilterFactory(null));
         dataStore.setGeometryFactory(new GeometryFactory(PackedCoordinateSequenceFactory.DOUBLE_FACTORY));
         dataStore.setFeatureTypeFactory(new FeatureTypeFactoryImpl());
         dataStore.setFeatureFactory(CommonFactoryFinder.getFeatureFactory(null));
         dataStore.setDataStoreFactory(this);
-
         return dataStore;
     }
 

@@ -78,10 +78,13 @@ import com.vividsolutions.jts.geom.Polygon;
  *         {@link StreamingParserFeatureReader} works well
  */
 @SuppressWarnings("nls")
-public class XmlSimpleFeatureParser extends XmlFeatureParser<SimpleFeature, SimpleFeatureType> implements GetFeatureParser {
+public class XmlSimpleFeatureParser extends XmlFeatureParser<SimpleFeatureType, SimpleFeature> implements GetFeatureParser {
+	
 	private final Map<String, AttributeDescriptor> expectedProperties;
-
-    public XmlSimpleFeatureParser(final InputStream getFeatureResponseStream,
+	
+	private final SimpleFeatureBuilder builder;
+	
+	public XmlSimpleFeatureParser(final InputStream getFeatureResponseStream,
             final SimpleFeatureType targetType, QName featureDescriptorName) throws IOException {
     	super(getFeatureResponseStream, targetType, featureDescriptorName);
 

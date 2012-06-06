@@ -114,7 +114,7 @@ public final class DataAccessFinder {
                 // canProcess
                 continue;
             }
-            
+
             if (canProcess) {
                 boolean isAvailable = false;
                 try {

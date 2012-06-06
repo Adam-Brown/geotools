@@ -174,8 +174,8 @@ public class XmlMappingFeatureIterator extends DataAccessMappingFeatureIterator 
         final AttributeDescriptor targetNode = mapping.getTargetFeature();
         AttributeBuilder builder = new AttributeBuilder(attf);
         builder.setDescriptor(targetNode);
-        Feature target = (Feature) builder.build(extractIdForAttribute(mapping
-                .getFeatureIdExpression(), null));
+        Feature target = (Feature) builder.build(
+        		extractIdForAttribute(mapping.getFeatureIdExpression(), null));
 
         if (attOrderedTypeList == null) {
             initialiseAttributeLists(mapping.getAttributeMappings());

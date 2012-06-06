@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import javax.xml.namespace.QName;
 import org.geotools.data.DataSourceException;
 import org.geotools.feature.complex.ComplexFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.type.AttributeTypeImpl;
 import org.geotools.feature.type.ComplexFeatureTypeImpl;
 import org.geotools.feature.type.ComplexTypeImpl;
@@ -29,9 +30,11 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-public class XmlComplexFeatureParser extends XmlFeatureParser<Feature, FeatureType> {
+public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Feature> {
 
 	private final Map<String, PropertyDescriptor> expectedProperties;
+	
+	private final ComplexFeatureBuilder builder;
 
 	public XmlComplexFeatureParser(
 			InputStream getFeatureResponseStream,
@@ -97,7 +100,7 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<Feature, FeatureTy
                 		if (tagName.compareTo("mineName") == 0) {
 	                        attributeValue = parseAttributeValue();
 
-	                        // builder.set(descriptor.getLocalName(), attributeValue);
+//	                         builder.append(name ,propertyValue);
 		                }
                 	}
                 }
@@ -107,7 +110,7 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<Feature, FeatureTy
 	        throw new DataSourceException(e);
 	    }
 
-		return null;
+		return builder.buildFeature(fid);
 	}
 
 	// TODO: maybe this should be called parsePropertyValue?
@@ -145,7 +148,6 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<Feature, FeatureTy
 	    return parsedValue;
 	}
 }
-
 
 
 

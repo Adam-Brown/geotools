@@ -194,7 +194,7 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
 	@Override
 	public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName)
 			throws IOException {
-		// TODO Auto-generated method stub
+		// TODO: Need to implement!
 		return null;
 	}
 

@@ -17,7 +17,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 
-public class ComplexFeatureBuilder extends FeatureBuilder<Feature, FeatureType> {
+public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> {
 	// TODO: the example of AppSchemaFeatureFactory doesn't use the Map, it just creates a list
 	// of properties. I've added the map so that I can group properties by name to make sure
 	// that I don't allow the user to add more than they're supposed to. Make sure this is OK...
@@ -53,19 +53,19 @@ public class ComplexFeatureBuilder extends FeatureBuilder<Feature, FeatureType> 
 			int numberOfProperties = properties.size();
 
 			if (numberOfProperties < minOccurs) {
-				// If the value is nillable anyway then just default it null: 
-				if (propertyDescriptor.isNillable()) {
-//					do {
-//						System.out.println("Adding null here for " + name);
-//
-//						// TODO: problem with the types here.
-//
-//						properties.add(new AttributeImpl(propertyDescriptor.getType().getBinding().cast(null), propertyDescriptor));
-//						numberOfProperties++;
-//					} while (numberOfProperties < minOccurs);
+				// If the value is nillable anyway then just default it to null: 
+				if (propertyDescriptor.isNillable() && AttributeDescriptor.class.isAssignableFrom(propertyDescriptor.getClass())) {
+					do {
+						Property nullProperty = new AttributeImpl(
+							propertyDescriptor.getType().getBinding().cast(null),
+							(AttributeDescriptor)propertyDescriptor,
+							null);
+
+						properties.add(nullProperty);
+					} while (++numberOfProperties < minOccurs);
 				}
 
-				// TODO: I was wondering if you could have an if-else here to try to apply default values if they're set..
+				// TODO: I was wondering if you could have another if-else here to try to apply default values if they're set..
 				// it seems like a good idea but the only problem is that they're only present on the AttributeDescriptors...
 				else {
 					throw new IllegalStateException(
@@ -88,83 +88,6 @@ public class ComplexFeatureBuilder extends FeatureBuilder<Feature, FeatureType> 
 		return factory.createFeature(properties, this.featureType, id);	
 	}
 
-//	public void append(Name name, Object value) {
-//		PropertyDescriptor propertyDescriptor = featureType.getDescriptor(name);
-//
-//		// The 'name' must exist in the type, if not, throw an exception:
-//		if (propertyDescriptor == null) {
-//			throw new IllegalArgumentException(
-//				String.format(
-//					"The name '%s' is not a valid descriptor name for the type '%s'.",
-//					name,
-//					this.featureType.getName()));
-//		}
-//
-//		Object convertedValue;
-//
-//		Class<?> expectedClass = propertyDescriptor.getType().getBinding();
-//		if (value != null) {
-//			Class<?> providedClass = value.getClass();
-//
-//			// Make sure that the provided class and the expected class match or that the expectedClass is a base class of the providedClass:
-//			if (!providedClass.equals(expectedClass) && !expectedClass.isAssignableFrom(providedClass)) {
-//				throw new IllegalArgumentException(
-//					String.format(
-//						"The value provided is an object of '%s' but the method expects an object of '%s'.", 
-//						providedClass,
-//						expectedClass));
-//			}
-//
-//			convertedValue = super.convert(value, propertyDescriptor);
-//		}
-//		else { // value == null
-//			if (propertyDescriptor.isNillable()) {
-//				convertedValue = expectedClass.cast(null);
-//			}
-//			else {
-//				// A null reference has been provided for a non-nillable type.
-//				throw new IllegalArgumentException(
-//					String.format(
-//						"The value provided is a null reference but the property descriptor '%s' is non-nillable.",
-//						propertyDescriptor));
-//			}
-//		}
-//
-//		// At this point the converted value has been set so we must persist it to the object's state:
-//		ArrayList<Property> valueList;
-//
-//		if (values.containsKey(name)) {
-//			valueList = values.get(name);
-//			
-//			// Make sure that the list isn't already at capacity:
-//			int maxOccurs = propertyDescriptor.getMaxOccurs();
-//			if (valueList.size() == maxOccurs) {
-//				throw new IndexOutOfBoundsException(
-//					String.format(
-//						"You can't add another object with the name of '%s' because you already have the maximum number (%s) allowed by the property descriptor.",
-//						name,
-//						maxOccurs));
-//			}
-//		}
-//		else {
-//			valueList = new ArrayList<Property>();
-//			values.put(name, valueList);
-//		}
-//
-//		// Create the AttributeImpl or XXX depending on whether or not it's a 
-//		
-//		// TODO: I don't really know if it's even possible for there to be an attribute descriptor at this level -
-//		// won't it always be Complex?
-//		
-//		// TODO: I think this part is wrong... shouldn't you be passing in pre-built attributes / properties?
-//		if (AttributeDescriptor.class.isAssignableFrom(propertyDescriptor.getClass())) {
-//			valueList.add(new AttributeImpl(convertedValue, (AttributeDescriptor)propertyDescriptor, null)); // TODO: Null?
-//		}
-//		else {
-//			
-//		}
-//	}
-	
 	public void append(Name name, Property value) {
 		PropertyDescriptor propertyDescriptor = featureType.getDescriptor(name);
 

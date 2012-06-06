@@ -298,7 +298,7 @@ public final class WFS_1_1_0_DataStore implements WFSDataStore {
         // TODO: handle output format preferences
         final String outputFormat = wfs.getDefaultOutputFormat(GET_FEATURE);
 
-        String srsName = adaptQueryForSupportedCrs((Query) query);
+        String srsName = adaptQueryForSupportedCrs(query);
 
         GetFeature request = new GetFeatureQueryAdapter(query, outputFormat, srsName, resultType);
 

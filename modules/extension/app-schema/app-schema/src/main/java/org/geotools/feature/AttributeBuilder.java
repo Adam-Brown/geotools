@@ -60,7 +60,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class AttributeBuilder {
     private static final Logger LOGGER = org.geotools.util.logging.Logging
             .getLogger(AttributeBuilder.class.getPackage().getName());
-
     /**
      * Factory used to create attributes
      */
@@ -173,6 +172,7 @@ public class AttributeBuilder {
                     crs = feature.getDefaultGeometryProperty().getType()
                             .getCoordinateReferenceSystem();
                 }
+
                 defaultGeometry = feature.getDefaultGeometryProperty().getValue();
             }
         }

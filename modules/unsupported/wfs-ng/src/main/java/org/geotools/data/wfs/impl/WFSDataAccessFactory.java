@@ -344,7 +344,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
             Map<String, Serializable> params) throws IOException {
     	
     	WFSContentDataAccess dataAccess = new WFSContentDataAccess(getWFSClient(params));
-    	String cacheLocationKey = "WFSDataStoreFactory:CACHE_LOCATION";
+    	String cacheLocationKey = "WFSDataStoreFactory:SCHEMA_CACHE_LOCATION";
     	
     	if (params.containsKey(cacheLocationKey)) {
     		String cacheLocation = (String)params.get(cacheLocationKey);
