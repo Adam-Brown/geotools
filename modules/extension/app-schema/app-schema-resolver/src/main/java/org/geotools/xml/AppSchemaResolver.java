@@ -318,7 +318,7 @@ public class AppSchemaResolver {
 
             String query = location.getQuery();
             if (keepQuery && query != null) {
-            	buffer.append("/");
+            	buffer.append(".");
             	buffer.append(stringToMD5String(query));            	
             	buffer.append(".xsd");
             }
