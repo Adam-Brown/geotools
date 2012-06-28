@@ -40,7 +40,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  * 
  *
- *
+ * 
  *
  * @source $URL$
  *         http://svn.osgeo.org/geotools/trunk/modules/unsupported/app-schema/app-schema/src/main

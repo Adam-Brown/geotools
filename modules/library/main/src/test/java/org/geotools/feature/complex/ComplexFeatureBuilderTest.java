@@ -1,5 +1,7 @@
 package org.geotools.feature.complex;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +26,7 @@ import org.opengis.filter.Filter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class ComplexFeatureBuilderTests extends TestCase {
+public class ComplexFeatureBuilderTest {
 	// -----------------------
 	// | Taken from XSSchema |
 	public static final AttributeType ANYTYPE_TYPE = new AttributeTypeImpl(new NameImpl(
@@ -167,190 +169,166 @@ public class ComplexFeatureBuilderTests extends TestCase {
     private static AttributeImpl location = new AttributeImpl(gm.createPoint(new Coordinate(1, 3)), LOCATION_DESCRIPTOR, null);
 	
 	@Before
-	protected void setUp() {
+	public void setUp() {
 
 	}
-
-	@Test
-	public void test_append_invalidName_throwsIllegalArgumentException() {
+	
+	private void assertExceptionMessage(Exception exception, String expectedMessage) throws Exception
+	{
+		String actualMessage = exception.getMessage(); 
+		if (actualMessage.compareTo(expectedMessage) != 0) {
+			fail(String.format("Expected %s to say: '%s' but got: '%s'",
+					exception.getClass().getSimpleName(), 
+					expectedMessage, 
+					actualMessage));
+		}
+		
+		throw exception;
+	}
+	
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void append_invalidName_throwsIllegalArgumentException() throws Exception {
 		// Arrange
 		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
 
 		// Act
 		try {
 			builder.append(new NameImpl("invalid_descriptor_name"), londonBridge);
-			fail("Expected IllegalArgumentException but it wasn't thrown.");
 		}
 		catch (IllegalArgumentException iae) {
-			String expectedMessage = "The name 'invalid_descriptor_name' is not a valid descriptor name for the type 'urn:Bridge:Test:1.1:Bridge'.";
-			if (iae.getMessage().compareTo(expectedMessage) != 0) {
-				fail("Expected IllegalArgumentExceptionMessage to say: '" + expectedMessage + "' but got: '" + iae.getMessage() + "'");
-			}
-
-			// Assert (This is the expected exception).
-			return; 
-		}
-		catch (Exception e) {
-			fail("Expected IllegalArgumentException but it wasn't thrown; got " + e.getClass() + " instead. " + e.getMessage());
+			assertExceptionMessage(
+				iae, 
+				"The name 'invalid_descriptor_name' is not a valid descriptor name for the type 'urn:Bridge:Test:1.1:Bridge'.");
 		}
 	}
 	
 	/**
+	 * @throws Exception 
 	 * 
 	 */
-@Test
-public void test_append_validNameInvalidValueClass_throwsIllegalArgumentException() {
-	// Arrange
-	ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
-	
-	// Act
-	try {
-		builder.append(LOCATION, londonBridge); // Passing in londonBridge instead of a location.
-		fail("Expected IllegalArgumentException but it wasn't thrown.");
-	}
-	catch (IllegalArgumentException iae) {
-		String expectedMessage = "The value provided contains an object of 'class java.lang.String' but the method expects an object of 'class com.vividsolutions.jts.geom.Geometry'.";
-		if (iae.getMessage().compareTo(expectedMessage) != 0) {
-			fail("Expected IllegalArgumentExceptionMessage to say: '" + expectedMessage + "' but got: '" + iae.getMessage() + "'");
-		}
+	@Test(expected=IllegalArgumentException.class)
+	public void append_validNameInvalidValueClass_throwsIllegalArgumentException() throws Exception {
+		// Arrange
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
 		
-		// Assert (This is the expected exception).
-		return; 
-	}
-	catch (Exception e) {
-		fail("Expected IllegalArgumentException but it wasn't thrown; got " + e.getClass() + " instead. " + e.getMessage());
-	}
-}
-
-@Test
-public void test_append_validNameButNullValue_throwsIllegalArgumentException() {
-	// Arrange
-	ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
-
-	// Act
-	try {
-		builder.append(BRIDGE_NAME, null); // Passing a null reference for a non-nillable type.
-		fail("Expected IllegalArgumentException but it wasn't thrown.");
-	}
-	catch (IllegalArgumentException iae) {
-		String expectedMessage = "The value provided is a null reference but the property descriptor 'AttributeDescriptorImpl urn:Bridge:Test:1.1:bridgeName <string:String> 0:1' is non-nillable.";
-		if (iae.getMessage().compareTo(expectedMessage) != 0) {
-			fail("Expected IllegalArgumentExceptionMessage to say: '" + expectedMessage + "' but got: '" + iae.getMessage() + "'");
+		// Act
+		try {
+			builder.append(LOCATION, londonBridge); // Passing in londonBridge instead of a location.
 		}
-
-		// Assert (This is the expected exception).
-		return; 
-	}
-	catch (Exception e) {
-		fail("Expected IllegalArgumentException but it wasn't thrown; got " + e.getClass() + " instead. " + e.getMessage());
-	}
-}
-
-@Test
-public void test_append_validNameValidValue_valueShouldBeAddedToTheMap() {
-	// Arrange
-	ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
-
-	// Act
-	builder.append(BRIDGE_NAME, londonBridge);
-	Object actualValue = builder.values.get(BRIDGE_NAME).get(0);
-
-	// Assert	
-	Assert.assertSame(londonBridge, actualValue);
-}
-
-@Test
-public void test_append_exceedMaxOccursLimit_throwsIndexOutOfBoundsException() {
-	// Arrange
-	ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
-	builder.append(BRIDGE_NAME, londonBridge);
-
-	// Act
-	try {
-		builder.append(BRIDGE_NAME, londonBridge); // Add it once too many times.
-		fail("Expected IndexOutOfBoundsException but it wasn't thrown.");
-	}
-	catch (IndexOutOfBoundsException iae) {
-		String expectedMessage = "You can't add another object with the name of 'urn:Bridge:Test:1.1:bridgeName' because you already have the maximum number (1) allowed by the property descriptor.";
-		if (iae.getMessage().compareTo(expectedMessage) != 0) {
-			fail("Expected IndexOutOfBoundsException to say: '" + expectedMessage + "' but got: '" + iae.getMessage() + "'");
+		catch (IllegalArgumentException iae) {
+			assertExceptionMessage(
+				iae, 
+				"The value provided contains an object of 'class java.lang.String' but the method expects an object of 'class com.vividsolutions.jts.geom.Geometry'.");
 		}
-
-		// Assert (This is the expected exception).
-		return; 
 	}
-	catch (Exception e) {
-		fail("Expected IndexOutOfBoundsException but it wasn't thrown; got " + e.getClass() + " instead. " + e.getMessage());
-	}
-}
 
-@Test
-public void test_buildFeature_validInput_buildsFeature() {
-	// Arrange
-	ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
-
-	AttributeImpl description = new AttributeImpl("description", DESCRIPTION_DESCRIPTOR, null);
-
-	builder.append(BRIDGE_NAME, londonBridge);
-	builder.append(LOCATION, location);
-	builder.append(DESCRIPTION, description);
-
-	// Act
-	Feature feature = builder.buildFeature("id");
-
-	// Assert
-	assertNotNull(feature);
-	assertSame(londonBridge, feature.getProperty(BRIDGE_NAME));
-	assertSame(location, feature.getProperty(LOCATION));
-	assertSame(description, feature.getProperty(DESCRIPTION));
-}
-
-@Test
-public void test_buildFeature_missingDescription_descriptionDefaultsToNull() {
-	// TODO: this may not be a valid test because it might not be possible to coalesce to null. 
 	
-	// Arrange
-	ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
+	@Test(expected=IllegalArgumentException.class)
+	public void append_validNameButNullValue_throwsIllegalArgumentException() throws Exception {
+		// Arrange
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
 
-	builder.append(BRIDGE_NAME, londonBridge);
-	builder.append(LOCATION, location);
-
-	// Act
-	Feature feature = builder.buildFeature("id");
-
-	// Assert
-	assertNull(feature.getProperty(DESCRIPTION).getValue());
-}
-
-@Test
-public void test_buildFeature_noLocationSet_throwsIllegalStateException() {
-	// Arrange
-	ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
-
-	// Deliberately not setting location
-	builder.append(BRIDGE_NAME, londonBridge);
-
-	// Act
-	try {
-		Feature feature = builder.buildFeature("id");
-		fail("expected an exception");
-	}
-	catch (IllegalStateException ise) {
-		String expectedMessage = "Failed to build feature 'urn:Bridge:Test:1.1:Bridge'; its property 'urn:Bridge:Test:1.1:location' requires at least 1 occurrence(s) but number of occurrences was 0.";
-		if (ise.getMessage().compareTo(expectedMessage) != 0) {
-			fail("Expected IllegalStateException to say: '" + expectedMessage + "' but got: '" + ise.getMessage() + "'");
+		// Act
+		try {
+			builder.append(BRIDGE_NAME, null); // Passing a null reference for a non-nillable type.
 		}
-
-		// Assert (This is the expected exception).
-		return;
+		catch (IllegalArgumentException iae) {
+			assertExceptionMessage(
+				iae, 
+				"The value provided is a null reference but the property descriptor 'AttributeDescriptorImpl urn:Bridge:Test:1.1:bridgeName <string:String> 0:1' is non-nillable.");
+		}
 	}
-	catch (Exception e) {
-		fail("Expected IllegalStateException but it wasn't thrown; got " + e.getClass() + " instead. " + e.getMessage());
-	}
-}
 
 	@Test
-	public void test_buildFeature_validCyclicType_buildsFeature() {
+	public void append_validNameValidValue_valueShouldBeAddedToTheMap() {
+		// Arrange
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
+
+		// Act
+		builder.append(BRIDGE_NAME, londonBridge);
+		Object actualValue = builder.values.get(BRIDGE_NAME).get(0);
+
+		// Assert	
+		Assert.assertSame(londonBridge, actualValue);
+	}
+	
+	@Test(expected=IndexOutOfBoundsException.class)
+	public void append_exceedMaxOccursLimit_throwsIndexOutOfBoundsException() throws Exception {
+		// Arrange
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
+		builder.append(BRIDGE_NAME, londonBridge);
+
+		// Act
+		try {
+			builder.append(BRIDGE_NAME, londonBridge); // Add it once too many times.
+		}
+		catch (IndexOutOfBoundsException ioobe) {
+			assertExceptionMessage(
+				ioobe, 
+				"You can't add another object with the name of 'urn:Bridge:Test:1.1:bridgeName' because you already have the maximum number (1) allowed by the property descriptor.");
+		}
+	}
+
+	@Test
+	public void buildFeature_validInput_buildsFeature() {
+		// Arrange
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
+
+		AttributeImpl description = new AttributeImpl("description", DESCRIPTION_DESCRIPTOR, null);
+
+		builder.append(BRIDGE_NAME, londonBridge);
+		builder.append(LOCATION, location);
+		builder.append(DESCRIPTION, description);
+
+		// Act
+		Feature feature = builder.buildFeature("id");
+
+		// Assert
+		assertNotNull(feature);
+		assertSame(londonBridge, feature.getProperty(BRIDGE_NAME));
+		assertSame(location, feature.getProperty(LOCATION));
+		assertSame(description, feature.getProperty(DESCRIPTION));
+	}
+
+	@Test
+	public void buildFeature_missingDescription_descriptionDefaultsToNull() {
+		// TODO: this may not be a valid test because it might not be possible to coalesce to null. 
+		
+		// Arrange
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
+
+		builder.append(BRIDGE_NAME, londonBridge);
+		builder.append(LOCATION, location);
+
+		// Act
+		Feature feature = builder.buildFeature("id");
+
+		// Assert
+		assertNull(feature.getProperty(DESCRIPTION).getValue());
+	}
+
+	@Test(expected=IllegalStateException.class)
+	public void buildFeature_noLocationSet_throwsIllegalStateException() throws Exception {
+		// Arrange
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(BRIDGE_TYPE);
+
+		// Deliberately not setting location
+		builder.append(BRIDGE_NAME, londonBridge);
+
+		// Act
+		try {
+			builder.buildFeature("id");
+		}
+		catch (IllegalStateException ise) {
+			assertExceptionMessage(
+				ise, 
+				"Failed to build feature 'urn:Bridge:Test:1.1:Bridge'; its property 'urn:Bridge:Test:1.1:location' requires at least 1 occurrence(s) but number of occurrences was 0.");
+		}
+	}
+
+	@Test
+	public void buildFeature_validCyclicType_buildsFeature() {
 		// TODO: figure out the best way to build cyclic types
 
 		// Arrange

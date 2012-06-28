@@ -42,6 +42,7 @@ import org.opengis.feature.simple.SimpleFeature;
  * @task REVISIT: move these methods directly to FeatureType?  This would not
  *       allow independent FeatureFactories, but I'm not sure if those are
  *       useful at all.
+ * @deprecated
  */
 public interface FeatureFactory {
     /**

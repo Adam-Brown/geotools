@@ -167,8 +167,7 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
 		// Create type registry and add the schema to it:
 		// ----------------------------------------------
 		FeatureTypeRegistry typeRegistry = this.getFeatureTypeRegistry();
-		SchemaIndex schemaIndex = this.getSchemaParser().parse(
-				describeRequestURL);
+		SchemaIndex schemaIndex = this.getSchemaParser().parse(describeRequestURL);
 		typeRegistry.addSchemas(schemaIndex);
 
 		// Create the attribute type and cast it as a FeatureType:
@@ -184,9 +183,12 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
 	 *            the folder to use as the cache.
 	 */
 	public void setCacheLocation(File cacheLocation) {
-		if (cacheLocation == null) {
-			throw new IllegalArgumentException("cacheLocation cannot be null");
-		}
+// ADAM: I've taken this out because the AppSchemaResolver actually can run without a cache
+//    it means that people don't have to set the cache location in the config parameters if
+//    they don't want to.
+//		if (cacheLocation == null) {
+//			throw new IllegalArgumentException("cacheLocation cannot be null");
+//		}
 
 		this.cacheLocation = cacheLocation;
 	}
@@ -212,8 +214,16 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
 	private EmfAppSchemaReader getSchemaParser() {
 		if (this.schemaParser == null) {
 			this.schemaParser = EmfAppSchemaReader.newInstance();
-			this.schemaParser.setResolver(new AppSchemaResolver(
-					new AppSchemaCache(this.cacheLocation, true)));
+			
+			AppSchemaResolver appSchemaResolver;
+			if (this.cacheLocation == null) {
+				appSchemaResolver = new AppSchemaResolver();
+			}
+			else {
+				appSchemaResolver = new AppSchemaResolver(new AppSchemaCache(this.cacheLocation, true));
+			}
+				
+			this.schemaParser.setResolver(appSchemaResolver);
 		}
 
 		return this.schemaParser;

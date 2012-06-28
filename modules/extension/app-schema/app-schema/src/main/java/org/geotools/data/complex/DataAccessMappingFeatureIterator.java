@@ -40,7 +40,7 @@ import org.geotools.data.complex.filter.XPath.Step;
 import org.geotools.data.complex.filter.XPath.StepList;
 import org.geotools.data.joining.JoiningNestedAttributeMapping;
 import org.geotools.data.joining.JoiningQuery;
-import org.geotools.feature.AttributeBuilder;
+import org.geotools.feature.AppSchemaAttributeBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureImpl;
 import org.geotools.feature.FeatureIterator;
@@ -805,7 +805,7 @@ public class DataAccessMappingFeatureIterator extends AbstractMappingFeatureIter
         final AttributeDescriptor targetNode = mapping.getTargetFeature();
         final Name targetNodeName = targetNode.getName();
 
-        AttributeBuilder builder = new AttributeBuilder(attf);
+        AppSchemaAttributeBuilder builder = new AppSchemaAttributeBuilder(attf);
         builder.setDescriptor(targetNode);
         Feature target = (Feature) builder.build(id);
 

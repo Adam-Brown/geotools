@@ -411,7 +411,7 @@ public abstract class ContentDataStore implements DataStore {
         if ( query.getTypeName() == null ) {
             throw new IllegalArgumentException("Query does not specify type.");
         }
-        
+
         return getFeatureSource(query.getTypeName(), tx).getReader(query);
     }
 
@@ -424,7 +424,7 @@ public abstract class ContentDataStore implements DataStore {
      * </p>
      */
     public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(String typeName, Filter filter, Transaction tx) throws IOException {
-        
+
         ContentFeatureStore featureStore = ensureFeatureStore(typeName,tx);
         return featureStore.getWriter(filter, WRITER_UPDATE | WRITER_ADD);
     }

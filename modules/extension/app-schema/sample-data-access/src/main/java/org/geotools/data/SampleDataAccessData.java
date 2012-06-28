@@ -75,9 +75,14 @@ public class SampleDataAccessData {
 
     public static final Name GEOLOGICUNIT_TYPE_NAME = new NameImpl(NAMESPACE_URI, "GeologicUnit");
 
-    public static final FeatureType GEOLOGICUNIT_TYPE = new FeatureTypeImpl(GEOLOGICUNIT_TYPE_NAME,
-            Collections.<PropertyDescriptor> emptyList(), null, false, Collections
-                    .<Filter> emptyList(), GMLSchema.ABSTRACTFEATURETYPE_TYPE, null);
+    public static final FeatureType GEOLOGICUNIT_TYPE = new FeatureTypeImpl(
+   		GEOLOGICUNIT_TYPE_NAME,
+   		Collections.<PropertyDescriptor> emptyList(), 
+   		null, 
+   		false, 
+   		Collections.<Filter> emptyList(), 
+   		GMLSchema.ABSTRACTFEATURETYPE_TYPE, 
+   		null);
 
     public static final AttributeDescriptor SPECIFICATION_DESCRIPTOR = new AttributeDescriptorImpl(
             GMLSchema.FEATUREPROPERTYTYPE_TYPE, new NameImpl(NAMESPACE_URI, "specification"), 0, 1,
@@ -107,9 +112,10 @@ public class SampleDataAccessData {
      * The type of the sample feature.
      */
     public static final FeatureType MAPPEDFEATURE_TYPE = new FeatureTypeImpl(
-            MAPPEDFEATURE_TYPE_NAME, MAPPEDFEATURE_TYPE_SCHEMA, null, false, Collections
-                    .<Filter> emptyList(), GMLSchema.ABSTRACTFEATURETYPE_TYPE, null);
+        MAPPEDFEATURE_TYPE_NAME, MAPPEDFEATURE_TYPE_SCHEMA, null, false, Collections
+            .<Filter> emptyList(), GMLSchema.ABSTRACTFEATURETYPE_TYPE, null);
 
+   
     /**
      * Create a sample feature from primitive components.
      * 
@@ -123,14 +129,18 @@ public class SampleDataAccessData {
      *            the shape of the feature
      * @return
      */
-    public static Feature createMappedFeature(String id, String bgsid, final String description,
-            final String specificationDescription, final Geometry shape) {
+    public static Feature createMappedFeature(
+		String id, 
+		String bgsid, 
+		final String description,
+		final String specificationDescription,
+		final Geometry shape) {
 
         final Collection<Property> specificationFeatureProperties = new ArrayList<Property>() {
             {
                 add(new AttributeImpl(specificationDescription, new AttributeDescriptorImpl(
-                        XSSchema.STRING_TYPE, new NameImpl("http://www.opengis.net/gml",
-                                "description"), 0, 1, false, null), null));
+                    XSSchema.STRING_TYPE, new NameImpl("http://www.opengis.net/gml",
+                        "description"), 0, 1, false, null), null));
             }
         };
         final Feature specificationFeature = new FeatureImpl(specificationFeatureProperties,
@@ -141,8 +151,8 @@ public class SampleDataAccessData {
                 // FIXME: should be GMLSchema.STRINGORREFTYPE_TYPE, but that is a complexType with
                 // simpleContent, not currently supported
                 add(new AttributeImpl(description, new AttributeDescriptorImpl(
-                        XSSchema.STRING_TYPE, new NameImpl("http://www.opengis.net/gml",
-                                "description"), 0, 1, false, null), null));
+                    XSSchema.STRING_TYPE, new NameImpl("http://www.opengis.net/gml",
+                        "description"), 0, 1, false, null), null));
                 add(new ComplexAttributeImpl(new ArrayList<Property>() {
                     {
                         add(specificationFeature);
@@ -165,17 +175,17 @@ public class SampleDataAccessData {
                 // Two sample MappedFeature from an old British Geological Survey test suite.
                 // See also mappedPolygons.properties and GeoSciMLTest.java in app-schema module.
                 add(createMappedFeature(
-                		"mf1",
-                        "651",
-                        "GUNTHORPE FORMATION",
-                        "Gunthorpe specification description",
-                        readGeometry("POLYGON((-1.2 52.5,-1.2 52.6,-1.1 52.6,-1.1 52.5,-1.2 52.5))")));
+            		"mf1",
+                    "651",
+                    "GUNTHORPE FORMATION",
+                    "Gunthorpe specification description",
+                    readGeometry("POLYGON((-1.2 52.5,-1.2 52.6,-1.1 52.6,-1.1 52.5,-1.2 52.5))")));
                 add(createMappedFeature(
-                        "mf2",
-                        "269",
-                        "MERCIA MUDSTONE GROUP",
-                        "Mercia specification description",
-                        readGeometry("POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5))")));
+                    "mf2",
+                    "269",
+                    "MERCIA MUDSTONE GROUP",
+                    "Mercia specification description",
+                    readGeometry("POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5))")));
             }
         };
     }

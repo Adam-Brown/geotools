@@ -20,10 +20,13 @@ import org.geotools.feature.FeatureBuilder;
 import org.geotools.gml3.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.Converters;
 import org.geotools.wfs.WFS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -78,7 +81,7 @@ public abstract class XmlFeatureParser<FT extends FeatureType, F extends Feature
             parser.setInput(inputStream, "UTF-8");
             parser.nextTag();
             parser.require(START_TAG, WFS.NAMESPACE, WFS.FeatureCollection.getLocalPart());
-
+            
             String nof = parser.getAttributeValue(null, "numberOfFeatures");
             if (nof != null) {
                 try {
@@ -121,6 +124,38 @@ public abstract class XmlFeatureParser<FT extends FeatureType, F extends Feature
             	throw new DataSourceException(e);
             }
         }
+    }
+
+    /**
+     * Parses the value of the current attribute, parser cursor shall be on a feature attribute
+     * START_TAG event.
+     * 
+     * @return
+     * @throws IOException
+     * @throws XmlPullParserException
+     * @throws FactoryException
+     * @throws NoSuchAuthorityCodeException
+     */
+    @SuppressWarnings("unchecked")
+    protected Object parseAttributeValue(AttributeDescriptor attribute) throws XmlPullParserException, IOException {
+        final AttributeType type = attribute.getType();
+        Object parsedValue;
+        if (type instanceof GeometryType) {
+            parser.nextTag();
+            try {
+                parsedValue = parseGeom();
+            } catch (NoSuchAuthorityCodeException e) {
+                throw new DataSourceException(e);
+            } catch (FactoryException e) {
+                throw new DataSourceException(e);
+            }
+        } else {
+            String rawTextValue = parser.nextText();
+            Class binding = type.getBinding();
+            parsedValue = Converters.convert(rawTextValue, binding);
+        }
+
+        return parsedValue;
     }
 
     /**

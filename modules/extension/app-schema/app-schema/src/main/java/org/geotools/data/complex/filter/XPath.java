@@ -31,7 +31,7 @@ import javax.xml.namespace.QName;
 
 import org.geotools.data.complex.ComplexFeatureConstants;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.AttributeBuilder;
+import org.geotools.feature.AppSchemaAttributeBuilder;
 import org.geotools.feature.AttributeImpl;
 import org.geotools.feature.Types;
 import org.geotools.feature.ValidatingFeatureFactoryImpl;
@@ -948,7 +948,7 @@ public class XPath {
             }
         }
         if (leafAttribute == null) {
-            AttributeBuilder builder = new AttributeBuilder(featureFactory);
+            AppSchemaAttributeBuilder builder = new AppSchemaAttributeBuilder(featureFactory);
             if (crs != null) {
                 builder.setCRS(crs);
             }

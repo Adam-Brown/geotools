@@ -131,7 +131,7 @@ public class XmlSimpleFeatureParser extends XmlFeatureParser<SimpleFeatureType, 
                 if (START_TAG == tagType) {
                     AttributeDescriptor descriptor = expectedProperties.get(tagName);
                     if (descriptor != null) {
-                    	attributeValue = parseAttributeValue();
+                    	attributeValue = parseAttributeValue(descriptor);
                         builder.set(descriptor.getLocalName(), attributeValue);
                     }
                 }
@@ -140,42 +140,7 @@ public class XmlSimpleFeatureParser extends XmlFeatureParser<SimpleFeatureType, 
             throw new DataSourceException(e);
         }
 
-        SimpleFeature feature = builder.buildFeature(fid);
-        return feature;
-    }
-
-    /**
-     * Parses the value of the current attribute, parser cursor shall be on a feature attribute
-     * START_TAG event.
-     * 
-     * @return
-     * @throws IOException
-     * @throws XmlPullParserException
-     * @throws FactoryException
-     * @throws NoSuchAuthorityCodeException
-     */
-    @SuppressWarnings("unchecked")
-    private Object parseAttributeValue() throws XmlPullParserException, IOException {
-        final String name = parser.getName();
-        final AttributeDescriptor attribute = expectedProperties.get(name);
-        final AttributeType type = attribute.getType();
-        Object parsedValue;
-        if (type instanceof GeometryType) {
-            parser.nextTag();
-            try {
-                parsedValue = parseGeom();
-            } catch (NoSuchAuthorityCodeException e) {
-                throw new DataSourceException(e);
-            } catch (FactoryException e) {
-                throw new DataSourceException(e);
-            }
-        } else {
-            String rawTextValue = parser.nextText();
-            Class binding = type.getBinding();
-            parsedValue = Converters.convert(rawTextValue, binding);
-        }
-
-        return parsedValue;
+        return builder.buildFeature(fid);
     }
 }
 
