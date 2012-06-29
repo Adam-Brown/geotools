@@ -42,7 +42,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Feature> {
 
-	private final Map<String, PropertyDescriptor> expectedProperties;
+	private final Map<Name, PropertyDescriptor> expectedProperties;
 
 	private final ComplexFeatureBuilder featureBuilder;
 
@@ -57,18 +57,12 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
 
 		this.featureBuilder = new ComplexFeatureBuilder(this.targetType);
 
-		// TODO: this casting is temporary - there's no getDescriptors() method on the FeatureType interface
-		// so I have to read it as a ComplexFeatureTypeImpl to access that method. Not sure why the method
-		// isn't declared in the interface. Will have to check but that might be a good way to fix this issue.
-
-		// TODO: I'm not sure which of these I'm meant to use; getDescriptors() or getTypeDescriptors()
-		//Collection<PropertyDescriptor> descriptors = ((ComplexFeatureTypeImpl) targetType).getDescriptors();
-		Collection<PropertyDescriptor> descriptors = ((ComplexFeatureTypeImpl) targetType).getTypeDescriptors();
+		Collection<PropertyDescriptor> descriptors = targetType.getDescriptors();
 
 		System.out.println(targetType);
-		expectedProperties = new TreeMap<String, PropertyDescriptor>(String.CASE_INSENSITIVE_ORDER);
+		expectedProperties = new TreeMap<Name, PropertyDescriptor>();
 		for (PropertyDescriptor descriptor : descriptors) {
-			this.expectedProperties.put(descriptor.getName().getLocalPart(), descriptor);
+			this.expectedProperties.put(descriptor.getName(), descriptor);
 		}
 	}
 	
@@ -134,77 +128,138 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
 //
 //		return featureBuilder.buildFeature(fid);
 //	}
+	
+	private int indent = 0;
+	private void log(int indent, String message) {
+		for (int i = 0; i < (this.indent + indent); i++) {
+			System.out.print("    ");
+		}
+		
+		System.out.println(message);
+	}
 
 	@Override
 	public Feature parse() throws IOException {
 		final String fid;
+		
 		try {
-			fid = seekFeature();
-
-			if (fid == null) {
+			// Get the feature id or return null if there isn't one:
+			if ((fid = seekFeature()) == null) {
 				return null;
 			}
 
-			int tagType;
-            String tagNs;
-            String tagName;
-            Object attributeValue;
+			log(0, "<" + featureName + " gml:id=\"" +fid + "\"> (building...)");
 
+			// Loop through each attribute
             while (true) {
-            	tagType = parser.next();
-                if (XmlPullParser.END_DOCUMENT == tagType) {
-                    close();
-                    return null;
-                }
-
-                tagNs = parser.getNamespace();
-                tagName = parser.getName();
+            	int tagType = parser.next();
+                String tagNs = parser.getNamespace();
+                String tagName = parser.getName();
+                Object attributeValue;
                 
                 if (tagType == END_TAG && featureNamespace.equals(tagNs) && featureName.equals(tagName)) {
-                    // found end of current feature
+                	log(0, "</" + tagName + ">");
                 	break;
                 }
-                else if (tagType == START_TAG) {
-                	// (6) MINEmineNAME_DESCRIPTOR
-                	PropertyDescriptor descriptor = expectedProperties.get(tagName);
 
+                if (tagType == XmlPullParser.START_TAG) {
+                	NameImpl name = new NameImpl(parser.getNamespace(), parser.getName());
+                	PropertyDescriptor descriptor = expectedProperties.get(name);
+                	
                 	if (descriptor != null) {
-                		if (tagName.compareTo("mineName") == 0) {
-                			System.out.println("(6) MINEmineNAME_DESCRIPTOR: " + descriptor);
+// TODO: remove this line
+if (tagName.equals("mineName")) {
+                		String id = parser.getAttributeValue("http://www.opengis.net/gml", "id");
+                		indent++;
+                		log(0, "<" + tagName + " gml:id=\"" + id + "\"> (building...)");
+                		indent++;
 
-                			// Look at the underlying java type of the descriptor's type and use
-	            			// that to determine how to construct the attributes.
+               			// Look at the underlying java type of the descriptor's type and use
+            			// that to determine how to construct the attributes.
+               			PropertyType type = descriptor.getType();
+                		if (type instanceof ComplexType) {
+                			// If the type is Complex then we need to parse it as such:
+                		    attributeValue = parseComplexAttribute((ComplexType)type); // I'm expecting this to return ComplexAttributeImpl:MineNamePropertyType with no id
+                		    System.out.println(attributeValue);
 
-                			// 'type' corresponds to (5) MINENAMEPROPERTYTYPE_TYPE
-	                		PropertyType type = descriptor.getType();
+		            		// TODO: DO you need an append overload to accept an id?
+		            		featureBuilder.append(/*id,?*/ name, (Property)attributeValue);
+			            }
 
-	                		if (type instanceof ComplexType) {
-	                			// If the type is Complex then we need to parse it as such:
-	                			String id = parser.getAttributeValue("http://www.opengis.net/gml", "id");
-		            			attributeValue = parseComplexAttribute((ComplexType)type, id);
-		            			System.out.println(attributeValue);
-		            		}
-
-//	                 		featureBuilder.append(name, propertyValue);
-	            			System.exit(0);
-                		}
-	                }
+		                System.exit(0);
+}
+                	}
                 }
+                else if (tagType == XmlPullParser.END_DOCUMENT) {
+                	log(0, "END_DOCUMENT");
+                	close();
+                	return null;
+                }                
             }
+		} catch (XmlPullParserException e) {
+			throw new DataSourceException(e);
 		}
-		catch (XmlPullParserException e) {
-	        throw new DataSourceException(e);
-	    }
 
 		return featureBuilder.buildFeature(fid);
 	}
-
-	private Object parseComplexAttribute(ComplexType complexType, String eid) throws XmlPullParserException, IOException {
+	
+	private Property parseComplexAttribute(ComplexType complexType) throws XmlPullParserException, IOException {
 		// TODO: Adam, should the LenientFeatureFactoryImpl be injected instead of being hard-coded?
 		AttributeBuilder attributeBuilder = new AttributeBuilder(new LenientFeatureFactoryImpl());  
 		attributeBuilder.setType(complexType);
+		String id = null;
+		Hashtable<Name, Collection<Property>> multivaluedData = new Hashtable<Name, Collection<Property>>();
+
+		while (true)
+		{
+			int tagType = parser.next();
+            
+            if (tagType == XmlPullParser.END_TAG) {
+            	break;
+            }
+			else if (tagType == XmlPullParser.START_TAG) {
+				NameImpl name = new NameImpl(parser.getNamespace(), parser.getName());
+				
+				// Get the id, if it's set:
+    			// TODO Adam: Should this really be hard-coded like this?
+    			id = parser.getAttributeValue("http://www.opengis.net/gml", "id");
+				
+        		log(0, "<" + name.getLocalPart() + " gml:id=\"" + id + "\"> (asdf.)");
+        		indent++;
+        		
+        		PropertyDescriptor descriptor = complexType.getDescriptor(name);
+        		PropertyType type = descriptor.getType();
+
+        		if (type instanceof ComplexType) {
+        			log(0, "type instanceof ComplexType");
+        		}
+        		else if (type instanceof AttributeType) {
+        			log(0, "type instanceof AttributeType");
+        			
+        			log(0, "parseAttributeValue for " + descriptor.getName());
+        			Object attributeValue = super.parseAttributeValue((AttributeDescriptor)descriptor);
+        			log(0, "adding attributeValue to builder under id: " + id + " and name: " + descriptor.getName().getLocalPart());        			
+                    attributeBuilder.add(id, attributeValue, name);
+        		}
+			}
+			else if (tagType == XmlPullParser.END_DOCUMENT) {
+				close();
+                return null;
+            }
+		}
+
+		for (Name name : multivaluedData.keySet()) {
+			attributeBuilder.add(id, multivaluedData.get(name), name);
+		}
 		
-		// The string should be the name of the type, list of objects which can be used as a collection.
+		return attributeBuilder.build();
+	}
+	
+	private Object OLDparseComplexAttribute(ComplexType complexType) throws XmlPullParserException, IOException {
+		// TODO: Adam, should the LenientFeatureFactoryImpl be injected instead of being hard-coded?
+		AttributeBuilder attributeBuilder = new AttributeBuilder(new LenientFeatureFactoryImpl());  
+		attributeBuilder.setType(complexType);
+		String id = null;
 		Hashtable<Name, Collection<Property>> multivaluedData = new Hashtable<Name, Collection<Property>>();
 		
 		// Get the next tag from the parser and see what type its name corresponds to:
@@ -212,18 +267,17 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
 		{
 			int tagType = parser.next();
 
-			if (XmlPullParser.END_DOCUMENT == tagType) {
-				close();
-                return null;
-            }
+			if (tagType == END_TAG) {
+            	break;
+            } 
 			else if (tagType == XmlPullParser.START_TAG) {
 				NameImpl name = new NameImpl(parser.getNamespace(), parser.getName());
-				
+
 				System.out.println(name);
-				
+
 				// Get the id, if it's set:
     			// TODO Adam: Should this really be hard-coded like this?
-    			String id = parser.getAttributeValue("http://www.opengis.net/gml", "id");
+    			id = parser.getAttributeValue("http://www.opengis.net/gml", "id");
 
 // TODO Adam: how should I get these attributes into the objects?
 //				int attributeCount = parser.getAttributeCount();
@@ -244,8 +298,8 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
 
         		if (type instanceof ComplexType) {
         			// Recurses here.
-        			Property property = (Property)parseComplexAttribute((ComplexType)type, id);        			
-        			
+        			Property property = (Property)OLDparseComplexAttribute((ComplexType)type);        			
+
         			if (!multivaluedData.keySet().contains(name)) {
         				multivaluedData.put(name, new ArrayList<Property>());
         			}
@@ -255,17 +309,20 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
        			}
         		else if (type instanceof AttributeType) {
         			Object attributeValue = super.parseAttributeValue((AttributeDescriptor)descriptor);
+
+        			System.out.println("INNER: " + id);
+
                     attributeBuilder.add(id, attributeValue, name);
         		}
 			}
-			else if (tagType == END_TAG) {
-            	break;
+			else if (XmlPullParser.END_DOCUMENT == tagType) {
+				close();
+                return null;
             }
 		} while (true);
 		
 		for (Name name : multivaluedData.keySet()) {
-			// TODO Adam: what about the id?
-			attributeBuilder.add(eid, multivaluedData.get(name), name);
+			attributeBuilder.add(id, multivaluedData.get(name), name);
 		}
 		
 		return attributeBuilder.build();
