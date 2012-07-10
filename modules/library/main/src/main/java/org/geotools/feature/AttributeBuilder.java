@@ -40,7 +40,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  *
  */
 public class AttributeBuilder {
-	// Region: fields
+	// fields
     /**
      * Factory used to create attributes.
      */
@@ -79,7 +79,7 @@ public class AttributeBuilder {
     protected Object defaultGeometry;
     
 
-    // Region: getters & setters
+    // getters & setters
     /**
      * @return The type of the attribute being built.
      */
@@ -97,6 +97,13 @@ public class AttributeBuilder {
     public void setType(AttributeType type) {
         this.type = type;
         this.descriptor = null;
+    }
+    
+    /**
+     * @return The descriptor of the attribute being built or null there is no descriptor (this occurs if setType() was used).
+     */
+    public AttributeDescriptor getDescriptor() {
+    	return this.descriptor;
     }
     
     /**
@@ -143,22 +150,22 @@ public class AttributeBuilder {
      * Convenience accessor for properties list which does the null check.
      */
     protected List getProperties() {
-        if (properties == null) {
-            properties = new ArrayList();
+        if (this.properties == null) {
+        	this.properties = new ArrayList();
         }
 
-        return properties;
+        return this.properties;
     }
-
     
-    // Region: constructor
+    
+    // constructor
     public AttributeBuilder(FeatureFactory attributeFactory)
     {
     	this.attributeFactory = attributeFactory;
     }
 
     
-    // Region: public methods
+    // public methods
     /**
      * Adds an attribute to the complex attribute being built. <br>
      * <p>
@@ -242,7 +249,6 @@ public class AttributeBuilder {
                             feature.setDefaultGeometryProperty((GeometryAttribute) att);
                         }
                     }
-
                 }
             }
         }
@@ -264,7 +270,7 @@ public class AttributeBuilder {
 	}
 
     
-    // Region: protected methods
+    // protected methods
     /**
      * Factors out attribute creation code, needs to be called with either one of type or descriptor.
      */
@@ -301,11 +307,9 @@ public class AttributeBuilder {
 
         return (AttributeDescriptor) descriptor;
     }
-    
-    
-    // -------------------------------------------------------------------------
-    // Region: taken from Types.java
-    // -------------------------------------------------------------------------
+
+
+    // taken from Types.java
     /**
      * Find a descriptor, taking in to account supertypes AND substitution groups
      * 
@@ -314,10 +318,10 @@ public class AttributeBuilder {
      * @return descriptor, null if not found
      */
     public static PropertyDescriptor findDescriptor(ComplexType parentType, Name name) {
-        //get list of descriptors from types and all supertypes
+        // get list of descriptors from types and all supertypes
         List<PropertyDescriptor> descriptors = descriptors(parentType);
         
-        //find matching descriptor
+        // find matching descriptor
         for (Iterator<PropertyDescriptor> it = descriptors.iterator(); it.hasNext();) {
             PropertyDescriptor d = it.next(); 
             if (d.getName().equals(name)) {
@@ -331,7 +335,7 @@ public class AttributeBuilder {
             if (substitutionGroup != null){
                 for (Iterator<AttributeDescriptor> it2 = substitutionGroup.iterator(); it2.hasNext();) {
                     AttributeDescriptor d = it2.next(); 
-                    if (d.getName().equals(name)) { //BINGOOO !!
+                    if (d.getName().equals(name)) {
                         return d;                            
                     }
                 }

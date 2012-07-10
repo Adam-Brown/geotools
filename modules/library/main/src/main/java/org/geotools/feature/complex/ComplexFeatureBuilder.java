@@ -47,7 +47,7 @@ public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> 
 
 			// Get the List of Properties:
 			List<Property> properties = values.get(name);
-			
+
 			// See if there's a mismatch between the number of properties and minOccurs value:
 			int minOccurs = propertyDescriptor.getMinOccurs();
 			int numberOfProperties = properties.size();
@@ -85,6 +85,7 @@ public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> 
 			properties.addAll(values.get(key));
 		}
 
+		this.values.clear();
 		return factory.createFeature(properties, this.featureType, id);	
 	}
 
@@ -150,15 +151,3 @@ public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> 
 		valueList.add(value);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
