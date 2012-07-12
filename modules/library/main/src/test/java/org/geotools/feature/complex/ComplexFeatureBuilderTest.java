@@ -18,6 +18,7 @@ import org.geotools.feature.type.FeatureTypeImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opengis.feature.Attribute;
+import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
@@ -67,7 +68,7 @@ public class ComplexFeatureBuilderTest {
     // Create the GeologicalUnitType
     private static final List<PropertyDescriptor> GEOLOGICALUNITTYPE_SCHEMA = new ArrayList<PropertyDescriptor>() { 
     	{
-            add(new AttributeDescriptorImpl(MAPPEDFEATURETYPE_TYPE, OCCURRENCE_NAME, 0, -1, false, null));
+            add(new AttributeDescriptorImpl(MAPPEDFEATURETYPE_TYPE, OCCURRENCE_NAME, 0, Integer.MAX_VALUE, false, null));
         }
     };
     
@@ -80,14 +81,38 @@ public class ComplexFeatureBuilderTest {
     	FAKEABSTRACTFEATURETYPE_TYPE,
     	null);
 
-    // *****************************************************************************************
-    // 
+    private static ComplexAttribute getAMineNameProperty(String name, boolean isPreferred) {
+		AttributeBuilder builder = new AttributeBuilder(new LenientFeatureFactoryImpl());
+		builder.setType(FakeTypes.Mine.MINENAMETYPE_TYPE);
+
+		builder.add(
+			"isPreferred_testId",
+			isPreferred,
+			FakeTypes.Mine.NAME_isPreferred);
+
+		builder.add(
+				"mineName_testId",
+			name,
+			FakeTypes.Mine.NAME_mineName);
+
+		final Attribute mineName = builder.build();
+		
+		Collection<Attribute> mineNames = new ArrayList<Attribute>();
+		mineNames.add(mineName);
+		
+		builder.init();
+		builder.setType(FakeTypes.Mine.MINENAMEPROPERTYTYPE_TYPE);
+		
+		builder.add(
+			"MineName_testId",
+			mineNames,
+			FakeTypes.Mine.NAME_MineName);
+		
+		return (ComplexAttribute) builder.build();
+	}
+
     private static GeometryFactory gm = new GeometryFactory();
     
-    private static AttributeImpl londonBridge = new AttributeImpl("London Bridge", FakeTypes.Bridge.BRIDGENAME_DESCRIPTOR, null);
-    
-    private static AttributeImpl location = new AttributeImpl(gm.createPoint(new Coordinate(1, 3)), FakeTypes.Bridge.LOCATION_DESCRIPTOR, null);
-	
     @Test(expected=IllegalArgumentException.class)
 	public void append_invalidName_throwsIllegalArgumentException() throws Exception {
 		// Arrange
@@ -100,7 +125,7 @@ public class ComplexFeatureBuilderTest {
 		catch (IllegalArgumentException iae) {
 			ExceptionChecker.assertExceptionMessage(
 				iae,
-				"The name 'invalid_descriptor_name' is not a valid descriptor name for the type 'urn:cgi:xmlns:GGIC:EarthResource:1.1:MineType'.");
+				"The name 'invalid_descriptor_name' is not a valid descriptor name for the type 'urn:org:example:MineType'.");
 		}
 	}
 	
@@ -115,12 +140,12 @@ public class ComplexFeatureBuilderTest {
 
 		// Act
 		try {
-			builder.append(FakeTypes.Mine.NAME_mineName, londonBridge); // Passing in londonBridge instead of a mineName.
+			builder.append(FakeTypes.Mine.NAME_mineName, new AttributeImpl("Test", FakeTypes.ANYSIMPLETYPE_TYPE, null)); // Passing in simple type instead of a mineName.
 		}
 		catch (IllegalArgumentException iae) {
 			ExceptionChecker.assertExceptionMessage(
 				iae, 
-				"The value provided contains an object of 'class java.lang.String' but the method expects an object of 'interface java.util.Collection'.");
+				"The value provided contains an object of 'class java.lang.Object' but the method expects an object of 'interface java.util.Collection'.");
 		}
 	}
 
@@ -136,88 +161,48 @@ public class ComplexFeatureBuilderTest {
 		catch (IllegalArgumentException iae) {
 			ExceptionChecker.assertExceptionMessage(
 				iae, 
-				"The value provided is a null reference but the property descriptor 'AttributeDescriptorImpl urn:cgi:xmlns:GGIC:EarthResource:1.1:mineName <MineNamePropertyType:Collection> 1:2147483647' is non-nillable.");
+				"The value provided is a null reference but the property descriptor 'AttributeDescriptorImpl urn:org:example:mineName <MineNamePropertyType:Collection> 1:2' is non-nillable.");
 		}
 	}
 
 	@Test
 	public void append_validNameValidValue_valueShouldBeAddedToTheMap() {
 		// Arrange
-		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(FakeTypes.Bridge.BRIDGE_TYPE);
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(FakeTypes.Mine.MINETYPE_TYPE);
+		ComplexAttribute mineNameProperty = getAMineNameProperty("mine 1", true);
 
 		// Act
-		builder.append(FakeTypes.Bridge.NAME_bridgeName, londonBridge);
-		Object actualValue = builder.values.get(FakeTypes.Bridge.NAME_bridgeName).get(0);
+		builder.append(FakeTypes.Mine.NAME_mineName, mineNameProperty);
+		Object actualValue = builder.values.get(FakeTypes.Mine.NAME_mineName).get(0);
 
-		// Assert	
-		Assert.assertSame(londonBridge, actualValue);
+		// Assert
+		Assert.assertSame(mineNameProperty, actualValue);
 	}
-	
+
 	@Test(expected=IndexOutOfBoundsException.class)
 	public void append_exceedMaxOccursLimit_throwsIndexOutOfBoundsException() throws Exception {
 		// Arrange
-		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(FakeTypes.Bridge.BRIDGE_TYPE);
-		builder.append(FakeTypes.Bridge.NAME_bridgeName, londonBridge);
-
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(FakeTypes.Mine.MINETYPE_TYPE);
+		builder.append(FakeTypes.Mine.NAME_mineName, getAMineNameProperty("mine 1", true));
+		builder.append(FakeTypes.Mine.NAME_mineName, getAMineNameProperty("mine 2", false));
+		
 		// Act
 		try {
-			builder.append(FakeTypes.Bridge.NAME_bridgeName, londonBridge); // Add it once too many times.
+			builder.append(FakeTypes.Mine.NAME_mineName, getAMineNameProperty("mine 3", false)); // Add it once too many times.
 		}
 		catch (IndexOutOfBoundsException ioobe) {
 			ExceptionChecker.assertExceptionMessage(
 				ioobe, 
-				"You can't add another object with the name of 'urn:Bridge:Test:1.1:bridgeName' because you already have the maximum number (1) allowed by the property descriptor.");
+				"You can't add another object with the name of 'urn:org:example:mineName' because you already have the maximum number (2) allowed by the property descriptor.");
 		}
-	}
-
-	@Test
-	public void buildFeature_validInput_buildsFeature() {
-		// Arrange
-		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(FakeTypes.Bridge.BRIDGE_TYPE);
-
-		AttributeImpl description = new AttributeImpl(
-			"description", 
-			FakeTypes.Bridge.DESCRIPTION_DESCRIPTOR, 
-			null);
-
-		builder.append(FakeTypes.Bridge.NAME_bridgeName, londonBridge);
-		builder.append(FakeTypes.Bridge.NAME_location, location);
-		builder.append(FakeTypes.Bridge.NAME_description, description);
-
-		// Act
-		Feature feature = builder.buildFeature("id");
-
-		// Assert
-		assertNotNull(feature);
-		assertSame(londonBridge, feature.getProperty(FakeTypes.Bridge.NAME_bridgeName));
-		assertSame(location, feature.getProperty(FakeTypes.Bridge.NAME_location));
-		assertSame(description, feature.getProperty(FakeTypes.Bridge.NAME_description));
-	}
-
-	@Test
-	public void buildFeature_missingDescription_descriptionDefaultsToNull() {
-		// TODO: this may not be a valid test because it might not be possible to coalesce to null. 
-		
-		// Arrange
-		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(FakeTypes.Bridge.BRIDGE_TYPE);
-
-		builder.append(FakeTypes.Bridge.NAME_bridgeName, londonBridge);
-		builder.append(FakeTypes.Bridge.NAME_location, location);
-
-		// Act
-		Feature feature = builder.buildFeature("id");
-
-		// Assert
-		assertNull(feature.getProperty(FakeTypes.Bridge.NAME_description).getValue());
 	}
 
 	@Test(expected=IllegalStateException.class)
 	public void buildFeature_noLocationSet_throwsIllegalStateException() throws Exception {
 		// Arrange
-		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(FakeTypes.Bridge.BRIDGE_TYPE);
+		ComplexFeatureBuilder builder = new ComplexFeatureBuilder(FakeTypes.Mine.MINETYPE_TYPE);
 
-		// Deliberately not setting location
-		builder.append(FakeTypes.Bridge.NAME_bridgeName, londonBridge);
+		// Deliberately not setting urn:org:example:mineName
 
 		// Act
 		try {
@@ -226,12 +211,12 @@ public class ComplexFeatureBuilderTest {
 		catch (IllegalStateException ise) {
 			ExceptionChecker.assertExceptionMessage(
 				ise, 
-				"Failed to build feature 'urn:Bridge:Test:1.1:BridgeType'; its property 'urn:Bridge:Test:1.1:location' requires at least 1 occurrence(s) but number of occurrences was 0.");
+				"Failed to build feature 'urn:org:example:MineType'; its property 'urn:org:example:mineName' requires at least 1 occurrence(s) but number of occurrences was 0.");
 		}
 	}
 
 	@Test
-	public void buildFeature_validCyclicType_buildsFeature() {
+ 	public void buildFeature_validCyclicType_buildsFeature() {
 		// TODO: figure out the best way to build cyclic types
 
 		// Arrange
@@ -246,38 +231,10 @@ public class ComplexFeatureBuilderTest {
 		fail("Unfinished");
 	}	
 	
-	
 	@Test
-	public void build_typeIsMineTypeAndAddedDataIsValid_buildsAComplexAttributeImpl() {
+	public void build_typeIsMineTypeAndAddedDataIsValid_buildsFeature() {
 		// Arrange
-		AttributeBuilder builder = new AttributeBuilder(new LenientFeatureFactoryImpl());
-		builder.setType(FakeTypes.Mine.MINENAMETYPE_TYPE);
-
-		builder.add(
-			"test_id 1",
-			true,
-			FakeTypes.Mine.NAME_isPreferred);
-
-		builder.add(
-			"test_id",
-			"Sharlston Colliery",
-			FakeTypes.Mine.NAME_mineName);
-
-		final Attribute mineName = builder.build();
-		
-		Collection<Attribute> mineNames = new ArrayList<Attribute>();
-		mineNames.add(mineName);
-		
-		builder.init();
-		builder.setType(FakeTypes.Mine.MINENAMEPROPERTYTYPE_TYPE);
-		
-		builder.add(
-			"test_id",
-			mineNames,
-			FakeTypes.Mine.NAME_MineName
-			);
-		
-		Attribute mineNameProperty = builder.build();
+		ComplexAttribute mineNameProperty = getAMineNameProperty("Sharlston Colliery", true);
 		
 		// Act
 		ComplexFeatureBuilder complexFeatureBuilder = new ComplexFeatureBuilder(FakeTypes.Mine.MINETYPE_TYPE);
@@ -285,12 +242,12 @@ public class ComplexFeatureBuilderTest {
 		complexFeatureBuilder.append(
 			FakeTypes.Mine.NAME_mineName,
 			mineNameProperty);
-		
+
 		Feature mine = complexFeatureBuilder.buildFeature("er.mine.S0000001");
-	
+
 		// Assert
 		Assert.assertEquals(
-			"FeatureImpl:MineType<MineType id=er.mine.S0000001>=[ComplexAttributeImpl:MineNameType=[AttributeImpl:mineName<string id=test_id>=Sharlston Colliery, AttributeImpl:isPreferred<boolean id=test_id 1>=true]]", 
+			"FeatureImpl:MineType<MineType id=er.mine.S0000001>=[ComplexAttributeImpl:MineNamePropertyType=[ComplexAttributeImpl:MineName<MineNameType id=MineName_testId>=[ComplexAttributeImpl:MineNameType=[AttributeImpl:isPreferred<boolean id=isPreferred_testId>=true, AttributeImpl:mineName<string id=mineName_testId>=Sharlston Colliery]]]]", 
 			mine.toString());
 	}
 }

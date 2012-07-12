@@ -761,13 +761,10 @@ public abstract class XmlFeatureParser<FT extends FeatureType, F extends Feature
                 return null;
             }
             
-            if (START_TAG != tagType) {
-                continue;
-            }
-            
             if (START_TAG == tagType) {
-                String namespace = parser.getNamespace();
+            	String namespace = parser.getNamespace();
                 String name = parser.getName();
+               
                 if (featureNamespace.equals(namespace) && featureName.equals(name)) {
                     String featureId = parser.getAttributeValue(GML.id.getNamespaceURI(), GML.id.getLocalPart());
 

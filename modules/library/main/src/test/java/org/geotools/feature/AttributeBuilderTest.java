@@ -20,12 +20,12 @@ public class AttributeBuilderTest {
     public void setUp() {
 		this.builder = new AttributeBuilder(new LenientFeatureFactoryImpl());
     }
-	
+
 	@After
     public void tearDown() {
 		this.builder = null;
-    }	
-	
+    }
+
 	@Test
 	public void setType_validType_descriptorIsSetToNull() {
 		// Act
@@ -34,7 +34,7 @@ public class AttributeBuilderTest {
 		// Assert
 		Assert.assertNull(builder.getDescriptor());
 	}
-	
+
 	@Test
 	public void setDescriptor_validDescriptor_typeIsSetToDescriptorsType() {
 		// Act
@@ -42,7 +42,7 @@ public class AttributeBuilderTest {
 
 		// Assert
 		Assert.assertSame(
-				FakeTypes.Mine.mineNAME_DESCRIPTOR.getType(), 
+			FakeTypes.Mine.mineNAME_DESCRIPTOR.getType(), 
 			builder.getType());
 	}
 
@@ -62,7 +62,7 @@ public class AttributeBuilderTest {
 			"AttributeImpl:mineName<string id=test_id>=Sharlston Colliery", 
 			mineName.toString());
 	}
-	
+
 	@Test
 	public void add_validArguments_attributeIsAddedToProperties() {
 		// Arrange
@@ -93,7 +93,7 @@ public class AttributeBuilderTest {
 		catch (IllegalArgumentException iae) {
 			ExceptionChecker.assertExceptionMessage(
 				iae,
-				"Could not locate attribute: urn:cgi:xmlns:GGIC:EarthResource:1.1:INVALID_NAME in type: urn:cgi:xmlns:GGIC:EarthResource:1.1:MineNameType");		
+				"Could not locate attribute: urn:org:example:INVALID_NAME in type: urn:org:example:MineNameType");		
 		}
 	}
 
@@ -120,56 +120,6 @@ public class AttributeBuilderTest {
 			"ComplexAttributeImpl:MineNameType=[AttributeImpl:isPreferred<boolean id=test_id 1>=true, AttributeImpl:mineName<string id=test_id>=Sharlston Colliery]", 
 			MineName.toString());
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-//
-//	@Test
-//	public void build_typeIsMineTypeAndAddedDataIsValid_buildsAComplexAttributeImpl() {
-//		// Arrange
-//		builder.setType(FakeTypes.Mine.MINENAMETYPE_TYPE);
-//
-//		builder.add(
-//			"test_id",
-//			"Sharlston Colliery",
-//			FakeTypes.Mine.NAME_mineName);
-//
-//		builder.add(
-//			"test_id 1",
-//			true,
-//			FakeTypes.Mine.NAME_isPreferred);
-//
-//		Attribute mineNameType = builder.build();
-//
-//		Collection<Property> properties = new ArrayList<Property>();
-//		properties.add(mineNameType);
-//		
-//		builder.init();
-//		builder.setType(FakeTypes.Mine.MINETYPE_TYPE);
-//
-//		builder.add(
-//			"test_id 2",
-//			properties, 
-//			FakeTypes.Mine.NAME_mineName);
-//		
-//		Attribute mine = builder.build("er.mine.S0000001");
-//	
-//		// Assert
-//		Assert.assertEquals(
-//			"FeatureImpl:MineType<MineType id=er.mine.S0000001>=[ComplexAttributeImpl:mineName<MineNamePropertyType id=test_id 2>=[ComplexAttributeImpl:MineNameType=[AttributeImpl:mineName<string id=test_id>=Sharlston Colliery, AttributeImpl:isPreferred<boolean id=test_id 1>=true]]]", 
-//			mine.toString());
-//	}
 }
 
 

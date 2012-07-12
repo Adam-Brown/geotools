@@ -86,70 +86,10 @@ public class FakeTypes {
         return builtType;
     }
     // ***************************
-	
-	// *** Mocked up Bridge example, this one is just made up, it's very basic *** 
-	public static class Bridge {
-		public static final String BRIDGE_NAMESPACE = "urn:Bridge:Test:1.1";
-		public static final Name NAME_BridgeType = new NameImpl(BRIDGE_NAMESPACE, ":", "BridgeType");
-		public static final Name NAME_bridgeName = new NameImpl(BRIDGE_NAMESPACE, ":", "bridgeName");
-		public static final Name NAME_location = new NameImpl(BRIDGE_NAMESPACE, ":", "location");
-		public static final Name NAME_description = new NameImpl(BRIDGE_NAMESPACE, ":", "description");
-		
-		public static final AttributeDescriptor BRIDGENAME_DESCRIPTOR = 
-			new AttributeDescriptorImpl(
-			/* type: 		 */ STRING_TYPE,
-			/* name: 		 */ NAME_bridgeName, 
-			/* min: 		 */ 0,
-			/* max:  		 */ 1,
-			/* isNillable:   */ false,
-			/* defaultValue: */	null);
-		
-	    public static final AttributeDescriptor LOCATION_DESCRIPTOR =
-	    	new AttributeDescriptorImpl(
-	    	/* type: 		 */ GEOMETRYPROPERTYTYPE_TYPE, 
-	    	/* name: 		 */ NAME_location, 
-	    	/* min: 		 */ 1, 
-	    	/* max:  		 */ 1, 
-	    	/* isNillable:   */ false, 
-	    	/* defaultValue: */	null);
-	    
-	    
-	    public static final AttributeDescriptor DESCRIPTION_DESCRIPTOR = 
-	    	new AttributeDescriptorImpl(
-	    	/* type: 		 */ STRING_TYPE, 
-	    	/* name: 		 */ NAME_description, 
-	    	/* min: 		 */ 1, 
-	    	/* max:  		 */ 1, 
-	    	/* isNillable:   */ true,
-	    	/* defaultValue: */	null);
-	    
-	    /**
-	     * The schema of the sample feature type.
-	     */
-	    private static final List<PropertyDescriptor> BRIDGETYPE_SCHEMA = new ArrayList<PropertyDescriptor>() { 
-	    	{
-	            add(BRIDGENAME_DESCRIPTOR);
-	            add(LOCATION_DESCRIPTOR);
-	            add(DESCRIPTION_DESCRIPTOR);
-	        }
-	    };
-	    
-	    /**
-	     * The type of the sample feature.
-	     */
-	    public static final FeatureType BRIDGE_TYPE = new FeatureTypeImpl(
-    		NAME_BridgeType,
-			BRIDGETYPE_SCHEMA,
-			null,
-			false,
-			Collections.<Filter> emptyList(),
-			NULLTYPE_TYPE, // TODO: Is this OK? The example from SampleDataAccessData had ABSTRACTFEATURETYPE_TYPE but I just want to say that this doesn't have any parent class...
-			null);
-	}
 
 	// *** EarthResource's Mine ***
 	public static class Mine {
-		public static final String MINE_NAMESPACE = "urn:cgi:xmlns:GGIC:EarthResource:1.1";
+		public static final String MINE_NAMESPACE = "urn:org:example";
 		
 		public static final QName NAME_Mine = new QName(MINE_NAMESPACE, "Mine", "er");
 		
@@ -236,7 +176,7 @@ public class FakeTypes {
 			/* type:         */ MINENAMEPROPERTYTYPE_TYPE,
 			/* name:         */ NAME_mineName,
 			/* min:          */ 1,
-			/* max:          */ Integer.MAX_VALUE,
+			/* max:          */ 2, // This is used for one of the tests.
 			/* isNillable:   */ false,
 			/* defaultValue: */ null);
 	

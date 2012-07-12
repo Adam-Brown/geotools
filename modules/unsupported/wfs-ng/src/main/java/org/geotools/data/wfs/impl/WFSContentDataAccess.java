@@ -183,13 +183,6 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
 	 *            the folder to use as the cache.
 	 */
 	public void setCacheLocation(File cacheLocation) {
-// ADAM: I've taken this out because the AppSchemaResolver actually can run without a cache
-//    it means that people don't have to set the cache location in the config parameters if
-//    they don't want to.
-//		if (cacheLocation == null) {
-//			throw new IllegalArgumentException("cacheLocation cannot be null");
-//		}
-
 		this.cacheLocation = cacheLocation;
 	}
 

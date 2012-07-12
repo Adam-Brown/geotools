@@ -31,13 +31,29 @@ public class XmlComplexFeatureParserTest {
 			/* getFeatureResponseStream: */ getResourceAsFileInputStream("sample_wfs_response_two_mines.xml"),
 			/* targetType:				 */ FakeTypes.Mine.MINETYPE_TYPE,
 			/* featureDescriptorName:	 */ FakeTypes.Mine.NAME_Mine);
-
 		Feature feature = mineParser.parse();
 		MineType mine = FeatureWrapper.Wrap(feature, MineType.class);
-
-		System.out.println("getPreferredName: " + mine.getPreferredName());
+//		System.out.println("getPreferredName: " + mine.getPreferredName());
 	}
-		
+	
+//	@Test
+//	public void demo() throws IOException {
+//		// This is creating the XmlComplexFeatureParser by manually passing it a file stream
+//		// of a WFS response. The targetType and featureDescriptorName are hard-coded for the
+//		// sample. The parser would normally be instantiated in WFSContentDataAccess with the
+//		// types that it had extracted with EmfAppSchemaReader.
+//		mineParser = new XmlComplexFeatureParser(
+//			/* getFeatureResponseStream: */ getResourceAsFileInputStream("sample_wfs_response_two_mines_internal_href.xml"),
+//			/* targetType:				 */ FakeTypes.Mine.MINETYPE_TYPE,
+//			/* featureDescriptorName:	 */ FakeTypes.Mine.NAME_Mine);
+//		
+//		Feature feature = mineParser.parse();
+//		MineType mine = FeatureWrapper.Wrap(feature, MineType.class);
+//		
+//		System.out.println(mine.MineNameProperties.get(0).MineName.mineName);
+//		System.out.println(mine.getPreferredName());
+//	}
+
 	/**
 	 * This method gets a file input stream for the file name specified.
 	 * It looks for the file in /org/geotools/data/wfs/internal/parsers/test-data/
@@ -50,12 +66,10 @@ public class XmlComplexFeatureParserTest {
 	private FileInputStream getResourceAsFileInputStream(String resourceName) {
 		final URL url = getClass().getResource("/org/geotools/data/wfs/internal/parsers/test-data/" + resourceName);
 
-		try 
-		{
+		try {
 			return new FileInputStream(new File(url.getPath()));
 		}
-		catch (FileNotFoundException fnfe)
-		{
+		catch (FileNotFoundException fnfe) {
 			Assert.fail("Could not find the file '" + resourceName + "'.");
 		}
 		
@@ -156,7 +170,7 @@ public class XmlComplexFeatureParserTest {
 
         // Assert
         Assert.assertEquals(
-			"FeatureImpl:MineType<MineType id=er.mine.S0000001>=[ComplexAttributeImpl:MineNamePropertyType=[ComplexAttributeImpl:MineName<MineNameType id=MINENAMETYPE_TYPE_1>=[ComplexAttributeImpl:MineNameType=[AttributeImpl:isPreferred<boolean id=isPreferred_1>=true, AttributeImpl:mineName<string id=mineName_1>=Pieces of Eight - Admiral Hill]]], ComplexAttributeImpl:MineNamePropertyType=[ComplexAttributeImpl:MineName<MineNameType id=MINENAMETYPE_TYPE_2>=[ComplexAttributeImpl:MineNameType=[AttributeImpl:isPreferred<boolean id=boolean:isPreferred_2>=false, AttributeImpl:mineName<string id=boolean:mineName_2>=Admiral Hill S - W Shear (WAMIN)]]]]",
+			"FeatureImpl:MineType<MineType id=er.mine.S0000001>=[ComplexAttributeImpl:MineNamePropertyType=[ComplexAttributeImpl:MineName<MineNameType id=MINENAMETYPE_TYPE_1>=[ComplexAttributeImpl:MineNameType=[AttributeImpl:isPreferred<boolean id=isPreferred_1>=true, AttributeImpl:mineName<string id=mineName_1>=Pieces of Eight - Admiral Hill]]], ComplexAttributeImpl:MineNamePropertyType=[ComplexAttributeImpl:MineName<MineNameType id=MINENAMETYPE_TYPE_2>=[ComplexAttributeImpl:MineNameType=[AttributeImpl:isPreferred<boolean id=isPreferred_2>=false, AttributeImpl:mineName<string id=mineName_2>=Admiral Hill S - W Shear (WAMIN)]]]]",
 			feature.toString());
 	}
 	

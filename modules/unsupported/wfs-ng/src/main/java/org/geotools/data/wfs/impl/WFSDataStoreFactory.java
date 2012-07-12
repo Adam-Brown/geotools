@@ -127,6 +127,7 @@ public class WFSDataStoreFactory extends WFSDataAccessFactory implements DataSto
     @Override
 	public boolean canProcess(@SuppressWarnings("rawtypes") final Map params) {
     	boolean canProcess = super.canProcess(params);
+    	    	
 		if (!canProcess) {
 		    return false;
 		}

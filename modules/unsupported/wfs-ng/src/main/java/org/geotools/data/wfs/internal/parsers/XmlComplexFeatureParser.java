@@ -10,6 +10,7 @@ import javax.xml.namespace.QName;
 import org.geotools.data.DataSourceException;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.AttributeImpl;
+import org.geotools.feature.FakeTypes;
 import org.geotools.feature.LenientFeatureFactoryImpl;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.complex.ComplexFeatureBuilder;
@@ -65,10 +66,16 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
 
                 if (tagType == XmlPullParser.START_TAG) {
                 	NameImpl name = new NameImpl(parser.getNamespace(), parser.getName());
-                	PropertyDescriptor descriptor = targetType.getDescriptor(name);
 
+                	PropertyDescriptor descriptor = targetType.getDescriptor(name);
                 	if (descriptor != null) {
+                		// TODO Adam: Should this really be hard-coded like this?
                 		String id = parser.getAttributeValue("http://www.opengis.net/gml", "id");
+
+//                		// TODO: what if you had a href at this level??
+//                		String href = parser.getAttributeValue("http://www.w3.org/1999/xlink", "href");
+//                		System.out.println("href: " + href);
+
            		        // Look at the underlying java type of the descriptor's type and use
             			// that to determine how to construct the attributes.
                			PropertyType type = descriptor.getType();
@@ -105,7 +112,7 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
 		attributeBuilder.setType(complexType);
 		String id = null;
 		Hashtable<Name, Collection<Property>> multivaluedData = new Hashtable<Name, Collection<Property>>();
-
+		
 		while (true)
 		{
 			int tagType = parser.next();
@@ -119,13 +126,22 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
 				// Get the id, if it's set:
     			// TODO Adam: Should this really be hard-coded like this?
     			id = parser.getAttributeValue("http://www.opengis.net/gml", "id");
-				
+//        		String href = parser.getAttributeValue("http://www.w3.org/1999/xlink", "href");
+//        		
+//        		if (href != null) {
+//        			System.out.println(href);
+//        		}
+
         		PropertyDescriptor descriptor = complexType.getDescriptor(name);
+        		if (descriptor == null) {
+        			continue;
+        		}
+
         		PropertyType type = descriptor.getType();
 
         		if (type instanceof ComplexType) {
         			Property property = this.parseComplexAttribute((ComplexType)type);
-        			
+
         			if (!multivaluedData.keySet().contains(name)) {
         				multivaluedData.put(name, new ArrayList<Property>());
         			}

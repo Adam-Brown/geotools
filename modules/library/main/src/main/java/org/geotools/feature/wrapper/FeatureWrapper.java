@@ -64,7 +64,7 @@ public abstract class FeatureWrapper {
 					if (FeatureWrapper.class.isAssignableFrom(fieldType)) { 
 						// The field's type is actually a FeatureWrapper itself so we need to recurse.
 
-						// I /think/ that because we know it's a FeatureWrapper it's safe to assume that the value is
+						// Because we know it's a FeatureWrapper it's safe to assume that the value is
 						// a complex attribute.
 						
 						// The featureWrapperAttribute is like: ComplexAttributeImpl:MineName<MineNameType id=MINENAMETYPE_TYPE_1>=[...]

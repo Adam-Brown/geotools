@@ -3,7 +3,7 @@ package org.geotools.feature;
 import org.geotools.feature.wrapper.FeatureWrapper;
 import org.geotools.feature.wrapper.XSDMapping;
 
-@XSDMapping(namespace = "urn:cgi:xmlns:GGIC:EarthResource:1.1", separator = ":")
+@XSDMapping(namespace = "urn:org:example", separator = ":")
 public class MineNamePropertyType extends FeatureWrapper {
 	@XSDMapping(local = "MineName")
 	public MineNameType MineName;
