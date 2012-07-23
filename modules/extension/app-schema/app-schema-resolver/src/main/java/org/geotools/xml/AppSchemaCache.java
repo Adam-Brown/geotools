@@ -63,6 +63,11 @@ public class AppSchemaCache {
      * The default block read size used when downloading a file.
      */
     private static final int DEFAULT_DOWNLOAD_BLOCK_SIZE = 4096;
+    
+    /**
+     * This is the default value of the keep query flag used when building an automatically configured AppSchemaCache.
+     */
+    private static final boolean DEFAULT_KEEP_QUERY = true;
 
     /**
      * Filenames used to recognise a GeoServer data directory if automatic configuration is enabled.
@@ -338,7 +343,7 @@ public class AppSchemaCache {
                 return null;
             }
             if (isSuitableDirectoryToContainCache(file)) {
-                return new AppSchemaCache(new File(file, CACHE_DIRECTORY_NAME), true, true);
+                return new AppSchemaCache(new File(file, CACHE_DIRECTORY_NAME), true, DEFAULT_KEEP_QUERY);
             }
             file = file.getParentFile();
         }
