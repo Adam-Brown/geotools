@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import javax.xml.namespace.QName;
 
 import org.geotools.feature.NameImpl;
+import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -25,15 +26,15 @@ public abstract class FeatureWrapper {
 		this.underlyingComplexAttribute = underlyingComplexAttribute;
 	}
 	
-//	/**
-//	 * Attempt to wrap the feature in a FeatureWrapper class.
-//	 * @param feature
-//	 * 				The feature to wrap.
-//	 * @param clazz
-//	 * 				The class you want the feature to be wrapped as. (This will be the type that is returned).
-//	 * @return
-//	 * 				An object of T which is the wrapped feature.
-//	 */				
+	/**
+	 * Attempt to wrap the feature in a FeatureWrapper class.
+	 * @param feature
+	 * 				The feature to wrap.
+	 * @param clazz
+	 * 				The class you want the feature to be wrapped as. (This will be the type that is returned).
+	 * @return
+	 * 				An object of T which is the wrapped feature.
+	 */				
 	public static <T extends FeatureWrapper> T Wrap(ComplexAttribute complexAttribute, Class<T> clazz) {
 		try {
 			// Create a new instance of the class:
@@ -44,31 +45,42 @@ public abstract class FeatureWrapper {
 			String defaultSeparator = null;
 			
 			// Get class-level XSDMapping:
-			XSDMapping classLevelXSDMapping =  clazz.getAnnotation(XSDMapping.class);
+			XSDMapping classLevelXSDMapping = clazz.getAnnotation(XSDMapping.class);
 			if (classLevelXSDMapping != null) {
 				defaultNamespace = classLevelXSDMapping.namespace();
 				defaultSeparator = classLevelXSDMapping.separator();
 			}
-					
+
 			for (Field field : clazz.getFields()) {
 				XSDMapping xsdMapping = field.getAnnotation(XSDMapping.class);
-				
+
 				if (xsdMapping != null) {
+					Class<?> fieldType = field.getType();
+
+					String path = xsdMapping.path();
 					String namespace = xsdMapping.namespace().equals("") ? defaultNamespace : xsdMapping.namespace();
 					String separator = xsdMapping.separator().equals("") ? defaultSeparator : xsdMapping.separator();
 
 					Name xsdName = new NameImpl(namespace, separator, xsdMapping.local());
-					Class<?> fieldType = field.getType();
+
+					ComplexAttribute targetAttribute = complexAttribute;
+					if (!path.equals("")) {
+						String[] steps = path.split("/");
+
+						for (int i = 0; i < steps.length; i++) {
+							// Dig through the attribute to get to the end node.
+							targetAttribute = (ComplexAttribute)targetAttribute.getProperty(steps[i]);
+						}
+					}
 					
 					// What kind of field is it?
 					if (FeatureWrapper.class.isAssignableFrom(fieldType)) { 
 						// The field's type is actually a FeatureWrapper itself so we need to recurse.
 
-						// Because we know it's a FeatureWrapper it's safe to assume that the value is
-						// a complex attribute.
+						// Because we know it's a FeatureWrapper it's safe to assume that the value is a complex attribute.
 						
 						// The featureWrapperAttribute is like: ComplexAttributeImpl:MineName<MineNameType id=MINENAMETYPE_TYPE_1>=[...]
-						ComplexAttribute featureWrapperAttribute = (ComplexAttribute)complexAttribute.getProperty(xsdName);
+						ComplexAttribute featureWrapperAttribute = (ComplexAttribute)targetAttribute.getProperty(xsdName);
 						
 						// We get the name of its type and then use that name to access the actual property, which then gets wrapped:
 						Name typeName = featureWrapperAttribute.getType().getName();
@@ -77,7 +89,7 @@ public abstract class FeatureWrapper {
 						FeatureWrapper property = Wrap(nestedComplexAttribute, (Class<FeatureWrapper>)fieldType);
 						field.set(wrapper, property);
 					}
-					else if (xsdMapping.collection()) {
+					else if (ArrayList.class.isAssignableFrom(fieldType)) {
 						// Collections aren't too dissimilar, you just have to build up an array list which gets set as the field's value.
 						
 						// What is the collection actually of?
@@ -87,13 +99,13 @@ public abstract class FeatureWrapper {
 						ArrayList<Object> collection = new ArrayList<Object>();
 						if (FeatureWrapper.class.isAssignableFrom(collectionType)) {
 							// The collection is complex.
-							for (Property property : complexAttribute.getProperties(xsdName)) {
+							for (Property property : targetAttribute.getProperties(xsdName)) {
 								collection.add(Wrap((ComplexAttribute)property, (Class<FeatureWrapper>)collectionType));
 							}
 						}
 						else {
 							// The collection is simple.
-							for (Property property : complexAttribute.getProperties(xsdName)) {
+							for (Property property : targetAttribute.getProperties(xsdName)) {
 								collection.add(property.getValue());
 							}
 						}
@@ -102,7 +114,7 @@ public abstract class FeatureWrapper {
 					}
 					else { //TODO: can I just assume it's a simple type?
 						// Look for this field in the complexAttribute:
-						Property property = complexAttribute.getProperty(xsdName);
+						Property property = targetAttribute.getProperty(xsdName);
 						field.set(wrapper, property.getValue());
 					}
 				}

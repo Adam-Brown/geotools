@@ -11,5 +11,5 @@ public @interface XSDMapping {
 	String local() default "";
 	String namespace() default "";
 	String separator() default "";
-	boolean collection() default false;	
+	String path() default "";	
 }

@@ -44,194 +44,187 @@ import org.opengis.feature.type.Name;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
-	/**
-	 * The Web feature service client object.
-	 */
-	private final WFSClient client;
+    /**
+     * The Web feature service client object.
+     */
+    private final WFSClient client;
 
-	/**
-	 * The schema reader used to take describe feature URL and turn it into a
-	 * schema index.
-	 */
-	private EmfAppSchemaReader schemaParser;
+    /**
+     * The schema reader used to take describe feature URL and turn it into a schema index.
+     */
+    private EmfAppSchemaReader schemaParser;
 
-	/**
-	 * Collection of feature type descriptors.
-	 */
-	private FeatureTypeRegistry typeRegistry;
+    /**
+     * Collection of feature type descriptors.
+     */
+    private FeatureTypeRegistry typeRegistry;
 
-	private File cacheLocation;
+    private File cacheLocation;
 
-	// TODO: Refactor - Copied from WFSContentDataStore
-	private final Map<Name, QName> names;
-	// END Refactor;
+    // TODO: Refactor - Copied from WFSContentDataStore
+    private final Map<Name, QName> names;
 
-	// TODO: Refactor - Copied from ContentDataStore
-	/**
-	 * namespace URL of the datastore itself, or default namespace
-	 */
-	protected String namespaceURI;
+    // END Refactor;
 
-	/**
-	 * The namespace URL of the datastore.
-	 * 
-	 * @return The namespace URL, may be <code>null</code>.
-	 */
-	public String getNamespaceURI() {
-		return namespaceURI;
-	}
+    // TODO: Refactor - Copied from ContentDataStore
+    /**
+     * namespace URL of the datastore itself, or default namespace
+     */
+    protected String namespaceURI;
 
-	/**
-	 * Sets the namespace URI of the datastore.
-	 * <p>
-	 * This will be used to qualify the entries or types of the datastore.
-	 * </p>
-	 * 
-	 * @param namespaceURI
-	 *            The namespace URI, may be <code>null</code>.
-	 */
-	public void setNamespaceURI(String namespaceURI) {
-		this.namespaceURI = namespaceURI;
-	}
+    /**
+     * The namespace URL of the datastore.
+     * 
+     * @return The namespace URL, may be <code>null</code>.
+     */
+    public String getNamespaceURI() {
+        return namespaceURI;
+    }
 
-	// END Refactor;
+    /**
+     * Sets the namespace URI of the datastore.
+     * <p>
+     * This will be used to qualify the entries or types of the datastore.
+     * </p>
+     * 
+     * @param namespaceURI The namespace URI, may be <code>null</code>.
+     */
+    public void setNamespaceURI(String namespaceURI) {
+        this.namespaceURI = namespaceURI;
+    }
 
-	/**
-	 * The WFS capabilities document.
-	 * 
-	 * @param capabilities
-	 */
-	public WFSContentDataAccess(final WFSClient client) {
-		this.client = client;
-		this.names = new ConcurrentHashMap<Name, QName>();
-	}
+    // END Refactor;
 
-	@Override
-	public ServiceInfo getInfo() {
-		// TODO: Refactor - Taken from WFSContentDataStore
-		return this.client.getInfo();
-	}
+    /**
+     * The WFS capabilities document.
+     * 
+     * @param capabilities
+     */
+    public WFSContentDataAccess(final WFSClient client) {
+        this.client = client;
+        this.names = new ConcurrentHashMap<Name, QName>();
+    }
 
-	@Override
-	public void createSchema(FeatureType featureType) throws IOException {
-		// TODO: Refactor - Copied from WFS_1_1_0_DataStore
-		throw new UnsupportedOperationException(
-				"WFS DataStore does not support createSchema");
-	}
+    @Override
+    public ServiceInfo getInfo() {
+        // TODO: Refactor - Taken from WFSContentDataStore
+        return this.client.getInfo();
+    }
 
-	@Override
-	public void updateSchema(Name typeName, FeatureType featureType)
-			throws IOException {
-		// TODO: Refactor - Copied from WFS_1_1_0_DataStore
-		throw new UnsupportedOperationException(
-				"WFS does not support update schema");
-	}
+    @Override
+    public void createSchema(FeatureType featureType) throws IOException {
+        // TODO: Refactor - Copied from WFS_1_1_0_DataStore
+        throw new UnsupportedOperationException("WFS DataStore does not support createSchema");
+    }
 
-	@Override
-	public List<Name> getNames() throws IOException {
-		// the WFSContentDataStore version inherits an implementation of this
-		// method from ContentDataStore,
-		// that method calls getTypeNames which calls an abstract method (i.e.
-		// one that's implemented in
-		// WFSContentDataStore) called createTypeNames(). createTypeNames, as
-		// implemented in WFSContentDataStore,
-		// uses client to 'getRemoteTypeNames()'.
+    @Override
+    public void updateSchema(Name typeName, FeatureType featureType) throws IOException {
+        // TODO: Refactor - Copied from WFS_1_1_0_DataStore
+        throw new UnsupportedOperationException("WFS does not support update schema");
+    }
 
-		// TODO: Refactor - Copied from ContentDataStore.
-		String namespaceURI = getNamespaceURI();
+    @Override
+    public List<Name> getNames() throws IOException {
+        // the WFSContentDataStore version inherits an implementation of this
+        // method from ContentDataStore,
+        // that method calls getTypeNames which calls an abstract method (i.e.
+        // one that's implemented in
+        // WFSContentDataStore) called createTypeNames(). createTypeNames, as
+        // implemented in WFSContentDataStore,
+        // uses client to 'getRemoteTypeNames()'.
 
-		Set<QName> remoteTypeNames = client.getRemoteTypeNames();
-		List<Name> names = new ArrayList<Name>(remoteTypeNames.size());
-		for (QName remoteTypeName : remoteTypeNames) {
-			Name typeName = new NameImpl(remoteTypeName);
-			names.add(typeName);
-			this.names.put(typeName, remoteTypeName);
-		}
+        // TODO: Refactor - Copied from ContentDataStore.
+        String namespaceURI = getNamespaceURI();
 
-		return names;
-		// END Refactor;
-	}
+        Set<QName> remoteTypeNames = client.getRemoteTypeNames();
+        List<Name> names = new ArrayList<Name>(remoteTypeNames.size());
+        for (QName remoteTypeName : remoteTypeNames) {
+            Name typeName = new NameImpl(remoteTypeName);
+            names.add(typeName);
+            this.names.put(typeName, remoteTypeName);
+        }
 
-	// TODO: Refactor - Copied from ContentDataStore (changed return type,
-	// though)
-	@Override
-	public FeatureType getSchema(Name name) throws IOException {
-		// Generate the URL for the feature request:
-		// -----------------------------------------
-		DescribeFeatureTypeRequest describeFeatureTypeRequest = client
-				.createDescribeFeatureTypeRequest();
-		QName qname = this.names.get(name);
-		describeFeatureTypeRequest.setTypeName(qname);
-		URL describeRequestURL = describeFeatureTypeRequest.getFinalURL();
+        return names;
+        // END Refactor;
+    }
 
-		// Create type registry and add the schema to it:
-		// ----------------------------------------------
-		FeatureTypeRegistry typeRegistry = this.getFeatureTypeRegistry();
-		SchemaIndex schemaIndex = this.getSchemaParser().parse(describeRequestURL);
-		typeRegistry.addSchemas(schemaIndex);
+    // TODO: Refactor - Copied from ContentDataStore (changed return type,
+    // though)
+    @Override
+    public FeatureType getSchema(Name name) throws IOException {
+        // Generate the URL for the feature request:
+        // -----------------------------------------
+        DescribeFeatureTypeRequest describeFeatureTypeRequest = client
+                .createDescribeFeatureTypeRequest();
+        QName qname = this.names.get(name);
+        describeFeatureTypeRequest.setTypeName(qname);
+        URL describeRequestURL = describeFeatureTypeRequest.getFinalURL();
 
-		// Create the attribute type and cast it as a FeatureType:
-		// -------------------------------------------------------
-		AttributeDescriptor attributeDescriptor = typeRegistry.getDescriptor(name);
-		return (FeatureType) attributeDescriptor.getType();
-	}
+        // Create type registry and add the schema to it:
+        // ----------------------------------------------
+        FeatureTypeRegistry typeRegistry = this.getFeatureTypeRegistry();
+        SchemaIndex schemaIndex = this.getSchemaParser().parse(describeRequestURL);
+        typeRegistry.addSchemas(schemaIndex);
 
-	/**
-	 * Sets the location of the cache folder to be used by app-schema-resolver.
-	 * 
-	 * @param cacheLocation
-	 *            the folder to use as the cache.
-	 */
-	public void setCacheLocation(File cacheLocation) {
-		this.cacheLocation = cacheLocation;
-	}
+        // Create the attribute type and cast it as a FeatureType:
+        // -------------------------------------------------------
+        AttributeDescriptor attributeDescriptor = typeRegistry.getDescriptor(name);
+        return (FeatureType) attributeDescriptor.getType();
+    }
 
-	@Override
-	public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName)
-			throws IOException {
-		// TODO: Need to implement!
-		return null;
-	}
+    /**
+     * Sets the location of the cache folder to be used by app-schema-resolver.
+     * 
+     * @param cacheLocation the folder to use as the cache.
+     */
+    public void setCacheLocation(File cacheLocation) {
+        this.cacheLocation = cacheLocation;
+    }
 
-	@Override
-	public void dispose() {
-		this.schemaParser = null;
-		this.typeRegistry = null;
-	}
+    @Override
+    public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName) throws IOException {
+        // TODO: Need to implement!
+        return null;
+    }
 
-	/**
-	 * Get the schema parser, creating it first if necessary.
-	 * 
-	 * @return the schema parser. Guaranteed non-null.
-	 */
-	private EmfAppSchemaReader getSchemaParser() {
-		if (this.schemaParser == null) {
-			this.schemaParser = EmfAppSchemaReader.newInstance();
-			
-			AppSchemaResolver appSchemaResolver;
-			if (this.cacheLocation == null) {
-				appSchemaResolver = new AppSchemaResolver();
-			}
-			else {
-				appSchemaResolver = new AppSchemaResolver(new AppSchemaCache(this.cacheLocation, true));
-			}
-				
-			this.schemaParser.setResolver(appSchemaResolver);
-		}
+    @Override
+    public void dispose() {
+        this.schemaParser = null;
+        this.typeRegistry = null;
+    }
 
-		return this.schemaParser;
-	}
+    /**
+     * Get the schema parser, creating it first if necessary.
+     * 
+     * @return the schema parser. Guaranteed non-null.
+     */
+    private EmfAppSchemaReader getSchemaParser() {
+        if (this.schemaParser == null) {
+            this.schemaParser = EmfAppSchemaReader.newInstance();
 
-	/**
-	 * Get the type registry, creating it first if necessary.
-	 * 
-	 * @return the type registry. Guaranteed non-null.
-	 */
-	private FeatureTypeRegistry getFeatureTypeRegistry() {
-		if (this.typeRegistry == null) {
-			this.typeRegistry = new FeatureTypeRegistry();
-		}
+            AppSchemaResolver appSchemaResolver;
+            if (this.cacheLocation == null) {
+                appSchemaResolver = new AppSchemaResolver();
+            } else {
+                appSchemaResolver = new AppSchemaResolver(new AppSchemaCache(this.cacheLocation, true));
+            }
 
-		return this.typeRegistry;
-	}
+            this.schemaParser.setResolver(appSchemaResolver);
+        }
+
+        return this.schemaParser;
+    }
+
+    /**
+     * Get the type registry, creating it first if necessary.
+     * 
+     * @return the type registry. Guaranteed non-null.
+     */
+    private FeatureTypeRegistry getFeatureTypeRegistry() {
+        if (this.typeRegistry == null) {
+            this.typeRegistry = new FeatureTypeRegistry();
+        }
+
+        return this.typeRegistry;
+    }
 }

@@ -49,22 +49,19 @@ import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
 /**
  * A {@link DataStoreFactorySpi} to connect to a Web Feature Service.
  * <p>
- * Produces a {@link WFSDataStore} if the correct set of connection parameters are provided. For
- * instance, the only mandatory one is {@link #URL}.
+ * Produces a {@link WFSDataStore} if the correct set of connection parameters are provided. For instance, the only mandatory one is {@link #URL}.
  * </p>
  * <p>
- * As with all the DataStoreFactorySpi implementations, this one is not intended to be used directly
- * but through the {@link DataStoreFinder} mechanism, hence client applications should not have
- * strong dependencies over this module.
+ * As with all the DataStoreFactorySpi implementations, this one is not intended to be used directly but through the {@link DataStoreFinder}
+ * mechanism, hence client applications should not have strong dependencies over this module.
  * </p>
  * <p>
- * Upon a valid URL to a WFS GetCapabilities document, this factory will perform version negotiation
- * between the server supported protocol versions and this plugin supported ones, and will return a
- * {@link DataStore} capable of communicating with the server using the agreed WFS protocol version.
+ * Upon a valid URL to a WFS GetCapabilities document, this factory will perform version negotiation between the server supported protocol versions
+ * and this plugin supported ones, and will return a {@link DataStore} capable of communicating with the server using the agreed WFS protocol version.
  * </p>
  * <p>
- * In the case the provided GetCapabilities URL explicitly contains a VERSION parameter and both the
- * server and client support that version, that version will be used.
+ * In the case the provided GetCapabilities URL explicitly contains a VERSION parameter and both the server and client support that version, that
+ * version will be used.
  * </p>
  * 
  * @see WFSContentDataStore
@@ -73,16 +70,14 @@ import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
 @SuppressWarnings({ "unchecked", "nls" })
 public class WFSDataStoreFactory extends WFSDataAccessFactory implements DataStoreFactorySpi {
 
-	private static int GMLComplianceLevel = 0;
+    private static int GMLComplianceLevel = 0;
 
     /**
-     * Requests the WFS Capabilities document from the {@link WFSDataStoreFactory#URL url} parameter
-     * in {@code params} and returns a {@link WFSDataStore} according to the version of the
-     * GetCapabilities document returned.
+     * Requests the WFS Capabilities document from the {@link WFSDataStoreFactory#URL url} parameter in {@code params} and returns a
+     * {@link WFSDataStore} according to the version of the GetCapabilities document returned.
      * <p>
-     * Note the {@code URL} provided as parameter must refer to the actual {@code GetCapabilities}
-     * request. If you need to specify a preferred version or want the GetCapabilities request to be
-     * generated from a base URL build the URL with the {@link #createGetCapabilitiesRequest} first.
+     * Note the {@code URL} provided as parameter must refer to the actual {@code GetCapabilities} request. If you need to specify a preferred version
+     * or want the GetCapabilities request to be generated from a base URL build the URL with the {@link #createGetCapabilitiesRequest} first.
      * </p>
      * 
      * @see org.geotools.data.DataStoreFactorySpi#createDataStore(java.util.Map)
@@ -95,7 +90,8 @@ public class WFSDataStoreFactory extends WFSDataAccessFactory implements DataSto
 
         // factories
         dataStore.setFilterFactory(CommonFactoryFinder.getFilterFactory(null));
-        dataStore.setGeometryFactory(new GeometryFactory(PackedCoordinateSequenceFactory.DOUBLE_FACTORY));
+        dataStore.setGeometryFactory(new GeometryFactory(
+                PackedCoordinateSequenceFactory.DOUBLE_FACTORY));
         dataStore.setFeatureTypeFactory(new FeatureTypeFactoryImpl());
         dataStore.setFeatureFactory(CommonFactoryFinder.getFeatureFactory(null));
         dataStore.setDataStoreFactory(this);
@@ -105,8 +101,7 @@ public class WFSDataStoreFactory extends WFSDataAccessFactory implements DataSto
     /**
      * Unsupported operation, can't create a WFS service.
      * 
-     * @throws UnsupportedOperationException
-     *             always, as this operation is not applicable to WFS.
+     * @throws UnsupportedOperationException always, as this operation is not applicable to WFS.
      */
     @Override
     public DataStore createNewDataStore(final Map<String, Serializable> params) throws IOException {
@@ -125,38 +120,21 @@ public class WFSDataStoreFactory extends WFSDataAccessFactory implements DataSto
     }
 
     @Override
-	public boolean canProcess(@SuppressWarnings("rawtypes") final Map params) {
-    	boolean canProcess = super.canProcess(params);
-    	    	
-		if (!canProcess) {
-		    return false;
-		}
-		
-		// Check compliance level
-        if (params.containsKey(GML_COMPLIANCE_LEVEL.key)) {
-        	if ((Integer) params.get(GML_COMPLIANCE_LEVEL.key) > GMLComplianceLevel) {
-        		return false;
-        	}
+    public boolean canProcess(@SuppressWarnings("rawtypes") final Map params) {
+        boolean canProcess = super.canProcess(params);
+
+        if (!canProcess) {
+            return false;
         }
-	
-		return true;
+
+        // Check compliance level
+        if (params.containsKey(GML_COMPLIANCE_LEVEL.key)) {
+            if ((Integer) params.get(GML_COMPLIANCE_LEVEL.key) > GMLComplianceLevel) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

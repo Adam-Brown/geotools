@@ -3,6 +3,7 @@ package org.geotools.feature;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class AttributeBuilder {
 	// fields
+	/**
+	 * Stores mutivalued data until build time so that it can put it in collections.
+	 */
+	
     /**
      * Factory used to create attributes.
      */

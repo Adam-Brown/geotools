@@ -246,15 +246,15 @@ public abstract class DataFeatureCollection implements SimpleFeatureCollection {
     protected void closeIterator( Iterator<SimpleFeature> close ) throws IOException
     {
     	if( close == null ){
-            // iterator probably failed during consturction !
+            // iterator probably failed during construction !
         }
         else if( close instanceof FeatureReaderIterator ){
             FeatureReaderIterator<SimpleFeature> iterator = (FeatureReaderIterator<SimpleFeature>) close;
-            iterator.close(); // only needs package visability
+            iterator.close(); // only needs package visibility
         }
         else if( close instanceof FeatureWriterIterator ){
             FeatureWriterIterator iterator = (FeatureWriterIterator) close;
-            iterator.close(); // only needs package visability
+            iterator.close(); // only needs package visibility
         }
     }
     
