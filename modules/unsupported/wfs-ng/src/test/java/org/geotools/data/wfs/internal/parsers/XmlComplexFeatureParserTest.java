@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 
 import org.geotools.feature.FakeTypes;
 import org.geotools.feature.MineType;
@@ -31,11 +32,21 @@ public class XmlComplexFeatureParserTest {
         // types that it had extracted with EmfAppSchemaReader.
 
         XmlComplexFeatureParser mineParser = getParser("wfs_response_two_mines.xml");
-        Feature feature = mineParser.parse();
-        MineType mine = FeatureWrapper.Wrap(feature, MineType.class);
 
-//        System.out.println(mine.firstName);
-//        System.out.println("getPreferredName: " + mine.getPreferredName());
+        Feature feature = mineParser.parse();
+        
+        ComplexAttribute mineNamePropertyType = (ComplexAttribute)feature.getProperty("MineNamePropertyType"); 
+        ComplexAttribute mineName = (ComplexAttribute)mineNamePropertyType.getProperty("MineName");
+        ComplexAttribute mineNameType = (ComplexAttribute)mineName.getProperty("MineNameType");
+        
+        System.out.println(mineNameType.getProperty("mineName").getValue());
+
+        
+        MineType mine = FeatureWrapper.Wrap(feature, MineType.class);
+        
+        System.out.println(mine.MineNameProperties.get(0).MineName.mineName);
+        System.out.println(mine.firstName);
+        System.out.println("getPreferredName: " + mine.getPreferredName());
     }
 
     @Test
@@ -59,9 +70,9 @@ public class XmlComplexFeatureParserTest {
     private FileInputStream getResourceAsFileInputStream(String resourceName) {
         final URL url = getClass().getResource(
                 "/org/geotools/data/wfs/internal/parsers/test-data/" + resourceName);
-
+        
         try {
-            return new FileInputStream(new File(url.getPath()));
+            return new FileInputStream(new File(url.getPath().replaceAll("%20", " ")));
         } catch (FileNotFoundException fnfe) {
             Assert.fail("Could not find the file '" + resourceName + "'.");
         }
