@@ -38,26 +38,13 @@ public class XmlComplexFeatureParserTest {
         ComplexAttribute mineNamePropertyType = (ComplexAttribute)feature.getProperty("MineNamePropertyType"); 
         ComplexAttribute mineName = (ComplexAttribute)mineNamePropertyType.getProperty("MineName");
         ComplexAttribute mineNameType = (ComplexAttribute)mineName.getProperty("MineNameType");
-        
-        System.out.println(mineNameType.getProperty("mineName").getValue());
 
-        
+        System.out.println(feature);
         MineType mine = FeatureWrapper.Wrap(feature, MineType.class);
         
-        System.out.println(mine.MineNameProperties.get(0).MineName.mineName);
-        System.out.println(mine.firstName);
-        System.out.println("getPreferredName: " + mine.getPreferredName());
-    }
-
-    @Test
-    public void demo() throws IOException {
-        XmlComplexFeatureParser mineParser = getParser("wfs_response_xlink_after_target.xml");
-
-        Feature feature = mineParser.parse();
-        MineType mine = FeatureWrapper.Wrap(feature, MineType.class);
-        // mine.MineNameProperties.get(0).
-
-        System.out.println(mine.MineNameProperties.get(1).MineName.mineName);
+//        System.out.println(mine.MineNameProperties.get(0).MineName.mineName);
+//        System.out.println(mine.firstName);
+//        System.out.println("getPreferredName: " + mine.getPreferredName());
     }
 
     /**
@@ -70,7 +57,7 @@ public class XmlComplexFeatureParserTest {
     private FileInputStream getResourceAsFileInputStream(String resourceName) {
         final URL url = getClass().getResource(
                 "/org/geotools/data/wfs/internal/parsers/test-data/" + resourceName);
-        
+
         try {
             return new FileInputStream(new File(url.getPath().replaceAll("%20", " ")));
         } catch (FileNotFoundException fnfe) {
@@ -191,7 +178,7 @@ public class XmlComplexFeatureParserTest {
         Feature feature = mineParser.parse();
         Object[] properties = feature.getProperties("MineNamePropertyType").toArray();
         
-        for (Object o : properties) 
+        for (Object o : properties)
             System.out.println(o);
 
         // Assert

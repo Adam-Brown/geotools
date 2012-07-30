@@ -209,12 +209,10 @@ public class ComplexFeatureBuilderTest {
 
     @Test
     public void buildFeature_validCyclicType_buildsFeature() {
-        // TODO: figure out the best way to build cyclic types
-
         // Arrange
         ComplexFeatureBuilder builder = new ComplexFeatureBuilder(GEOLOGICALUNITTYPE_TYPE);
 
-        // builder.append(OCCURRENCE_NAME, );
+//        builder.append(OCCURRENCE_NAME, );
 
         // Act
         Feature feature = builder.buildFeature("id");
