@@ -71,6 +71,18 @@ public class FeatureWrapperTest {
         MineType wrappedMine = FeatureWrapper.Wrap(mine, MineType.class);
 
         // Assert
+        Assert.assertEquals("Pieces of Eight - Admiral Hill", wrappedMine.MineNameProperties.get(0).MineName.mineName);
+    }
+    
+    @Test
+    public void wrap_validFeature_canAccessPathDefinedVariables() throws Exception {
+        // Arrange
+        Feature mine = getFeature();
+
+        // Act
+        MineType wrappedMine = FeatureWrapper.Wrap(mine, MineType.class);
+
+        // Assert
         Assert.assertEquals("Pieces of Eight - Admiral Hill", wrappedMine.firstName);
     }
 
