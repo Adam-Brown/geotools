@@ -1,5 +1,6 @@
 package org.geotools.feature.wrapper;
 
+import java.io.InvalidClassException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -14,8 +15,14 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.Name;
 
+/**
+ * You can make feature wrappers for specific types by extending this class and annotating the descendant class's fields with {@link XSDMapping} to
+ * show what they correspond to in the XSD.
+ * 
+ * @author bro879
+ * 
+ */
 public abstract class FeatureWrapper {
-
     private ComplexAttribute underlyingComplexAttribute;
 
     public ComplexAttribute getUnderlyingComplexAttribute() {
@@ -34,10 +41,17 @@ public abstract class FeatureWrapper {
      * @return An object of T which is the wrapped feature.
      */
     public static <T extends FeatureWrapper> T Wrap(ComplexAttribute complexAttribute,
-            Class<T> clazz) {
+            Class<T> clazz) throws InvalidClassException {
         try {
             // Create a new instance of the class:
-            T wrapper = clazz.newInstance();
+            T wrapper;
+            try {
+                wrapper = clazz.newInstance();
+            } catch (InstantiationException e) {
+                throw new InvalidClassException(String.format(
+                        "Unable instantiate class of type '%s'.", clazz));
+            }
+
             wrapper.setUnderlyingComplexAttribute(complexAttribute);
 
             String defaultNamespace = null;
@@ -50,6 +64,7 @@ public abstract class FeatureWrapper {
                 defaultSeparator = classLevelXSDMapping.separator();
             }
 
+            // Look through the fields of the class you're trying to create:
             for (Field field : clazz.getFields()) {
                 XSDMapping xsdMapping = field.getAnnotation(XSDMapping.class);
 
@@ -65,10 +80,19 @@ public abstract class FeatureWrapper {
                     Name xsdName = new NameImpl(namespace, separator, xsdMapping.local());
 
                     ComplexAttribute targetAttribute = complexAttribute;
+
+                    // See if the field has a path to a deeper value:
                     if (!path.equals("")) {
                         String[] steps = path.split("/");
 
                         for (int i = 0; i < steps.length; i++) {
+                            if (targetAttribute == null) {
+                                throw new InvalidClassException(
+                                        String.format(
+                                                "Unable to wrap attribute in class '%s'. Reference to %s could not be found in the attribute.",
+                                                clazz, xsdMapping.local()));
+                            }
+
                             // Dig through the attribute to get to the end node.
                             targetAttribute = (ComplexAttribute) targetAttribute
                                     .getProperty(steps[i]);
@@ -78,18 +102,33 @@ public abstract class FeatureWrapper {
                     // What kind of field is it?
                     if (FeatureWrapper.class.isAssignableFrom(fieldType)) {
                         // The field's type is actually a FeatureWrapper itself so we need to recurse.
-
                         // Because we know it's a FeatureWrapper it's safe to assume that the value is a complex attribute.
-
                         // The featureWrapperAttribute is like: ComplexAttributeImpl:MineName<MineNameType id=MINENAMETYPE_TYPE_1>=[...]
                         ComplexAttribute featureWrapperAttribute = (ComplexAttribute) targetAttribute
                                 .getProperty(xsdName);
+
+                        if (featureWrapperAttribute == null) {
+                            // What's wrong is that MineName is not being added to MineNamePropertyType
+                            throw new InvalidClassException(
+                                    String.format(
+                                            "Unable to wrap attribute in class '%s'. '%s' doesn't have required property '%s'.",
+                                            clazz.getName(), targetAttribute.getName(), xsdName));
+                        }
 
                         // We get the name of its type and then use that name to access the actual property, which then gets wrapped:
                         Name typeName = featureWrapperAttribute.getType().getName();
                         ComplexAttribute nestedComplexAttribute = (ComplexAttribute) featureWrapperAttribute
                                 .getProperty(typeName);
 
+                        if (nestedComplexAttribute == null) {
+                            // What's wrong is that MineName's properties are missing the mine type
+                            throw new InvalidClassException(
+                                    String.format(
+                                            "Unable to wrap attribute in class '%s'. '%s' doesn't have required property '%s'.",
+                                            clazz.getName(), xsdName, typeName));
+                        }
+
+                        // Look for this field in the complexAttribute:
                         FeatureWrapper property = Wrap(nestedComplexAttribute,
                                 (Class<FeatureWrapper>) fieldType);
                         field.set(wrapper, property);
@@ -116,9 +155,16 @@ public abstract class FeatureWrapper {
                         }
 
                         field.set(wrapper, collection);
-                    } else { // TODO: can I just assume it's a simple type?
-                             // Look for this field in the complexAttribute:
+                    } else {
                         Property property = targetAttribute.getProperty(xsdName);
+
+                        if (property == null) {
+                            throw new InvalidClassException(
+                                    String.format(
+                                            "Unable to wrap attribute in class '%s'. %s could not be found in the attribute.",
+                                            clazz, xsdName));
+                        }
+
                         field.set(wrapper, property.getValue());
                     }
                 }
@@ -126,11 +172,10 @@ public abstract class FeatureWrapper {
 
             return wrapper;
         } catch (IllegalAccessException iae) {
-            System.out.println(iae);
-        } catch (InstantiationException e) {
-            System.out.println(e);
+            throw new InvalidClassException(
+                    String.format(
+                            "Unable to wrap attribute in class '%s'. Exception of type: '%s' was thrown with message: '%s'",
+                            clazz, iae.getClass(), iae.getMessage()));
         }
-
-        return null;
     }
 }

@@ -102,7 +102,7 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
                 return placeholderComplexAttribute;
             }
         } else {
-            // TODO: Handle remote hrefs?
+            // TODO: Handle remote hrefs.
         }
 
         return null;
@@ -123,7 +123,7 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
      * @throws XmlPullParserException
      * @throws IOException
      */
-    public ReturnAttribute parseNextAttribute(ComplexType complexType)
+    private ReturnAttribute parseNextAttribute(ComplexType complexType)
             throws XmlPullParserException, IOException {
         // 1. Read through the XML until you come across a start tag, end tag or the end of the document:
         int tagType;

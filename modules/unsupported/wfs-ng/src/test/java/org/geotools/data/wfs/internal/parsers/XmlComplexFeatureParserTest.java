@@ -23,34 +23,10 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 public class XmlComplexFeatureParserTest {
-
-    @Test
-    public void demo1() throws IOException {
-        // This is creating the XmlComplexFeatureParser by manually passing it a file stream
-        // of a WFS response. The targetType and featureDescriptorName are hard-coded for the
-        // sample. The parser would normally be instantiated in WFSContentDataAccess with the
-        // types that it had extracted with EmfAppSchemaReader.
-
-        XmlComplexFeatureParser mineParser = getParser("wfs_response_two_mines.xml");
-
-        Feature feature = mineParser.parse();
-        
-        ComplexAttribute mineNamePropertyType = (ComplexAttribute)feature.getProperty("MineNamePropertyType"); 
-        ComplexAttribute mineName = (ComplexAttribute)mineNamePropertyType.getProperty("MineName");
-        ComplexAttribute mineNameType = (ComplexAttribute)mineName.getProperty("MineNameType");
-
-        System.out.println(feature);
-        MineType mine = FeatureWrapper.Wrap(feature, MineType.class);
-        
-//        System.out.println(mine.MineNameProperties.get(0).MineName.mineName);
-//        System.out.println(mine.firstName);
-//        System.out.println("getPreferredName: " + mine.getPreferredName());
-    }
-
     /**
      * This method gets a file input stream for the file name specified. It looks for the file in /org/geotools/data/wfs/internal/parsers/test-data/
      * and will Assert.fail() if it's not there.
-     *
+     * 
      * @param resourceName The name of the file whose stream you want. (Must be in test-data folder).
      * @return A FileInputStream of the file you requested.
      */
@@ -67,40 +43,6 @@ public class XmlComplexFeatureParserTest {
         // I don't think this is actually reachable because the Assert.fail()
         // should cause the method to terminate but it has to be here to compile.
         return null;
-    }
-
-    private static void writeln(String message) {
-        write(message + String.format("%n"));
-    }
-
-    private static void write(String message) {
-        char[] tabs = new char[explodePropertyDepth * 4];
-
-        for (int i = 0; i < tabs.length; i++) {
-            tabs[i] = ' ';
-        }
-
-        String whitespace = new String(tabs);
-        System.out.print(whitespace + message);
-    }
-
-    private static int explodePropertyDepth = 0;
-
-    private static void explodeProperty(Property property) {
-        write(property.getName().getLocalPart() + ":");// " (" + property.getClass().getSimpleName() + "):");
-        explodePropertyDepth++;
-
-        if (ComplexAttribute.class.isAssignableFrom(property.getClass())) {
-            System.out.println();
-            for (Property subProperty : ((ComplexAttribute) property).getProperties()) {
-                explodeProperty(subProperty);
-                explodePropertyDepth--;
-            }
-        } else if (Attribute.class.isAssignableFrom(property.getClass())) {
-            System.out.println(" " + ((Attribute) property).getValue());
-        } else {
-            writeln("! " + property.getClass().getSimpleName());
-        }
     }
 
     private XmlComplexFeatureParser getParser(String inputFileName) {
@@ -177,9 +119,6 @@ public class XmlComplexFeatureParserTest {
         // Act
         Feature feature = mineParser.parse();
         Object[] properties = feature.getProperties("MineNamePropertyType").toArray();
-        
-        for (Object o : properties)
-            System.out.println(o);
 
         // Assert
         Assert.assertSame(properties[0], properties[1]);
@@ -226,7 +165,7 @@ public class XmlComplexFeatureParserTest {
         Assert.assertSame(mineNamePropertyType1, mineNamePropertyType2);
     }
 
-    // TODO: this one is different to the others because the object isn't actually the same object, it's just a copy of it. I 
+    // TODO: this one is different to the others because the object isn't actually the same object, it's just a copy of it. I
     // don't know if this is OK or not?
     @Test
     public void parse_xlinkRefersToTargetInAnotherFeatureBelow_linkedElementGetsSet()
@@ -242,41 +181,3 @@ public class XmlComplexFeatureParserTest {
         Assert.assertEquals(mineNamePropertyType1, mineNamePropertyType2);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
