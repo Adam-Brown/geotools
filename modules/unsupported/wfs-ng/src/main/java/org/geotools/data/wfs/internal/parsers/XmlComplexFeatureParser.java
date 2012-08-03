@@ -63,40 +63,39 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
     private Map<String, ComplexAttribute> discoveredComplexAttributes = new HashMap<String, ComplexAttribute>();
 
     private Map<String, ArrayList<ComplexAttribute>> placeholderComplexAttributes = new HashMap<String, ArrayList<ComplexAttribute>>();
-    
+
     private void RegisterGmlTarget(String id, ComplexAttribute value) {
         // Add the value to the discoveredComplexAttributes object:
         discoveredComplexAttributes.put(id, value);
-        
+
         // Check whether anything is waiting for this attribute and, if so, populate them.
         if (placeholderComplexAttributes.containsKey(id)) {
-            for (ComplexAttribute placeholderComplexAttribute : this.placeholderComplexAttributes.get(id)) {
-                placeholderComplexAttribute.setValue(value.getValue());    
+            for (ComplexAttribute placeholderComplexAttribute : this.placeholderComplexAttributes
+                    .get(id)) {
+                placeholderComplexAttribute.setValue(value.getValue());
             }
         }
     }
-    
+
     private ComplexAttribute ResolveHref(String href, ComplexType expectedType) {
         // See what kind of href it is:
         if (href.startsWith("#")) {
             String hrefId = href.substring(1);
-            
+
             // Does the target of this href already exist in the discoveredComplexAttributes object?
             if (discoveredComplexAttributes.containsKey(hrefId)) {
                 // If it does, we can just return that.
-                return discoveredComplexAttributes.get(hrefId); 
-            }
-            else {
+                return discoveredComplexAttributes.get(hrefId);
+            } else {
                 // If not, then we create a placeholderComplexAttribute instead:
                 ComplexAttribute placeholderComplexAttribute = new ComplexAttributeImpl(
-                    Collections.<Property>emptyList(),
-                    expectedType, null);
+                        Collections.<Property> emptyList(), expectedType, null);
 
                 // I must maintain a reference back to this object so that I can change it once its target is found:
                 if (!placeholderComplexAttributes.containsKey(hrefId)) {
                     placeholderComplexAttributes.put(hrefId, new ArrayList<ComplexAttribute>());
                 }
-                
+
                 // Adding it to a list allows us to have multiple hrefs pointing to the same target.
                 placeholderComplexAttributes.get(hrefId).add(placeholderComplexAttribute);
                 return placeholderComplexAttribute;
@@ -107,19 +106,15 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
 
         return null;
     }
-    
-    
+
     /**
-     * This is a recursive method that returns any object that belongs to the complexType specified.
-     * The return object is wrapped in a ReturnAttribute which carries through some values related to
-     * the object. They are: its GML Id and its name.
-     * @param complexType
-     *          The complex type that the CALLER is trying to build. 
-     *          NB: this is NOT the type that the method will build, it's the type that the caller wants.
-     * @return
-     *          A ReturnAttribute object which groups a (Name) name, (String) id, and (Object) value that
-     *          represent an attribute that belongs in the complexType specified.
-     *          Returns null once there are no more elements in the complex type you're trying to parse.
+     * This is a recursive method that returns any object that belongs to the complexType specified. The return object is wrapped in a ReturnAttribute
+     * which carries through some values related to the object. They are: its GML Id and its name.
+     * 
+     * @param complexType The complex type that the CALLER is trying to build. NB: this is NOT the type that the method will build, it's the type that
+     *        the caller wants.
+     * @return A ReturnAttribute object which groups a (Name) name, (String) id, and (Object) value that represent an attribute that belongs in the
+     *         complexType specified. Returns null once there are no more elements in the complex type you're trying to parse.
      * @throws XmlPullParserException
      * @throws IOException
      */
@@ -153,23 +148,21 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
                     // elements and construct a complex attribute.
 
                     // Is it defined by an xlink?
-                    String href = parser.getAttributeValue(
-                            "http://www.w3.org/1999/xlink", "href");
+                    String href = parser.getAttributeValue("http://www.w3.org/1999/xlink", "href");
 
                     if (href != null) {
                         // Resolve the href:
-                        ComplexAttribute hrefAttribute = ResolveHref(href, (ComplexType)type);
-                       
+                        ComplexAttribute hrefAttribute = ResolveHref(href, (ComplexType) type);
+
                         // We've got the attribute but the parser is still pointing at this tag so
                         // we have to advance it till we get to the end tag.
-                        while (parser.next() != XmlPullParser.END_TAG);
+                        while (parser.next() != XmlPullParser.END_TAG)
+                            ;
                         return new ReturnAttribute(id, currentTagName, hrefAttribute);
-                    }
-                    else
-                    {
+                    } else {
                         // The attribute that we get from parsing the next attribute.
                         ReturnAttribute innerAttribute;
-    
+
                         // Configure the attribute builder to help build the complex attribute.
                         AttributeBuilder attributeBuilder = new AttributeBuilder(
                                 new LenientFeatureFactoryImpl());
@@ -177,15 +170,15 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
 
                         // 5. Loop over and parse all the attributes in this complex feature.
                         while ((innerAttribute = parseNextAttribute((ComplexType) type)) != null) {
-    
+
                             // 6. Check the type of the parsed attribute.
-                            if (ComplexAttribute.class.isAssignableFrom(innerAttribute.value.getClass())) {
+                            if (ComplexAttribute.class.isAssignableFrom(innerAttribute.value
+                                    .getClass())) {
                                 // 6a. If it's a Property then we must add it to a list before sending it to the builder.
-                                // TODO: I don't understand why this must go in a list?
                                 ArrayList<Property> properties = new ArrayList<Property>();
                                 properties.add((Property) innerAttribute.value);
-                                attributeBuilder
-                                        .add(innerAttribute.id, properties, innerAttribute.name);
+                                attributeBuilder.add(innerAttribute.id, properties,
+                                        innerAttribute.name);
                             } else {
                                 // 6b. If the parsed attribute is actually just an object then it must belong to a simple type
                                 // in which case we can just add it to the builder as is.
@@ -193,12 +186,12 @@ public class XmlComplexFeatureParser extends XmlFeatureParser<FeatureType, Featu
                                         innerAttribute.name);
                             }
                         }
-                        
+
                         Attribute attribteValue = attributeBuilder.build();
-                        
+
                         // If this item has an id we'll register it in case anything else points to it with an xlink:
                         if (id != null) {
-                            this.RegisterGmlTarget(id, (ComplexAttribute)attribteValue);
+                            this.RegisterGmlTarget(id, (ComplexAttribute) attribteValue);
                         }
 
                         return new ReturnAttribute(id, currentTagName, attribteValue);

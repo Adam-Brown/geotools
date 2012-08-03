@@ -71,9 +71,10 @@ public class FeatureWrapperTest {
         MineType wrappedMine = FeatureWrapper.Wrap(mine, MineType.class);
 
         // Assert
-        Assert.assertEquals("Pieces of Eight - Admiral Hill", wrappedMine.MineNameProperties.get(0).MineName.mineName);
+        Assert.assertEquals("Pieces of Eight - Admiral Hill",
+                wrappedMine.MineNameProperties.get(0).MineName.mineName);
     }
-    
+
     @Test
     public void wrap_validFeature_canAccessPathDefinedVariables() throws Exception {
         // Arrange
@@ -106,7 +107,6 @@ public class FeatureWrapperTest {
 
     @Test(expected = InvalidClassException.class)
     public void wrap_invalidFeatureMissingAttribute_throwsInvalidClassException() throws Exception {
-
         // Arrange
         // AttributeImpl:mineName<string id=mineName_1>=Pieces of Eight - Admiral Hill
         Attribute mineName = new AttributeImpl("Pieces of Eight - Admiral Hill",
@@ -159,7 +159,6 @@ public class FeatureWrapperTest {
     @Test(expected = InvalidClassException.class)
     public void wrap_invalidFeatureMissingMineNameTypeProperty_throwsInvalidClassException()
             throws Exception {
-
         // Arrange
         Collection<Property> MineNameProperties = new ArrayList<Property>();
         // MineNameProperties.add(MineNameType); Deliberately not adding this.

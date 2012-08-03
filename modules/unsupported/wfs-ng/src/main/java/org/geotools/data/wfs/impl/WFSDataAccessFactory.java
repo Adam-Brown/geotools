@@ -1,19 +1,3 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2012, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
- */
 package org.geotools.data.wfs.impl;
 
 import java.io.File;
@@ -90,7 +74,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     private static final WFSFactoryParam<?>[] parametersInfo = new WFSFactoryParam[14];
 
     private static final int GMLComplianceLevel = 2;
-        
+
     /**
      * Mandatory DataStore parameter indicating the URL for the WFS GetCapabilities document.
      */
@@ -100,10 +84,10 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
         String description = "Represents a URL to the getCapabilities document or a server instance.";
         parametersInfo[0] = URL = new WFSFactoryParam<URL>(name, URL.class, description);
     }
-    
+
     /**
-     * Optional {@code Boolean} DataStore parameter acting as a hint for the HTTP protocol to use
-     * preferably against the WFS instance, with the following semantics:
+     * Optional {@code Boolean} DataStore parameter acting as a hint for the HTTP protocol to use preferably against the WFS instance, with the
+     * following semantics:
      * <ul>
      * <li>{@code null} (not supplied): use "AUTO", let the DataStore decide.
      * <li>{@code Boolean.TRUE} use HTTP POST preferably.
@@ -121,8 +105,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional {@code String} DataStore parameter supplying the user name to use when the server
-     * requires HTTP authentication
+     * Optional {@code String} DataStore parameter supplying the user name to use when the server requires HTTP authentication
      * <p>
      * Shall be used together with {@link #PASSWORD} or not used at all.
      * </p>
@@ -139,8 +122,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional {@code String} DataStore parameter supplying the password to use when the server
-     * requires HTTP authentication
+     * Optional {@code String} DataStore parameter supplying the password to use when the server requires HTTP authentication
      * <p>
      * Shall be used together with {@link #USERNAME} or not used at all.
      * </p>
@@ -157,8 +139,8 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional {@code String} DataStore parameter supplying a JVM supported {@link Charset charset}
-     * name to use as the character encoding for XML requests sent to the server.
+     * Optional {@code String} DataStore parameter supplying a JVM supported {@link Charset charset} name to use as the character encoding for XML
+     * requests sent to the server.
      */
     public static final WFSFactoryParam<String> ENCODING;
     static {
@@ -175,8 +157,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional {@code Integer} DataStore parameter indicating a timeout in milliseconds for the
-     * HTTP connections. <>p>
+     * Optional {@code Integer} DataStore parameter indicating a timeout in milliseconds for the HTTP connections. <>p>
      * 
      * @TODO: specify if its just a connection timeout or also a read timeout
      */
@@ -190,8 +171,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional {@code Integer} parameter stating how many Feature instances to buffer at once. Only
-     * implemented for WFS 1.0.0 support.
+     * Optional {@code Integer} parameter stating how many Feature instances to buffer at once. Only implemented for WFS 1.0.0 support.
      */
     public static final WFSFactoryParam<Integer> BUFFER_SIZE;
     static {
@@ -203,8 +183,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional {@code Boolean} data store parameter indicating whether to set the accept GZip
-     * encoding on the HTTP request headers sent to the server
+     * Optional {@code Boolean} data store parameter indicating whether to set the accept GZip encoding on the HTTP request headers sent to the server
      */
     public static final WFSFactoryParam<Boolean> TRY_GZIP;
     static {
@@ -216,8 +195,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional {@code Boolean} DataStore parameter indicating whether to be lenient about parsing
-     * bad data
+     * Optional {@code Boolean} DataStore parameter indicating whether to be lenient about parsing bad data
      */
     public static final WFSFactoryParam<Boolean> LENIENT;
     static {
@@ -231,8 +209,8 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional positive {@code Integer} used as a hard limit for the amount of Features to retrieve
-     * for each FeatureType. A value of zero or not providing this parameter means no limit.
+     * Optional positive {@code Integer} used as a hard limit for the amount of Features to retrieve for each FeatureType. A value of zero or not
+     * providing this parameter means no limit.
      */
     public static final WFSFactoryParam<Integer> MAXFEATURES;
     static {
@@ -244,8 +222,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional {@code Integer} DataStore parameter indicating level of compliance to WFS
-     * specification
+     * Optional {@code Integer} DataStore parameter indicating level of compliance to WFS specification
      * <ul>
      * <li>{@link XMLHandlerHints#VALUE_FILTER_COMPLIANCE_LOW}</li>
      * <li>{@link XMLHandlerHints#VALUE_FILTER_COMPLIANCE_MEDIUM}</li>
@@ -264,8 +241,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
     }
 
     /**
-     * Optional {@code String} DataStore parameter indicating either "mapserver", "geoserver",
-     * "strict" or "nonstrict" strategy
+     * Optional {@code String} DataStore parameter indicating either "mapserver", "geoserver", "strict" or "nonstrict" strategy
      */
     public static final WFSFactoryParam<String> WFS_STRATEGY;
     static {
@@ -288,16 +264,16 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
         parametersInfo[12] = NAMESPACE = new WFSFactoryParam<String>(name, String.class,
                 description, null);
     }
-    
+
     /**
-     * Optional {@code Integer} OCG GML compliance level.
-     * i.e. (simple feature) 0, 1 or 2
+     * Optional {@code Integer} OCG GML compliance level. i.e. (simple feature) 0, 1 or 2
      */
     public static final WFSFactoryParam<Integer> GML_COMPLIANCE_LEVEL;
     static {
         String name = "WFSDataStoreFactory:GML_COMPLIANCE_LEVEL";
         String description = "Optional OGC GML compliance level required.";
-        parametersInfo[13] = GML_COMPLIANCE_LEVEL = new WFSFactoryParam<Integer>(name, Integer.class, description, 0);
+        parametersInfo[13] = GML_COMPLIANCE_LEVEL = new WFSFactoryParam<Integer>(name,
+                Integer.class, description, 0);
     }
 
     /**
@@ -312,7 +288,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
      */
     @Override
     public boolean canProcess(@SuppressWarnings("rawtypes") final Map params) {
-    	/*
+        /*
          * check required params exist and are of the correct type
          */
         boolean canProcess = super.canProcess(params);
@@ -342,31 +318,31 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
                 return false; // must have both
             }
         }
-        
+
         // Check compliance level
         if (params.containsKey(GML_COMPLIANCE_LEVEL.key)) {
-        	if ((Integer) params.get(GML_COMPLIANCE_LEVEL.key) > GMLComplianceLevel) {
-        		return false;
-        	}
+            if ((Integer) params.get(GML_COMPLIANCE_LEVEL.key) > GMLComplianceLevel) {
+                return false;
+            }
         }
-        
+
         return true;
     }
-    
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --  
-    
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
     @Override
     public DataAccess<? extends FeatureType, ? extends Feature> createDataStore(
             Map<String, Serializable> params) throws IOException {
-    	
-    	WFSContentDataAccess dataAccess = new WFSContentDataAccess(getWFSClient(params));
-    	String cacheLocationKey = "WFSDataStoreFactory:SCHEMA_CACHE_LOCATION";
-    	
-    	if (params.containsKey(cacheLocationKey)) {
-    		String cacheLocation = (String)params.get(cacheLocationKey);
-    		dataAccess.setCacheLocation(new File(cacheLocation));
-    	}
-    	
+
+        WFSContentDataAccess dataAccess = new WFSContentDataAccess(getWFSClient(params));
+        String cacheLocationKey = "WFSDataStoreFactory:SCHEMA_CACHE_LOCATION";
+
+        if (params.containsKey(cacheLocationKey)) {
+            String cacheLocation = (String) params.get(cacheLocationKey);
+            dataAccess.setCacheLocation(new File(cacheLocation));
+        }
+
         return dataAccess;
     }
 
@@ -401,9 +377,9 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
         System.arraycopy(parametersInfo, 0, params, 0, length);
         return params;
     }
-    
+
     protected WFSClient getWFSClient(final Map<String, Serializable> params) throws IOException {
-    	final WFSConfig config = WFSConfig.fromParams(params);
+        final WFSConfig config = WFSConfig.fromParams(params);
         {
             String user = config.getUser();
             String password = config.getPassword();

@@ -165,8 +165,6 @@ public class XmlComplexFeatureParserTest {
         Assert.assertSame(mineNamePropertyType1, mineNamePropertyType2);
     }
 
-    // TODO: this one is different to the others because the object isn't actually the same object, it's just a copy of it. I
-    // don't know if this is OK or not?
     @Test
     public void parse_xlinkRefersToTargetInAnotherFeatureBelow_linkedElementGetsSet()
             throws IOException {

@@ -11,7 +11,7 @@
 		<ex:Mine gml:id="er.mine.S0000005">
 			<!--
 				This is only being done to allow for testing of the internal xlink. The
-				structure of this document dosen't really makes sense; it's saying that
+				structure of this document dosen't really make sense; it's saying that
 				the Mine has three mineNames... all of which are exactly the same. It's
 				OK for testing, though! -->
 			<ex:mineName xlink:href="#mineName_Aspacia" />

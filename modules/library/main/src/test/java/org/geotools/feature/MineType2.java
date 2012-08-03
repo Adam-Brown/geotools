@@ -8,7 +8,6 @@ import org.geotools.feature.wrapper.XSDMapping;
 
 // This is just like MineType but it's modified to cater for some tests. See FeatureWrapperTest.java.
 
-
 // This demonstrates how to extend FeatureWrapper to get a strongly-typed object to represent a feature.
 @XSDMapping(namespace = "urn:org:example", separator = ":")
 public class MineType2 extends FeatureWrapper {
