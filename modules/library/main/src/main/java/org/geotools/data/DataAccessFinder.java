@@ -96,10 +96,6 @@ public final class DataAccessFinder {
 			Map<String, Serializable> params) throws IOException {
 		Iterator<DataAccessFactory> ps = getAvailableDataStores();
 
-		while (ps.hasNext()) {
-			System.out.println(ps.next());
-		}
-
 		return (DataAccess<FeatureType, Feature>) getDataStore(params, ps);
 	}
 
@@ -111,6 +107,7 @@ public final class DataAccessFinder {
 		IOException canProcessButNotAvailable = null;
 		while (ps.hasNext()) {
 			fac = (DataAccessFactory) ps.next();
+			
 			boolean canProcess = false;
 			try {
 				canProcess = fac.canProcess(params);

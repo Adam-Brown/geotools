@@ -77,7 +77,7 @@ public class WFSConfig {
                     : PreferredHttpMethod.HTTP_GET;
         }
 
-        config.preferredMethod = PreferredHttpMethod.HTTP_POST;// remove this line
+        
 
         config.user = (String) USERNAME.lookUp(params);
         config.pass = (String) PASSWORD.lookUp(params);

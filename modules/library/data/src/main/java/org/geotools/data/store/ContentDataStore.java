@@ -79,11 +79,11 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  *   <li>{@link #createTypeNames()}
  *   <li>{@link #createFeatureSource(ContentEntry)}
  * </ul>
- * The following methods may also be overriden:
+ * The following methods may also be overridden:
  * <ul>
  *   <li>{@link #createContentState(ContentEntry)}
  * </ul>
- * The following methods may be overriden but <b>only</b> to narrow the return 
+ * The following methods may be overridden but <b>only</b> to narrow the return 
  * type to a specific subclass of {@link ContentFeatureSource}.
  * <ul>
  *   <li>{@link #getFeatureSource(String)}

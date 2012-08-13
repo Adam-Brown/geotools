@@ -16,6 +16,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.ServiceInfo;
 import org.geotools.data.complex.config.EmfAppSchemaReader;
 import org.geotools.data.complex.config.FeatureTypeRegistry;
+import org.geotools.data.store.ContentComplexFeatureSource;
 import org.geotools.data.wfs.internal.DescribeFeatureTypeRequest;
 import org.geotools.data.wfs.internal.WFSClient;
 import org.geotools.feature.NameImpl;
@@ -134,6 +135,12 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
     // though)
     @Override
     public FeatureType getSchema(Name name) throws IOException {
+//    	return getFeatureSource(name).getSchema();
+
+// TODO: ADAM I don't know where this came from at all... I had a comment which said it was copied from
+// ContentDataStore but this code isn't there. It doesn't work because it complains about the source not
+// having "targetNamespace" set.
+    	
         // Generate the URL for the feature request:
         // -----------------------------------------
         DescribeFeatureTypeRequest describeFeatureTypeRequest = client
@@ -165,8 +172,9 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
 
     @Override
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName) throws IOException {
-        // TODO: Need to implement!
-        return null;
+    	// There is an implementation of this in ContentDataStore which gets inherited by WFSContentDataStore.
+    	FeatureSource<FeatureType, Feature> contentComplexFeatureSource = new ContentComplexFeatureSource();
+        return contentComplexFeatureSource;
     }
 
     @Override
@@ -188,8 +196,11 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
             if (this.cacheLocation == null) {
                 appSchemaResolver = new AppSchemaResolver();
             } else {
-                appSchemaResolver = new AppSchemaResolver(new AppSchemaCache(this.cacheLocation,
-                        true));
+                appSchemaResolver = new AppSchemaResolver(
+                	new AppSchemaCache(
+                			this.cacheLocation, 
+                			/* download: */ true, 
+                			/* keepQuery: */ true));
             }
 
             this.schemaParser.setResolver(appSchemaResolver);
