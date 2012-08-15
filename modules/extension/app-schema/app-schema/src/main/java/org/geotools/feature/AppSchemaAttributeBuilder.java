@@ -17,10 +17,8 @@
 
 package org.geotools.feature;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -33,20 +31,14 @@ import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureFactory;
-import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AssociationDescriptor;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Builder for attributes.
@@ -59,49 +51,12 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  * @source $URL$
  */
-public class AttributeBuilder {
+public class AppSchemaAttributeBuilder extends AttributeBuilder {
     private static final Logger LOGGER = org.geotools.util.logging.Logging
-            .getLogger(AttributeBuilder.class.getPackage().getName());
-
-    /**
-     * Factory used to create attributes
-     */
-    FeatureFactory attributeFactory;
-
-    /**
-     * Namespace context.
-     */
-    String namespace;
-
-    /**
-     * Type of complex attribute being built. This field is mutually exclusive with
-     * {@link #descriptor}
-     */
-    AttributeType type;
-
-    /**
-     * Descriptor of complex attribute being built. This field is mutually exclusive with
-     * {@link #type}
-     */
-    AttributeDescriptor descriptor;
-
-    /**
-     * Contained properties (associations + attributes)
-     */
-    List properties;
-
-    /**
-     * The crs of the attribute.
-     */
-    CoordinateReferenceSystem crs;
-
-    /**
-     * Default geometry of the feature.
-     */
-    Object defaultGeometry;
-
-    public AttributeBuilder(FeatureFactory attributeFactory) {
-        this.attributeFactory = attributeFactory;
+            .getLogger(AppSchemaAttributeBuilder.class.getPackage().getName());
+    
+    public AppSchemaAttributeBuilder(FeatureFactory attributeFactory) {
+        super(attributeFactory);
     }
 
     //
@@ -126,19 +81,6 @@ public class AttributeBuilder {
     //
     // State
     //
-
-    /**
-     * Initializes the builder to its initial state, the same state it is in directly after being
-     * instantiated.
-     */
-    public void init() {
-        descriptor = null;
-        type = null;
-        properties = null;
-        crs = null;
-        defaultGeometry = null;
-    }
-
     /**
      * Initializes the state of the builder based on a previously built attribute.
      * <p>
@@ -175,6 +117,7 @@ public class AttributeBuilder {
                     crs = feature.getDefaultGeometryProperty().getType()
                             .getCoordinateReferenceSystem();
                 }
+
                 defaultGeometry = feature.getDefaultGeometryProperty().getValue();
             }
         }
@@ -210,59 +153,10 @@ public class AttributeBuilder {
     }
 
     /**
-     * Sets the descriptor of the attribute being built.
-     * <p>
-     * When building a complex attribute, this type is used a reference to obtain the types of
-     * contained attributes.
-     * </p>
-     */
-    public void setDescriptor(AttributeDescriptor descriptor) {
-        this.descriptor = descriptor;
-        this.type = (AttributeType) descriptor.getType();
-    }
-
-    /**
      * @return The type of the attribute being built.
      */
     public AttributeType getType() {
         return type;
-    }
-
-    // Feature specific methods
-    /**
-     * Sets the coordinate reference system of the built feature.
-     */
-    public void setCRS(CoordinateReferenceSystem crs) {
-        this.crs = crs;
-    }
-
-    /**
-     * @return The coordinate reference system of the feature, or null if not set.
-     */
-    public CoordinateReferenceSystem getCRS(Object geom) {
-        if (crs != null) {
-            return crs;
-        } else if (geom != null && geom instanceof Geometry) {
-            Object userData = ((Geometry) geom).getUserData();
-            if (userData != null && userData instanceof CoordinateReferenceSystem) {
-                return (CoordinateReferenceSystem) userData;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Sets the default geometry of the feature.
-     */
-    public void setDefaultGeometry(Object defaultGeometry) {
-        this.defaultGeometry = defaultGeometry;
-    }
-
-    /**
-     * @return The default geometry of the feature.
-     */
-    public Object getDefaultGeometry() {
-        return defaultGeometry;
     }
 
     //
@@ -346,7 +240,7 @@ public class AttributeBuilder {
     }
 
     /**
-     * Adds an attribute to the complex attribute being built overriding the type of the declared
+     * Adds an attribute to the complex attribute being built, overriding the type of the declared
      * attribute descriptor by a subtype of it. <br>
      * <p>
      * This method uses the type supplied in {@link #setType(AttributeType)} in order to determine
@@ -354,7 +248,7 @@ public class AttributeBuilder {
      * </p>
      * 
      * @param id
-     *                the attribtue id
+     *                the attribute id
      * @param value
      *                The value of the attribute.
      * 
@@ -365,10 +259,10 @@ public class AttributeBuilder {
      *                for the given AttributeDescriptor or a derived type.
      * 
      */
-    public Attribute add(final String id, final Object value, final Name name,
+    public Attribute add(final String id, final Object value, final Name name,  
             final AttributeType type) {
         // existence check
-        AttributeDescriptor descriptor = attributeDescriptor(name);
+        AttributeDescriptor descriptor = getAttributeDescriptorFor(name);
         AttributeType declaredType = (AttributeType) descriptor.getType();
         if (!declaredType.equals(type)) {
             boolean argIsSubType = Types.isSuperType(type, declaredType);
@@ -379,7 +273,7 @@ public class AttributeBuilder {
                  * IllegalArgumentException(type.getName() + " is not a subtype of " +
                  * declaredType.getName());
                  */
-                LOGGER.fine("Adding attribute " + name + " of type " + type.getName()
+            	LOGGER.fine("Adding attribute " + name + " of type " + type.getName()
                         + " which is not a subtype of " + declaredType.getName());
             }
             int minOccurs = descriptor.getMinOccurs();
@@ -405,7 +299,7 @@ public class AttributeBuilder {
         } else {
             attribute = create(value, null, descriptor, id);
         }
-        properties().add(attribute);
+        getProperties().add(attribute);
         return attribute;
     }
 
@@ -444,7 +338,7 @@ public class AttributeBuilder {
         AssociationDescriptor descriptor = associationDescriptor(name);
         Association association = attributeFactory.createAssociation(value, descriptor);
 
-        properties().add(association);
+        getProperties().add(association);
     }
 
     /**
@@ -488,39 +382,6 @@ public class AttributeBuilder {
         return add(id, value, Types.typeName(namespaceURI, name));
     }
 
-    /**
-     * Adds an attribute to the complex attribute being built. <br>
-     * <p>
-     * This method uses the type supplied in {@link #setType(AttributeType)} in order to determine
-     * the attribute type.
-     * </p>
-     * 
-     * @param id
-     *                The id of the attribute.
-     * @param name
-     *                The name of the attribute.
-     * @param value
-     *                The value of the attribute.
-     * 
-     */
-    public Attribute add(String id, Object value, Name name) {
-        AttributeDescriptor descriptor = attributeDescriptor(name);
-        Attribute attribute = create(value, null, descriptor, id);
-        properties().add(attribute);
-        return attribute;
-    }
-
-    /**
-     * Convenience accessor for properties list which does the null check.
-     */
-    protected List properties() {
-        if (properties == null) {
-            properties = new ArrayList();
-        }
-
-        return properties;
-    }
-
     protected AssociationDescriptor associationDescriptor(Name name) {
         PropertyDescriptor descriptor = Types.descriptor((ComplexType) type, name);
 
@@ -537,120 +398,6 @@ public class AttributeBuilder {
         return (AssociationDescriptor) descriptor;
     }
 
-    protected AttributeDescriptor attributeDescriptor(Name name) {
-        PropertyDescriptor descriptor = Types.findDescriptor((ComplexType) type, name);
-
-        if (descriptor == null) {
-            String msg = "Could not locate attribute: " + name + " in type: " + type.getName();
-            throw new IllegalArgumentException(msg);
-        }
-
-        if (!(descriptor instanceof AttributeDescriptor)) {
-            String msg = name + " references a non attribute";
-            throw new IllegalArgumentException(msg);
-        }
-
-        return (AttributeDescriptor) descriptor;
-    }
-
-    /**
-     * Factors out attribute creation code, needs to be called with either one of type or descriptor
-     * null.
-     */
-    protected Attribute create(Object value, AttributeType type, AttributeDescriptor descriptor,
-            String id) {
-        if (descriptor != null) {
-            type = (AttributeType) descriptor.getType();
-        }
-        // if (type instanceof FeatureCollectionType) {
-        // attribute = descriptor != null ? attributeFactory.createFeatureCollection(
-        // (Collection) value, descriptor, id) : attributeFactory.createFeatureCollection(
-        // (Collection) value, (FeatureCollectionType) type, id);
-        // } else
-        if (type instanceof FeatureType) {
-            return descriptor != null ? attributeFactory.createFeature((Collection) value,
-                    descriptor, id) : attributeFactory.createFeature((Collection) value,
-                    (FeatureType) type, id);
-        } else if (type instanceof ComplexType) {
-            return createComplexAttribute((Collection) value, (ComplexType) type, descriptor, id);
-        } else if (type instanceof GeometryType) {
-            return attributeFactory.createGeometryAttribute(value, (GeometryDescriptor) descriptor,
-                    id, getCRS(value));
-        } else {
-            return attributeFactory.createAttribute(value, descriptor, id);
-        }
-    }
-
-    /**
-     * Create complex attribute
-     * 
-     * @param value
-     * @param type
-     * @param descriptor
-     * @param id
-     * @return
-     */
-    public ComplexAttribute createComplexAttribute(Object value, ComplexType type,
-            AttributeDescriptor descriptor, String id) {
-        return descriptor != null ? attributeFactory.createComplexAttribute((Collection) value,
-                descriptor, id) : attributeFactory.createComplexAttribute((Collection) value, type,
-                id);
-    }
-    
-    /**
-     * Builds the attribute.
-     * <p>
-     * The class of the attribute built is determined from its type set with
-     * {@link #setType(AttributeType)}.
-     * </p>
-     * 
-     * @return The build attribute.
-     */
-    public Attribute build() {
-        return build(null);
-    }
-
-    /**
-     * Builds the attribute.
-     * <p>
-     * The class of the attribute built is determined from its type set with
-     * {@link #setType(AttributeType)}.
-     * </p>
-     * 
-     * @param id
-     *                The id of the attribute, or null.
-     * 
-     * @return The build attribute.
-     */
-    public Attribute build(String id) {
-        Attribute built = create(properties(), type, descriptor, id);
-
-        // FIXME
-        // // if geometry, set the crs
-        // if (built instanceof GeometryAttribute) {
-        // ((GeometryAttribute) built).getDescriptor().setCRS(getCRS());
-        // }
-
-        // if feature, set crs and default geometry
-        if (built instanceof Feature) {
-            Feature feature = (Feature) built;
-            // FIXME feature.setCRS(getCRS());
-            if (defaultGeometry != null) {
-                for (Iterator itr = feature.getProperties().iterator(); itr.hasNext();) {
-                    Attribute att = (Attribute) itr.next();
-                    if (att instanceof GeometryAttribute) {
-                        if (defaultGeometry.equals(att.getValue())) {
-                            feature.setDefaultGeometryProperty((GeometryAttribute) att);
-                        }
-                    }
-
-                }
-            }
-        }
-        properties().clear();
-        return built;
-    }
-
     /**
      * Special case for any type. Skip validating existence in the schema, since anyType legally can
      * be casted into anything.
@@ -664,10 +411,10 @@ public class AttributeBuilder {
      * @param id
      * @return
      */
-    public Attribute addAnyTypeValue(Object value, AttributeType type,
+    public Attribute addAnyTypeValue(Object value, AttributeType type, 
             AttributeDescriptor descriptor, String id) {
         Attribute attribute = create(value, type, descriptor, id);
-        properties().add(attribute);
+        getProperties().add(attribute);
         return attribute;
     }
     
