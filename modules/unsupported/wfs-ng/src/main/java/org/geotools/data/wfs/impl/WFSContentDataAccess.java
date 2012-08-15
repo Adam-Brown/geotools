@@ -131,16 +131,14 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
         // END Refactor;
     }
 
-    // TODO: Refactor - Copied from ContentDataStore (changed return type,
-    // though)
     @Override
     public FeatureType getSchema(Name name) throws IOException {
-//    	return getFeatureSource(name).getSchema();
 
-// TODO: ADAM I don't know where this came from at all... I had a comment which said it was copied from
-// ContentDataStore but this code isn't there. It doesn't work because it complains about the source not
-// having "targetNamespace" set.
-    	
+    	// If there are no values in this.names it probably means that getNames hasn't been called yet.
+    	if (this.names.size() == 0) {
+    		this.getNames();
+    	}
+    	    	
         // Generate the URL for the feature request:
         // -----------------------------------------
         DescribeFeatureTypeRequest describeFeatureTypeRequest = client
