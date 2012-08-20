@@ -55,6 +55,10 @@ public class XmlComplexFeatureParser extends
 			while ((nextAttribute = parseNextAttribute(this.targetType)) != null) {
 				featureBuilder.append(nextAttribute.name,
 						(Property) nextAttribute.value);
+				System.out.println("Appended to feature:");
+				System.out.println("   name: " + nextAttribute.name);
+				System.out.println("  value: " + nextAttribute.value);
+
 			}
 		} catch (XmlPullParserException e) {
 			throw new DataSourceException(e);
@@ -111,9 +115,15 @@ public class XmlComplexFeatureParser extends
 			}
 		} else {
 			// TODO: Handle remote hrefs.
+
+			// This is temporary code to get things to work:
+			ComplexAttribute placeholderComplexAttribute = new ComplexAttributeImpl(
+					Collections.<Property> emptyList(), expectedType, null);
+
+			return placeholderComplexAttribute;
 		}
 
-		return null;
+		// return null;
 	}
 
 	/**
@@ -165,78 +175,80 @@ public class XmlComplexFeatureParser extends
 				String id = parser.getAttributeValue(GML.id.getNamespaceURI(),
 						GML.id.getLocalPart());
 
+				// Is it defined by an xlink?
+				String href = parser.getAttributeValue(
+						"http://www.w3.org/1999/xlink", "href");
+
 				// 4. Parse the tag's contents based on whether it's a
+				if (href != null) {
+					// Resolve the href:
+					System.out.println(type);
+
+					ComplexAttribute hrefAttribute = ResolveHref(href,
+							(ComplexType) type);
+
+					// We've got the attribute but the parser is still
+					// pointing at this tag so
+					// we have to advance it till we get to the end tag.
+					while (parser.next() != XmlPullParser.END_TAG)
+						;
+
+					return new ReturnAttribute(id, currentTagName,
+							hrefAttribute);
+				}
 				// ComplexType or an AttributeType.
-				if (type instanceof ComplexType) {
+				else if (type instanceof ComplexType) {
 					// 4a. The element is a complex type so we must loop through
-					// each of its internal
-					// elements and construct a complex attribute.
+					// each of its internal elements and construct a complex
+					// attribute.
 
-					// Is it defined by an xlink?
-					String href = parser.getAttributeValue(
-							"http://www.w3.org/1999/xlink", "href");
+					// The attribute that we get from parsing the next
+					// attribute.
+					ReturnAttribute innerAttribute;
 
-					if (href != null) {
-						// Resolve the href:
-						ComplexAttribute hrefAttribute = ResolveHref(href,
-								(ComplexType) type);
+					// Configure the attribute builder to help build the complex
+					// attribute.
+					AttributeBuilder attributeBuilder = new AttributeBuilder(
+							new LenientFeatureFactoryImpl());
+					attributeBuilder.setType((AttributeType) type);
 
-						// We've got the attribute but the parser is still
-						// pointing at this tag so
-						// we have to advance it till we get to the end tag.
-						while (parser.next() != XmlPullParser.END_TAG)
-							;
-						return new ReturnAttribute(id, currentTagName,
-								hrefAttribute);
-					} else {
-						// The attribute that we get from parsing the next
-						// attribute.
-						ReturnAttribute innerAttribute;
+					// 5. Loop over and parse all the attributes in this complex
+					// feature.
+					while ((innerAttribute = parseNextAttribute((ComplexType) type)) != null) {
 
-						// Configure the attribute builder to help build the
-						// complex attribute.
-						AttributeBuilder attributeBuilder = new AttributeBuilder(
-								new LenientFeatureFactoryImpl());
-						attributeBuilder.setType((AttributeType) type);
-
-						// 5. Loop over and parse all the attributes in this
-						// complex feature.
-						while ((innerAttribute = parseNextAttribute((ComplexType) type)) != null) {
-
-							// 6. Check the type of the parsed attribute.
-							if (ComplexAttribute.class
-									.isAssignableFrom(innerAttribute.value
-											.getClass())) {
-								// 6a. If it's a Property then we must add it to
-								// a list before sending it to the builder.
-								ArrayList<Property> properties = new ArrayList<Property>();
-								properties.add((Property) innerAttribute.value);
-								attributeBuilder.add(innerAttribute.id,
-										properties, innerAttribute.name);
-							} else {
-								// 6b. If the parsed attribute is actually just
-								// an object then it must belong to a simple
-								// type
-								// in which case we can just add it to the
-								// builder as is.
-								attributeBuilder.add(innerAttribute.id,
-										innerAttribute.value,
-										innerAttribute.name);
-							}
+						// 6. Check the type of the parsed attribute.
+						if (ComplexAttribute.class
+								.isAssignableFrom(innerAttribute.value
+										.getClass())) {
+							// 6a. If it's a Property then we must add it to
+							// a list before sending it to the builder.
+							ArrayList<Property> properties = new ArrayList<Property>();
+							properties.add((Property) innerAttribute.value);
+							attributeBuilder.add(innerAttribute.id, properties,
+									innerAttribute.name);
+						} else {
+							// 6b. If the parsed attribute is actually just
+							// an object then it must belong to a simple
+							// type
+							// in which case we can just add it to the
+							// builder as is.
+							attributeBuilder.add(innerAttribute.id,
+									innerAttribute.value, innerAttribute.name);
 						}
-
-						Attribute attribteValue = attributeBuilder.build();
-
-						// If this item has an id we'll register it in case
-						// anything else points to it with an xlink:
-						if (id != null) {
-							this.RegisterGmlTarget(id,
-									(ComplexAttribute) attribteValue);
-						}
-
-						return new ReturnAttribute(id, currentTagName,
-								attribteValue);
 					}
+
+					Attribute attribteValue = attributeBuilder.build();
+
+					// If this item has an id we'll register it in case
+					// anything else points to it with an xlink:
+					if (id != null) {
+						this.RegisterGmlTarget(id,
+								(ComplexAttribute) attribteValue);
+					}
+
+					return new ReturnAttribute(id, currentTagName,
+							attribteValue);
+
 				} else if (type instanceof AttributeType) {
 					// 4b. It's just a simple type so we can use super's
 					// parseAttributeValue method.
