@@ -140,8 +140,12 @@ public abstract class XmlFeatureParser<FT extends FeatureType, F extends Feature
 		final AttributeType type = attribute.getType();
 		Object parsedValue;
 		if (type instanceof GeometryType) {
-			parser.nextTag();
+			
+			int tag = parser.getEventType();
+			
 			try {
+				System.out.println("Going to parse geom now...");
+				
 				parsedValue = parseGeom();
 			} catch (NoSuchAuthorityCodeException e) {
 				throw new DataSourceException(e);
@@ -270,9 +274,7 @@ public abstract class XmlFeatureParser<FT extends FeatureType, F extends Feature
 		}
 
 		parser.require(END_TAG, GML.NAMESPACE, GML.MultiPoint.getLocalPart());
-
-		geom = geomFac
-				.createMultiPoint(points.toArray(new Point[points.size()]));
+		geom = geomFac.createMultiPoint(points.toArray(new Point[points.size()]));
 		return geom;
 	}
 
@@ -803,7 +805,7 @@ public abstract class XmlFeatureParser<FT extends FeatureType, F extends Feature
 
 	protected String seekFeature() throws IOException, XmlPullParserException {
 		int tagType;
-
+		
 		while (true) {
 			tagType = parser.next();
 			if (tagType == XmlPullParser.END_DOCUMENT) {
@@ -814,7 +816,7 @@ public abstract class XmlFeatureParser<FT extends FeatureType, F extends Feature
 			if (START_TAG == tagType) {
 				String namespace = parser.getNamespace();
 				String name = parser.getName();
-
+				
 				if (featureNamespace.equals(namespace)
 						&& featureName.equals(name)) {
 					String featureId = parser.getAttributeValue(

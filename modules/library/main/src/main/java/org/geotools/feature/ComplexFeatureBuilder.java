@@ -18,125 +18,141 @@ import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 
 public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> {
-    Map<Name, ArrayList<Property>> values = new HashMap<Name, ArrayList<Property>>();
+	Map<Name, ArrayList<Property>> values = new HashMap<Name, ArrayList<Property>>();
 
-    public ComplexFeatureBuilder(FeatureType featureType) {
-        this(featureType, CommonFactoryFinder.getFeatureFactory(null));
-    }
+	public ComplexFeatureBuilder(FeatureType featureType) {
+		this(featureType, CommonFactoryFinder.getFeatureFactory(null));
+	}
 
-    protected ComplexFeatureBuilder(FeatureType featureType, FeatureFactory factory) {
-        super(featureType, factory);
-    }
+	protected ComplexFeatureBuilder(FeatureType featureType,
+			FeatureFactory factory) {
+		super(featureType, factory);
+	}
 
-    @Override
-    public Feature buildFeature(String id) {
-        // Instantiate if null:
-        id = id == null ? FeatureBuilder.createDefaultFeatureId() : id;
+	@Override
+	public Feature buildFeature(String id) {
+		// Instantiate if null:
+		id = id == null ? FeatureBuilder.createDefaultFeatureId() : id;
 
-        // Validate the values against the featureType; we need to make sure that requirements are honoured:
-        for (PropertyDescriptor propertyDescriptor : super.featureType.getDescriptors()) {
-            Name name = propertyDescriptor.getName();
+		// Validate the values against the featureType; we need to make sure
+		// that requirements are honoured:
+		for (PropertyDescriptor propertyDescriptor : super.featureType
+				.getDescriptors()) {
+			Name name = propertyDescriptor.getName();
 
-            // Create a List of Properties for this name if we don't already have one:
-            if (!values.containsKey(name)) {
-                values.put(name, new ArrayList<Property>());
-            }
+			// Create a List of Properties for this name if we don't already
+			// have one:
+			if (!values.containsKey(name)) {
+				values.put(name, new ArrayList<Property>());
+			}
 
-            // Get the List of Properties:
-            List<Property> properties = values.get(name);
+			// Get the List of Properties:
+			List<Property> properties = values.get(name);
 
-            // See if there's a mismatch between the number of properties and minOccurs value:
-            int minOccurs = propertyDescriptor.getMinOccurs();
-            int numberOfProperties = properties.size();
+			// See if there's a mismatch between the number of properties and
+			// minOccurs value:
+			int minOccurs = propertyDescriptor.getMinOccurs();
+			int numberOfProperties = properties.size();
 
-            if (numberOfProperties < minOccurs) {
-                // If the value is nillable anyway then just default it to null:
-                if (propertyDescriptor.isNillable()
-                        && AttributeDescriptor.class
-                                .isAssignableFrom(propertyDescriptor.getClass())) {
-                    do {
-                        Property nullProperty = new AttributeImpl(propertyDescriptor.getType()
-                                .getBinding().cast(null), (AttributeDescriptor) propertyDescriptor,
-                                null);
+			if (numberOfProperties < minOccurs) {
+				// If the value is nillable anyway then just default it to null:
+				if (propertyDescriptor.isNillable()
+						&& AttributeDescriptor.class
+								.isAssignableFrom(propertyDescriptor.getClass())) {
+					do {
+						Property nullProperty = new AttributeImpl(
+								propertyDescriptor.getType().getBinding()
+										.cast(null),
+								(AttributeDescriptor) propertyDescriptor, null);
 
-                        properties.add(nullProperty);
-                    } while (++numberOfProperties < minOccurs);
-                }
-                // TODO: I was wondering if you could have another if-else here to try to apply default values if they're set..
-                // it seems like a good idea but the only problem is that they're only present on the AttributeDescriptors...
-                else {
-                    throw new IllegalStateException(
-                            String.format(
-                                    "Failed to build feature '%s'; its property '%s' requires at least %s occurrence(s) but number of occurrences was %s.",
-                                    featureType.getName(), name, minOccurs, numberOfProperties));
-                }
-            }
-        }
+						properties.add(nullProperty);
+					} while (++numberOfProperties < minOccurs);
+				}
+				// TODO: I was wondering if you could have another if-else here
+				// to try to apply default values if they're set..
+				// it seems like a good idea but the only problem is that
+				// they're only present on the AttributeDescriptors...
+				else {
+					throw new IllegalStateException(
+							String.format(
+									"Failed to build feature '%s'; its property '%s' requires at least %s occurrence(s) but number of occurrences was %s.",
+									featureType.getName(), name, minOccurs,
+									numberOfProperties));
+				}
+			}
+		}
 
-        // Merge the Map<String, ArrayList<Property>> into one collection of properties:
-        Collection<Property> properties = new ArrayList<Property>();
-        for (Name key : values.keySet()) {
-            properties.addAll(values.get(key));
-        }
+		// Merge the Map<String, ArrayList<Property>> into one collection of
+		// properties:
+		Collection<Property> properties = new ArrayList<Property>();
+		for (Name key : values.keySet()) {
+			properties.addAll(values.get(key));
+		}
 
-        this.values.clear();
-        return factory.createFeature(properties, this.featureType, id);
-    }
+		this.values.clear();
+		return factory.createFeature(properties, this.featureType, id);
+	}
 
-    public void append(Name name, Property value) {
-        PropertyDescriptor propertyDescriptor = featureType.getDescriptor(name);
+	public void append(Name name, Property value) {
+		PropertyDescriptor propertyDescriptor = featureType.getDescriptor(name);
 
-        // The 'name' must exist in the type, if not, throw an exception:
-        if (propertyDescriptor == null) {
-            throw new IllegalArgumentException(String.format(
-                    "The name '%s' is not a valid descriptor name for the type '%s'.", name,
-                    this.featureType.getName()));
-        }
+		// The 'name' must exist in the type, if not, throw an exception:
+		if (propertyDescriptor == null) {
+			throw new IllegalArgumentException(
+					String.format(
+							"The name '%s' is not a valid descriptor name for the type '%s'.",
+							name, this.featureType.getName()));
+		}
 
-        Class<?> expectedClass = propertyDescriptor.getType().getBinding();
-        if (value != null) {
-            Class<?> providedClass = value.getType().getBinding();
+		Class<?> expectedClass = propertyDescriptor.getType().getBinding();
+		if (value != null) {
+			Class<?> providedClass = value.getType().getBinding();
 
-            // Make sure that the provided class and the expected class match or that the expectedClass is a base class of the providedClass:
-            if (!providedClass.equals(expectedClass)
-                    && !expectedClass.isAssignableFrom(providedClass)) {
-                throw new IllegalArgumentException(
-                        String.format(
-                                "The value provided contains an object of '%s' but the method expects an object of '%s'.",
-                                providedClass, expectedClass));
-            }
-        } else { // value == null
-            if (propertyDescriptor.isNillable()) {
-                value = (Property) expectedClass.cast(null);
-            } else {
-                // TODO: You probably need to fix this for remote XLINKs.
-                // A null reference has been provided for a non-nillable type.
-                throw new IllegalArgumentException(
-                        String.format(
-                                "The value provided is a null reference but the property descriptor '%s' is non-nillable.",
-                                propertyDescriptor));
-            }
-        }
+			// Make sure that the provided class and the expected class match or
+			// that the expectedClass is a base class of the providedClass:
+			if (!providedClass.equals(expectedClass)
+					&& !expectedClass.isAssignableFrom(providedClass)) {
+				throw new IllegalArgumentException(
+						String.format(
+								"The value provided contains an object of '%s' but the method expects an object of '%s'.",
+								providedClass, expectedClass));
+			}
+		} else { // value == null
+			if (propertyDescriptor.isNillable()) {
+				value = (Property) expectedClass.cast(null);
+			} else {
+				// TODO: You probably need to fix this for remote XLINKs.
+				// A null reference has been provided for a non-nillable type.
 
-        // At this point the converted value has been set so we must persist it to the object's state:
-        ArrayList<Property> valueList;
+				// TODO: I copied this line from above but you really should process the xlinks here.
+				value = (Property) expectedClass.cast(null);
+//				throw new IllegalArgumentException(
+//						String.format(
+//								"The value provided is a null reference but the property descriptor '%s' is non-nillable.",
+//								propertyDescriptor));
+			}
+		}
 
-        if (values.containsKey(name)) {
-            valueList = values.get(name);
+		// At this point the converted value has been set so we must persist it
+		// to the object's state:
+		ArrayList<Property> valueList;
 
-            // Make sure that the list isn't already at capacity:
-            int maxOccurs = propertyDescriptor.getMaxOccurs();
-            if (valueList.size() == maxOccurs) {
-                throw new IndexOutOfBoundsException(
-                        String.format(
-                                "You can't add another object with the name of '%s' because you already have the maximum number (%s) allowed by the property descriptor.",
-                                name, maxOccurs));
-            }
-        } else {
-            valueList = new ArrayList<Property>();
-            values.put(name, valueList);
-        }
+		if (values.containsKey(name)) {
+			valueList = values.get(name);
 
-        valueList.add(value);
-    }
+			// Make sure that the list isn't already at capacity:
+			int maxOccurs = propertyDescriptor.getMaxOccurs();
+			if (valueList.size() == maxOccurs) {
+				throw new IndexOutOfBoundsException(
+						String.format(
+								"You can't add another object with the name of '%s' because you already have the maximum number (%s) allowed by the property descriptor.",
+								name, maxOccurs));
+			}
+		} else {
+			valueList = new ArrayList<Property>();
+			values.put(name, valueList);
+		}
+
+		valueList.add(value);
+	}
 }

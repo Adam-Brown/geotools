@@ -171,8 +171,10 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
     @Override
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName) throws IOException {
     	// There is an implementation of this in ContentDataStore which gets inherited by WFSContentDataStore.
-    	FeatureSource<FeatureType, Feature> contentComplexFeatureSource = new ContentComplexFeatureSource();
-        return contentComplexFeatureSource;
+    	FeatureSource<FeatureType, Feature> contentComplexFeatureSource = 
+    			new WFSContentComplexFeatureSource(typeName, this.client, this);
+    	
+    	return contentComplexFeatureSource;
     }
 
     @Override

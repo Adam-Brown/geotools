@@ -3,26 +3,33 @@ package org.geotools.data.wfs.internal.parsers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 import org.geotools.data.DataSourceException;
+import org.geotools.data.complex.ComplexFeatureConstants;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
-import org.geotools.feature.ComplexAttributeImpl;
+import org.geotools.feature.AttributeImpl;
 import org.geotools.feature.LenientFeatureFactoryImpl;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.ComplexFeatureBuilder;
+import org.geotools.feature.Types;
+import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.gml3.GML;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
+import org.opengis.filter.FilterFactory;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
@@ -41,6 +48,8 @@ public class XmlComplexFeatureParser extends
 		this.featureBuilder = new ComplexFeatureBuilder(this.targetType);
 	}
 
+	int tabs = 0;
+
 	@Override
 	public Feature parse() throws IOException {
 		final String fid;
@@ -53,12 +62,17 @@ public class XmlComplexFeatureParser extends
 
 			ReturnAttribute nextAttribute;
 			while ((nextAttribute = parseNextAttribute(this.targetType)) != null) {
-				featureBuilder.append(nextAttribute.name,
-						(Property) nextAttribute.value);
-				System.out.println("Appended to feature:");
-				System.out.println("   name: " + nextAttribute.name);
-				System.out.println("  value: " + nextAttribute.value);
-
+				if (!Property.class.isAssignableFrom(nextAttribute.value.getClass())) {
+					featureBuilder.append(
+						nextAttribute.name,
+						new AttributeImpl(
+							nextAttribute.value, 
+							(AttributeDescriptor)this.targetType.getDescriptor(nextAttribute.name), 
+							null));
+				}
+				else {
+					featureBuilder.append(nextAttribute.name, (Property)nextAttribute.value);
+				}
 			}
 		} catch (XmlPullParserException e) {
 			throw new DataSourceException(e);
@@ -67,25 +81,24 @@ public class XmlComplexFeatureParser extends
 		return featureBuilder.buildFeature(fid);
 	}
 
-	private Map<String, ComplexAttribute> discoveredComplexAttributes = new HashMap<String, ComplexAttribute>();
+	private Map<String, Attribute> discoveredComplexAttributes = new HashMap<String, Attribute>();
 
-	private Map<String, ArrayList<ComplexAttribute>> placeholderComplexAttributes = new HashMap<String, ArrayList<ComplexAttribute>>();
+	private Map<String, ArrayList<Attribute>> placeholderComplexAttributes = new HashMap<String, ArrayList<Attribute>>();
 
-	private void RegisterGmlTarget(String id, ComplexAttribute value) {
+	private void RegisterGmlTarget(String id, Attribute value) {
 		// Add the value to the discoveredComplexAttributes object:
 		discoveredComplexAttributes.put(id, value);
 
 		// Check whether anything is waiting for this attribute and, if so,
 		// populate them.
 		if (placeholderComplexAttributes.containsKey(id)) {
-			for (ComplexAttribute placeholderComplexAttribute : this.placeholderComplexAttributes
-					.get(id)) {
+			for (Attribute placeholderComplexAttribute : this.placeholderComplexAttributes.get(id)) {
 				placeholderComplexAttribute.setValue(value.getValue());
 			}
 		}
 	}
 
-	private ComplexAttribute ResolveHref(String href, ComplexType expectedType) {
+	private Attribute ResolveHref(String href, AttributeType expectedType) {
 		// See what kind of href it is:
 		if (href.startsWith("#")) {
 			String hrefId = href.substring(1);
@@ -97,14 +110,14 @@ public class XmlComplexFeatureParser extends
 				return discoveredComplexAttributes.get(hrefId);
 			} else {
 				// If not, then we create a placeholderComplexAttribute instead:
-				ComplexAttribute placeholderComplexAttribute = new ComplexAttributeImpl(
+				Attribute placeholderComplexAttribute = new AttributeImpl(
 						Collections.<Property> emptyList(), expectedType, null);
-
+				
 				// I must maintain a reference back to this object so that I can
 				// change it once its target is found:
 				if (!placeholderComplexAttributes.containsKey(hrefId)) {
 					placeholderComplexAttributes.put(hrefId,
-							new ArrayList<ComplexAttribute>());
+							new ArrayList<Attribute>());
 				}
 
 				// Adding it to a list allows us to have multiple hrefs pointing
@@ -117,7 +130,7 @@ public class XmlComplexFeatureParser extends
 			// TODO: Handle remote hrefs.
 
 			// This is temporary code to get things to work:
-			ComplexAttribute placeholderComplexAttribute = new ComplexAttributeImpl(
+			Attribute placeholderComplexAttribute = new AttributeImpl(
 					Collections.<Property> emptyList(), expectedType, null);
 
 			return placeholderComplexAttribute;
@@ -125,6 +138,21 @@ public class XmlComplexFeatureParser extends
 
 		// return null;
 	}
+	
+	/**
+     * Get base (non-collection) type of simple content.
+     * 
+     * @param type
+     * @return
+     */
+    static AttributeType getSimpleContentType(AttributeType type) {
+        Class<?> binding = type.getBinding();
+        if (binding == Collection.class) {
+            return getSimpleContentType(type.getSuper());
+        } else {
+            return type;
+        }
+    }
 
 	/**
 	 * This is a recursive method that returns any object that belongs to the
@@ -145,6 +173,7 @@ public class XmlComplexFeatureParser extends
 	 */
 	private ReturnAttribute parseNextAttribute(ComplexType complexType)
 			throws XmlPullParserException, IOException {
+	
 		// 1. Read through the XML until you come across a start tag, end tag or
 		// the end of the document:
 		int tagType;
@@ -159,10 +188,10 @@ public class XmlComplexFeatureParser extends
 			// 2a. A start tag has been found; if it belongs to the complexType
 			// then we should parse it and return it.
 
-			// 3. Convert the tag's name in to a NameImpl and then see if
+			// 3. Convert the tag's name into a NameImpl and then see if
 			// there's a descriptor by that name in the type:
-			Name currentTagName = new NameImpl(parser.getNamespace(),
-					parser.getName());
+			Name currentTagName = new NameImpl(parser.getNamespace(), parser.getName());
+
 			PropertyDescriptor descriptor = complexType
 					.getDescriptor(currentTagName);
 			if (descriptor != null) {
@@ -172,20 +201,17 @@ public class XmlComplexFeatureParser extends
 				// Get the type that the descriptor relates to, and get the GML
 				// Id if it's set:
 				PropertyType type = descriptor.getType();
+
 				String id = parser.getAttributeValue(GML.id.getNamespaceURI(),
 						GML.id.getLocalPart());
 
 				// Is it defined by an xlink?
-				String href = parser.getAttributeValue(
-						"http://www.w3.org/1999/xlink", "href");
+				String href = parser.getAttributeValue("http://www.w3.org/1999/xlink", "href");
 
 				// 4. Parse the tag's contents based on whether it's a
 				if (href != null) {
 					// Resolve the href:
-					System.out.println(type);
-
-					ComplexAttribute hrefAttribute = ResolveHref(href,
-							(ComplexType) type);
+					Attribute hrefAttribute = ResolveHref(href, (AttributeType) type);
 
 					// We've got the attribute but the parser is still
 					// pointing at this tag so
@@ -193,8 +219,7 @@ public class XmlComplexFeatureParser extends
 					while (parser.next() != XmlPullParser.END_TAG)
 						;
 
-					return new ReturnAttribute(id, currentTagName,
-							hrefAttribute);
+					return new ReturnAttribute(id, currentTagName, hrefAttribute);
 				}
 				// ComplexType or an AttributeType.
 				else if (type instanceof ComplexType) {
@@ -202,24 +227,54 @@ public class XmlComplexFeatureParser extends
 					// each of its internal elements and construct a complex
 					// attribute.
 
-					// The attribute that we get from parsing the next
-					// attribute.
+					// The attribute that we get from parsing the next attribute.
 					ReturnAttribute innerAttribute;
 
-					// Configure the attribute builder to help build the complex
-					// attribute.
+					// Configure the attribute builder to help build the complex attribute.
 					AttributeBuilder attributeBuilder = new AttributeBuilder(
 							new LenientFeatureFactoryImpl());
 					attributeBuilder.setType((AttributeType) type);
 
-					// 5. Loop over and parse all the attributes in this complex
-					// feature.
-					while ((innerAttribute = parseNextAttribute((ComplexType) type)) != null) {
+						if (type.getBinding() == Collection.class &&
+							Types.isSimpleContentType(type)) {
+							
+							// Get the value
+							// —————————————
 
+							// I'm calling 'next()' to move the cursor off the tag and into its body, otherwise getText() pulls the wrong part.
+							parser.next();
+							Object value = parser.getText();
+							
+							// create an empty list
+							ArrayList<Property> list = new ArrayList<Property>();
+
+							// Add the value to the list if it's not null or if nulls are allowed by the descriptor.
+							if (value != null || descriptor.isNillable()) {// add the result of buildSimpleContent(type, value) to the list and return it.
+								AttributeType simpleContentType = getSimpleContentType((AttributeType)type);
+								
+								FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+								Object convertedValue = ff.literal(value).evaluate(value, simpleContentType.getBinding());
+								
+						        AttributeDescriptor simpleContentDescriptor = new AttributeDescriptorImpl(simpleContentType,
+						            ComplexFeatureConstants.SIMPLE_CONTENT, 1, 1, true, (Object) null);
+						        list.add(new AttributeImpl(convertedValue, simpleContentDescriptor, null));
+			                }
+							
+							// We've got the attribute but the parser is still
+							// pointing at this tag so
+							// we have to advance it till we get to the end tag.
+							while (parser.next() != XmlPullParser.END_TAG)
+								;
+			                
+							return new ReturnAttribute(id, currentTagName, list);
+						}
+					
+
+					// 5. Loop over and parse all the attributes in this complex feature.
+					while ((innerAttribute = parseNextAttribute((ComplexType) type)) != null) {
 						// 6. Check the type of the parsed attribute.
 						if (ComplexAttribute.class
-								.isAssignableFrom(innerAttribute.value
-										.getClass())) {
+								.isAssignableFrom(innerAttribute.value.getClass())) {
 							// 6a. If it's a Property then we must add it to
 							// a list before sending it to the builder.
 							ArrayList<Property> properties = new ArrayList<Property>();
@@ -229,15 +284,20 @@ public class XmlComplexFeatureParser extends
 						} else {
 							// 6b. If the parsed attribute is actually just
 							// an object then it must belong to a simple
-							// type
-							// in which case we can just add it to the
+							// type in which case we can just add it to the
 							// builder as is.
+
 							attributeBuilder.add(innerAttribute.id,
 									innerAttribute.value, innerAttribute.name);
 						}
 					}
 
-					Attribute attribteValue = attributeBuilder.build();
+					Attribute attribteValue;
+					if (type instanceof FeatureType) {
+						attribteValue = attributeBuilder.build(id);
+					} else {
+						attribteValue = attributeBuilder.build();
+					}
 
 					// If this item has an id we'll register it in case
 					// anything else points to it with an xlink:
@@ -246,21 +306,15 @@ public class XmlComplexFeatureParser extends
 								(ComplexAttribute) attribteValue);
 					}
 
-					return new ReturnAttribute(id, currentTagName,
-							attribteValue);
-
-				} else if (type instanceof AttributeType) {
-					// 4b. It's just a simple type so we can use super's
-					// parseAttributeValue method.
-					Object attributeValue = super
-							.parseAttributeValue((AttributeDescriptor) descriptor);
-
-					return new ReturnAttribute(id, currentTagName,
-							attributeValue);
+					return new ReturnAttribute(id, currentTagName, attribteValue);
+				} else if (type instanceof AttributeType
+						|| type instanceof GeometryType) {
+					// 4b. It's a simple type so we can use super's parseAttributeValue method.
+					Object attributeValue = super.parseAttributeValue((AttributeDescriptor) descriptor);
+					return new ReturnAttribute(id, currentTagName, attributeValue);
 				}
 			} else {
-				// 3b. If the tag name doesn't belong to this type then
-				// something is wrong.
+				// 3b. If the tag name doesn't belong to this type then something is wrong.
 				throw new RuntimeException(
 						String.format(
 								"WFS response structure unexpected. Could not find descriptor in type '%s' for '%s'.",
