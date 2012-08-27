@@ -361,6 +361,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
 
 		WFSContentDataAccess dataAccess = new WFSContentDataAccess(
 				getWFSClient(params));
+				
 		String cacheLocationKey = "WFSDataStoreFactory:SCHEMA_CACHE_LOCATION";
 
 		if (params.containsKey(cacheLocationKey)) {
@@ -405,6 +406,7 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
 
 	protected WFSClient getWFSClient(final Map<String, Serializable> params)
 			throws IOException {
+		
 		final WFSConfig config = WFSConfig.fromParams(params);
 		{
 			String user = config.getUser();

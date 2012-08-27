@@ -11,12 +11,10 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ResourceInfo;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
 
 public abstract class ContentComplexFeatureSource implements FeatureSource<FeatureType, Feature>{
 
@@ -60,15 +58,6 @@ public abstract class ContentComplexFeatureSource implements FeatureSource<Featu
 		throw new RuntimeException("Not implemented");	
 	}
 	
-	/**
-     * Convenience method for joining a query with the defining query of the 
-     * feature source.
-     */
-    protected Query joinQuery( Query query ) {
-        // join the queries
-        return DataUtilities.mixQueries(this.query, query, null);
-    }
-
 	@Override
 	public FeatureType getSchema() {
 		throw new RuntimeException("Not implemented");
@@ -93,4 +82,13 @@ public abstract class ContentComplexFeatureSource implements FeatureSource<Featu
 	public Set<Key> getSupportedHints() {
 		throw new RuntimeException("Not implemented");
 	}
+	
+	/**
+     * Convenience method for joining a query with the defining query of the 
+     * feature source.
+     */
+    protected Query joinQuery( Query query ) {
+        // join the queries
+        return DataUtilities.mixQueries(this.query, query, null);
+    }
 }

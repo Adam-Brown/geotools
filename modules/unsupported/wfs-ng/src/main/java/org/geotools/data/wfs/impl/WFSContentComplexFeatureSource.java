@@ -24,8 +24,6 @@ public class WFSContentComplexFeatureSource extends ContentComplexFeatureSource 
 	
 	private Name typeName;
 	private WFSClient client;
-	
-	// TODO: does this really need to be sent in?
 	private WFSContentDataAccess dataAccess;
 	
 	protected WFSContentComplexFeatureSource(Query query) {
@@ -47,45 +45,37 @@ public class WFSContentComplexFeatureSource extends ContentComplexFeatureSource 
 	}
 
 	@Override
-	public FeatureCollection<FeatureType, Feature> getFeatures(Query query)
-			throws IOException {
-		this.query = query;
-		return getFeatures();
-	}
-
-	@Override
 	public FeatureCollection<FeatureType, Feature> getFeatures()
 			throws IOException {
+		return getFeatures(joinQuery(Query.ALL));		
+	}
+	
+	@Override
+	public FeatureCollection<FeatureType, Feature> getFeatures(Query query)
+			throws IOException {
+		this.query = joinQuery(query);
+
 		GetFeatureRequest request = client.createGetFeatureRequest();
 		FeatureType schema = dataAccess.getSchema(typeName);
+		QName name = dataAccess.getRemoteTypeName(typeName); // new QName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "Borehole", ":");
+		request.setTypeName(new QName(query.getTypeName())); // "gsml:Borehole"
 
-//		request.setTypeName(new QName("gsml:Borehole"));
-		QName name = new QName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "Borehole", ":");
-		request.setTypeName(new QName("gsml:Borehole"));
 		request.setFullType(schema);
 		request.setFilter(query.getFilter());
-		int maxFeatures = 1;// query.getMaxFeatures();
-
-		if (Integer.MAX_VALUE > maxFeatures) {
-			request.setMaxFeatures(maxFeatures);
-		}
-
 		request.setPropertyNames(query.getPropertyNames());
         request.setSortBy(query.getSortBy());
         
         String srsName = null;
 	  	CoordinateReferenceSystem crs = query.getCoordinateSystem();
 	  	if (null != crs) {
-	  		System.err.println("TODO: don't forget to set the query CRS");
+	  		System.err.println("Warning: don't forget to set the query CRS");
 	  	}
-	
+
 	  	request.setSrsName(srsName);
-		
+
 		InputStream stream = request.getFinalURL().openStream();
 
 		// Step 6 - parse it.
-//		QName name = new QName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "Borehole", ":");
-
 		XmlComplexFeatureParser parser = new XmlComplexFeatureParser(stream, schema, name);
 
 		Queue<Feature> features = new LinkedList<Feature>();
@@ -94,7 +84,7 @@ public class WFSContentComplexFeatureSource extends ContentComplexFeatureSource 
 		while ((feature = parser.parse()) != null) {
 			features.add(feature);
 		}
-		
+
 		return new WFSContentComplexFeatureCollection(features);
 	}
 }

@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -120,15 +121,26 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
 
         // TODO: Refactor - Copied from ContentDataStore.
         Set<QName> remoteTypeNames = client.getRemoteTypeNames();
-        List<Name> names = new ArrayList<Name>(remoteTypeNames.size());
+        List<Name> namesList = new ArrayList<Name>(remoteTypeNames.size());
         for (QName remoteTypeName : remoteTypeNames) {
             Name typeName = new NameImpl(remoteTypeName);
-            names.add(typeName);
+            namesList.add(typeName);
             this.names.put(typeName, remoteTypeName);
         }
 
-        return names;
+        return namesList;
         // END Refactor;
+    }
+
+    public QName getRemoteTypeName(Name localTypeName) throws IOException {
+        if (names.isEmpty()) {
+        	getNames();
+        }
+        QName qName = names.get(localTypeName);
+        if (null == qName) {
+            throw new NoSuchElementException(localTypeName.toString());
+        }
+        return qName;
     }
 
     @Override
@@ -138,7 +150,7 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
     	if (this.names.size() == 0) {
     		this.getNames();
     	}
-    	    	
+
         // Generate the URL for the feature request:
         // -----------------------------------------
         DescribeFeatureTypeRequest describeFeatureTypeRequest = client
@@ -197,10 +209,10 @@ public class WFSContentDataAccess implements DataAccess<FeatureType, Feature> {
                 appSchemaResolver = new AppSchemaResolver();
             } else {
                 appSchemaResolver = new AppSchemaResolver(
-                	new AppSchemaCache(
-                			this.cacheLocation, 
-                			/* download: */ true, 
-                			/* keepQuery: */ true));
+	            	new AppSchemaCache(
+	        			this.cacheLocation,
+	        			/* download: */ true,
+	        			/* keepQuery: */ true));
             }
 
             this.schemaParser.setResolver(appSchemaResolver);

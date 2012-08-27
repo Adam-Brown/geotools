@@ -133,6 +133,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
 			this.featureType = SimpleFeatureTypeBuilder.retype(
 					this.featureType, query.getPropertyNames());
 		}
+		
 		// Check for change in coordinate reference system
 		// (Even if featureSource.canReproject the feature reader, we will need
 		// to adjust the

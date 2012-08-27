@@ -82,7 +82,6 @@ public final class ContentEntry {
     public ContentEntry(ContentDataStore dataStore, Name typeName) {
         this.typeName = typeName;
         this.dataStore = dataStore;
-
         this.state = new HashMap<Transaction, ContentState>();
 
         //create a state for the auto commit transaction
