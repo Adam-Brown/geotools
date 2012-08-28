@@ -1,3 +1,19 @@
+/*
+ *    GeoTools - The Open Source Java GIS Toolkit
+ *    http://geotools.org
+ *
+ *    (C) 2012, Open Source Geospatial Foundation (OSGeo)
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation;
+ *    version 2.1 of the License.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *    Lesser General Public License for more details.
+ */
 package org.geotools.feature;
 
 import java.rmi.server.UID;
@@ -9,6 +25,16 @@ import org.opengis.feature.FeatureFactory;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 
+/**
+ * This class provides some common functionality for builders and defines an abstraction
+ * for Feature builders' public interfaces. 
+ * @author bro879
+ *  
+ * @param <FT>
+ * 		The kind of FeatureType whose feature the builder will build. Allows you to enforce a stricter specialist type; eg. SimpleFeatureType.
+ * @param <F>
+ * 		The kind of Feature that the builder will build. Allows you to enforce a stricter specialist type; eg. SimpleFeature.
+ */
 public abstract class FeatureBuilder<FT extends FeatureType, F extends Feature> {
 	/** the feature type */
     protected FT featureType;
@@ -18,8 +44,6 @@ public abstract class FeatureBuilder<FT extends FeatureType, F extends Feature> 
 
     public abstract F buildFeature(String id);
 
-//	public abstract F buildFeature(String id, Object[] values); 
-   
     protected FeatureBuilder(FT featureType, FeatureFactory factory)
     {
     	this.featureType = featureType;

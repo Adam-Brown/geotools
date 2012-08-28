@@ -11,7 +11,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *    Lesser General Public License for more details.
  */
 package org.geotools.feature;
@@ -306,7 +306,6 @@ public class AttributeBuilder {
         return (AttributeDescriptor) descriptor;
     }
 
-    // taken from Types.java
     /**
      * Find a descriptor, taking in to account supertypes AND substitution groups
      * 

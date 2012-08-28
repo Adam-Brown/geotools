@@ -1,3 +1,19 @@
+/*
+ *    GeoTools - The Open Source Java GIS Toolkit
+ *    http://geotools.org
+ *
+ *    (C) 2012, Open Source Geospatial Foundation (OSGeo)
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation;
+ *    version 2.1 of the License.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *    Lesser General Public License for more details.
+ */
 package org.geotools.data.wfs.impl;
 
 import java.io.File;
@@ -26,6 +42,14 @@ import org.geotools.xml.XMLHandlerHints;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
+/**
+ * The factory responsible for creating WFSDataAccess objects based on their capabilities and the configuration file used.
+ * This file is included as a candidate for DataAccessFinder by virtue of the fact that its name is present in the
+ * file gt-wfs-ng —> src/main/resources —> META-INF —> services —> org.geotools.data.DataAccessFactory.
+ * 
+ * @author bro879
+ *
+ */
 public class WFSDataAccessFactory extends AbstractDataAccessFactory {
 
 	/**
@@ -351,9 +375,6 @@ public class WFSDataAccessFactory extends AbstractDataAccessFactory {
 
 		return true;
 	}
-
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-	// -- -- -- -- -- -- -- -- -- -- -- --
 
 	@Override
 	public DataAccess<? extends FeatureType, ? extends Feature> createDataStore(

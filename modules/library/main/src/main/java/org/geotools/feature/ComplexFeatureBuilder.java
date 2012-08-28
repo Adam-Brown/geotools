@@ -1,3 +1,19 @@
+/*
+ *    GeoTools - The Open Source Java GIS Toolkit
+ *    http://geotools.org
+ *
+ *    (C) 2012, Open Source Geospatial Foundation (OSGeo)
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation;
+ *    version 2.1 of the License.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *    Lesser General Public License for more details.
+ */
 package org.geotools.feature;
 
 import java.util.ArrayList;
@@ -17,6 +33,14 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 
+/**
+ * The complex feature builder allows the construction of features by
+ * progressively appending their components and deferring the construction till
+ * you're ready.
+ * 
+ * @author bro879
+ * 
+ */
 public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> {
 	Map<Name, ArrayList<Property>> values = new HashMap<Name, ArrayList<Property>>();
 
@@ -68,7 +92,7 @@ public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> 
 						properties.add(nullProperty);
 					} while (++numberOfProperties < minOccurs);
 				}
-				// TODO: I was wondering if you could have another if-else here
+				// NOTE: I was wondering if you could have another if-else here
 				// to try to apply default values if they're set..
 				// it seems like a good idea but the only problem is that
 				// they're only present on the AttributeDescriptors...
@@ -121,15 +145,9 @@ public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> 
 			if (propertyDescriptor.isNillable()) {
 				value = (Property) expectedClass.cast(null);
 			} else {
-				// TODO: You probably need to fix this for remote XLINKs.
-				// A null reference has been provided for a non-nillable type.
-
-				// TODO: I copied this line from above but you really should process the xlinks here.
+				// NOTE: This could possibly to changed to allow for processing
+				// remote xlinks.
 				value = (Property) expectedClass.cast(null);
-//				throw new IllegalArgumentException(
-//						String.format(
-//								"The value provided is a null reference but the property descriptor '%s' is non-nillable.",
-//								propertyDescriptor));
 			}
 		}
 
