@@ -50,10 +50,12 @@ public class XmlComplexFeatureParser extends
 
 	int tabs = 0;
 
+	/**
+	 * 
+	 */
 	@Override
 	public Feature parse() throws IOException {
 		final String fid;
-
 		try {
 			// Get the feature id or return null if there isn't one:
 			if ((fid = seekFeature()) == null) {
@@ -127,16 +129,13 @@ public class XmlComplexFeatureParser extends
 				return placeholderComplexAttribute;
 			}
 		} else {
-			// TODO: Handle remote hrefs.
-
+			// TODO: You could modify this to make it handle remote hrefs if need be.
 			// This is temporary code to get things to work:
 			Attribute placeholderComplexAttribute = new AttributeImpl(
 					Collections.<Property> emptyList(), expectedType, null);
 
 			return placeholderComplexAttribute;
 		}
-
-		// return null;
 	}
 	
 	/**
