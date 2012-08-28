@@ -23,7 +23,6 @@ public abstract class ContentComplexFeatureSource implements FeatureSource<Featu
      */
     protected Query query;
     
-    
     protected ContentComplexFeatureSource(Query query) {
     	this.query = query;
     }
