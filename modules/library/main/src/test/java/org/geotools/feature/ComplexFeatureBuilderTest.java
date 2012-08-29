@@ -85,22 +85,6 @@ public class ComplexFeatureBuilderTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void append_validNameButNullValue_throwsIllegalArgumentException() throws Exception {
-        // Arrange
-        ComplexFeatureBuilder builder = new ComplexFeatureBuilder(FakeTypes.Mine.MINETYPE_TYPE);
-
-        // Act
-        try {
-            builder.append(FakeTypes.Mine.NAME_mineName, null); // Passing a null reference for a non-nillable type.
-        } catch (IllegalArgumentException iae) {
-            ExceptionChecker
-                    .assertExceptionMessage(
-                            iae,
-                            "The value provided is a null reference but the property descriptor 'AttributeDescriptorImpl urn:org:example:mineName <MineNamePropertyType:Collection> 1:3' is non-nillable.");
-        }
-    }
-
     @Test
     public void append_validNameValidValue_valueShouldBeAddedToTheMap() {
         // Arrange
