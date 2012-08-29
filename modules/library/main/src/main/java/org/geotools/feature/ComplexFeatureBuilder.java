@@ -53,6 +53,10 @@ public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> 
 		super(featureType, factory);
 	}
 
+	/**
+	 * Build and return the feature you've been constructing.
+	 * If the id is null it will be assigned from FeatureBuilder.createDefaultFeatureId().
+	 */
 	@Override
 	public Feature buildFeature(String id) {
 		// Instantiate if null:
@@ -117,6 +121,14 @@ public class ComplexFeatureBuilder extends FeatureBuilder<FeatureType, Feature> 
 		return factory.createFeature(properties, this.featureType, id);
 	}
 
+	/**
+	 * Append a property value to the complex feature under construction
+	 * and associate it with the name specified.
+	 * @param name
+	 * 		The name of the property you wish to set.
+	 * @param value
+	 * 		The value of the property to append.
+	 */
 	public void append(Name name, Property value) {
 		PropertyDescriptor propertyDescriptor = featureType.getDescriptor(name);
 

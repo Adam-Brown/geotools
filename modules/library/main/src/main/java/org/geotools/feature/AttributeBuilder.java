@@ -45,10 +45,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class AttributeBuilder {
     /**
-     * Stores mutivalued data until build time so that it can put it in collections.
-     */
-
-    /**
      * Factory used to create attributes.
      */
     protected FeatureFactory attributeFactory;
