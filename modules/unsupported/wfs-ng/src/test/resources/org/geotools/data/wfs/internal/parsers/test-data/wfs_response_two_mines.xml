@@ -4,21 +4,8 @@
 	timeStamp="2012-03-07T08:37:45.280+08:00" 
 	xmlns:wfs="http://www.opengis.net/wfs" 
 	xmlns:ex="urn:org:example" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:gml="http://www.opengis.net/gml"
-	xmlns:xlink="http://www.w3.org/1999/xlink">
+	xmlns:gml="http://www.opengis.net/gml">
 	<gml:featureMembers>
-
-<gsml:Borehole gml:id="gsml.borehole.rd001">
-	...
-	<gsml:collarLocation>
-		<gsml:BoreholeCollar gml:id="gsml.borehole.collar.rd001">
-			<gsml:elevation axisLabels="Gravity-related height" srsDimension="1" srsName="http://www.opengis.net/gml/srs/epsg.xml#5711" uomLabels="m">0.0</gsml:elevation>
-		</gsml:BoreholeCollar>
-	</gsml:collarLocation>
-	...
-</gsml:Borehole>
-
 		<ex:Mine gml:id="er.mine.S0000001"> <!-- seekFeature() -> "er.mine.S0000001" -->
 			<!--
 				(6) MINEmineNAME_DESCRIPTOR, AttributeDescriptorImpl, describes <MineNamePropertyType:Collection> or 1 to 2147483647 mineName:MineNamePropertyType.

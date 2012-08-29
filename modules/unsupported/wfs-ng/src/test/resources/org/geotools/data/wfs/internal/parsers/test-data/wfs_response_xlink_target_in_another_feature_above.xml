@@ -3,8 +3,7 @@
 	numberOfFeatures="2"
 	timeStamp="2012-03-07T08:37:45.280+08:00" 
 	xmlns:wfs="http://www.opengis.net/wfs" 
-	xmlns:ex="urn:org:example" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ex="urn:org:example"
 	xmlns:gml="http://www.opengis.net/gml"
 	xmlns:xlink="http://www.w3.org/1999/xlink">
 	<gml:featureMembers>
