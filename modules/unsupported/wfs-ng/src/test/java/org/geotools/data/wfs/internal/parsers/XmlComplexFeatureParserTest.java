@@ -13,13 +13,23 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.xml.namespace.QName;
+
+import org.geotools.data.complex.config.EmfAppSchemaReader;
+import org.geotools.data.complex.config.FeatureTypeRegistry;
 import org.geotools.feature.FakeTypes;
+import org.geotools.feature.NameImpl;
+import org.geotools.xml.AppSchemaCache;
+import org.geotools.xml.AppSchemaResolver;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
 
 public class XmlComplexFeatureParserTest {
 	/**
@@ -195,5 +205,35 @@ public class XmlComplexFeatureParserTest {
 
 		// Assert
 		Assert.assertEquals(mineNamePropertyType1, mineNamePropertyType2);
+	}
+
+	@Test
+	public void parse_geosciml() throws MalformedURLException, IOException {
+		// Arrange
+		AppSchemaResolver appSchemaResolver = new AppSchemaResolver();
+		EmfAppSchemaReader reader = EmfAppSchemaReader.newInstance();
+		reader.setResolver(appSchemaResolver);
+		FeatureTypeRegistry typeRegistry = new FeatureTypeRegistry();
+		typeRegistry.addSchemas(reader.parse(new URL(
+				"http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd")));
+		AttributeDescriptor descriptor = typeRegistry
+				.getDescriptor(new NameImpl("urn:cgi:xmlns:CGI:GeoSciML:2.0",
+						":", "Borehole"), null);
+		FeatureType featureType = (FeatureType) descriptor.getType();
+		System.out.println(featureType);
+
+		// Arrange
+		XmlComplexFeatureParser boreholeParser = new XmlComplexFeatureParser(
+				getResourceAsFileInputStream("wfs_response_borehole.xml"),
+				featureType, new QName("urn:cgi:xmlns:CGI:GeoSciML:2.0",
+						"Borehole", "gsml"));
+
+		// Act
+		Feature feature = boreholeParser.parse();
+
+		// Assert
+		Assert.assertEquals(
+				"FeatureImpl:BoreholeType<BoreholeType id=gsml.borehole.rd001>=[AttributeImpl:CurvePropertyType=[], ComplexAttributeImpl:BoreholeCollarPropertyType=[FeatureImpl:BoreholeCollar<BoreholeCollarType id=gsml.borehole.collar.rd001>=[FeatureImpl:BoreholeCollarType<BoreholeCollarType id=gsml.borehole.collar.rd001>=[ComplexAttributeImpl:elevation<DirectPositionType>=[AttributeImpl:simpleContent<doubleList>=0.0]]]], ComplexAttributeImpl:BoreholeDetailsPropertyType=[ComplexAttributeImpl:BoreholeDetails<BoreholeDetailsType>=[ComplexAttributeImpl:BoreholeDetailsType=[ComplexAttributeImpl:driller<ReferenceType>=[], AttributeImpl:drillingMethod<BoreholeDrillingMethodCodeType>=Diamond, AttributeImpl:startPoint<BoreholeStartPointCodeType>=natural ground surface, AttributeImpl:inclinationType<BoreholeInclinationCodeType>=vertical, ComplexAttributeImpl:coredInterval<BoundingShapeType>=[ComplexAttributeImpl:BoundingShapeType=[ComplexAttributeImpl:Envelope<EnvelopeType>=[ComplexAttributeImpl:EnvelopeType=[ComplexAttributeImpl:lowerCorner<DirectPositionType>=[AttributeImpl:simpleContent<doubleList>=0.0], ComplexAttributeImpl:upperCorner<DirectPositionType>=[AttributeImpl:simpleContent<doubleList>=324.6]]]]], ComplexAttributeImpl:coreCustodian<ReferenceType>=[]]]], AttributeImpl:name<CodeType>=[AttributeImpl:simpleContent<string>=http://nvclwebservices.vm.csiro.au/resource/feature/CSIRO/borehole/rd001], AttributeImpl:name<CodeType>=[AttributeImpl:simpleContent<string>=rd001], AttributeImpl:FeaturePropertyType=[]]",
+				feature.toString());
 	}
 }
