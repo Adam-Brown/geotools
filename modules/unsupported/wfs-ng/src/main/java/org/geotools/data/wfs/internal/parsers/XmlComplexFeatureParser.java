@@ -139,7 +139,7 @@ public class XmlComplexFeatureParser extends
 	 * @param value
 	 * 		The parsed attribute value for this id.
 	 */
-	private void RegisterGmlTarget(String id, Attribute value) {
+	private void registerGmlTarget(String id, Attribute value) {
 		// Add the value to the discoveredComplexAttributes object:
 		discoveredComplexAttributes.put(id, value);
 
@@ -167,7 +167,7 @@ public class XmlComplexFeatureParser extends
 	 * 		An attribute of the type specified, either the actual attribute or a 
 	 * 		placeholder.
 	 */
-	private Attribute ResolveHref(String href, AttributeType expectedType) {
+	private Attribute resolveHref(String href, AttributeType expectedType) {
 		// See what kind of href it is:
 		if (href.startsWith("#")) {
 			String hrefId = href.substring(1);
@@ -280,7 +280,7 @@ public class XmlComplexFeatureParser extends
 				// 4. Parse the tag's contents based on whether it's a:
 				if (href != null) {
 					// Resolve the href:
-					Attribute hrefAttribute = ResolveHref(href,
+					Attribute hrefAttribute = resolveHref(href,
 							(AttributeType) type);
 
 					// We've got the attribute but the parser is still
@@ -395,7 +395,7 @@ public class XmlComplexFeatureParser extends
 					// If this item has an id we'll register it in case
 					// anything else points to it with an xlink:
 					if (id != null) {
-						this.RegisterGmlTarget(id,
+						this.registerGmlTarget(id,
 								(ComplexAttribute) attribteValue);
 					}
 
