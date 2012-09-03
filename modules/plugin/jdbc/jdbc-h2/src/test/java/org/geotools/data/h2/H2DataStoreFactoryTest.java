@@ -29,7 +29,7 @@ import org.h2.tools.Server;
 
 /**
  * 
- * 
+ *
  * @source $URL$
  */
 public class H2DataStoreFactoryTest extends TestCase {
@@ -48,7 +48,7 @@ public class H2DataStoreFactoryTest extends TestCase {
         assertFalse(factory.canProcess(Collections.EMPTY_MAP));
         assertTrue(factory.canProcess(params));
     }
-        
+    
     public void testCreateDataStore() throws Exception {
         JDBCDataStore ds = factory.createDataStore( params );
         assertNotNull( ds );
@@ -60,7 +60,7 @@ public class H2DataStoreFactoryTest extends TestCase {
         params.put(H2DataStoreFactory.DATABASE.key, "geotools");
         params.put(H2DataStoreFactory.USER.key, "geotools");
         params.put(H2DataStoreFactory.PASSWD.key, "geotools");
-
+        
         DataStore ds = factory.createDataStore(params);
         try {
             ds.getTypeNames();
