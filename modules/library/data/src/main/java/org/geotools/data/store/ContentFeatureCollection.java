@@ -562,7 +562,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     public boolean remove(Object o) {
 //        if( featureSource instanceof SimpleFeatureStore){
 //            SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
-//            if ( o instanceof SimpleFeature ) {
+//            if( o instanceof SimpleFeature ) {
 //                SimpleFeature feature = (SimpleFeature) o;
 //                FeatureId fid = feature.getIdentifier();
 //                FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
@@ -580,27 +580,27 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
 //                return false; // nothing to do; we can only remove features
 //            }
 //        }
-        throw new UnsupportedOperationException("Content is not writable; FeatureStore not available");
+        throw new UnsupportedOperationException("Content is not writable; FeatureStore not available" );
     }
 
     public boolean removeAll(Collection collection) {
-//        if (featureSource instanceof SimpleFeatureStore) {
+//        if( featureSource instanceof SimpleFeatureStore) {
 //            SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
 //            FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 //            Set<FeatureId> ids = new HashSet<FeatureId>();
-//            for (Object o : collection) {
-//                if (o instanceof SimpleFeature) {
+//            for( Object o : collection ) {
+//                if( o instanceof SimpleFeature){
 //                    SimpleFeature feature = (SimpleFeature) o;
 //                    FeatureId fid = feature.getIdentifier();
-//                    ids.add(fid);
+//                    ids.add( fid );
 //                }
 //            }
 //            Filter remove = ff.id(ids);
 //            try {
-//                featureStore.removeFeatures(remove);
+//                featureStore.removeFeatures( remove );
 //                return true;
 //            } catch (IOException e) {
-//                // LOGGER.log(Level.FINER, e.getMessage(), e);
+//                //LOGGER.log(Level.FINER, e.getMessage(), e);
 //                return false; // unable to remove
 //            }
 //        }
@@ -610,7 +610,6 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     public boolean retainAll(Collection collection) {
         throw new UnsupportedOperationException();
     }
-
     /**
      * Array of all the elements.
      * 
@@ -623,36 +622,34 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         Iterator<SimpleFeature> e = null;
         try {
             e = iterator();
-            while (e.hasNext()) {
-                array.add(e.next());
+            while ( e.hasNext() ){
+                array.add( e.next() );
             }
-            return array.toArray(new SimpleFeature[array.size()]);
+            return array.toArray( new SimpleFeature[array.size()]);
         } finally {
-            close(e);
+            close( e );
         }
     }
 
     public <T> T[] toArray(T[] array) {
         int size = size();
-        if (array.length < size) {
-            array = (T[]) java.lang.reflect.Array.newInstance(array.getClass().getComponentType(),
-                    size);
+        if (array.length < size){
+            array = (T[])java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), size);
         }
         Iterator<SimpleFeature> it = iterator();
         try {
             Object[] result = array;
-            for (int i = 0; it.hasNext() && i < size; i++) {
+            for (int i=0; it.hasNext() && i < size; i++){
                 result[i] = it.next();
             }
-            if (array.length > size) {
+            if (array.length > size){
                 array[size] = null;
             }
             return array;
         } finally {
-            close(it);
+            close( it );
         }
     }
-
     public String getID() {
         throw new UnsupportedOperationException();
     }
