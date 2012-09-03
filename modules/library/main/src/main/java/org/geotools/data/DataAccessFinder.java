@@ -32,28 +32,30 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
 /**
- * Enable programs to find all available DataAccess implementations, including the DataStore ones.
+ * Enable programs to find all available DataAccess implementations,
+ * including the DataStore ones.
  * 
  * <p>
- * In order to be located by this finder datasources must provide an implementation of the {@link DataAccessFactory} interface.
+ * In order to be located by this finder datasources must provide an
+ * implementation of the {@link DataAccessFactory} interface.
  * </p>
  * 
  * <p>
- * In addition to implementing this interface datasouces should have a services file:<br/>
- * <code>META-INF/services/org.geotools.data.DataAccessFactory</code>
+ * In addition to implementing this interface datasouces should have a services
+ * file:<br/><code>META-INF/services/org.geotools.data.DataAccessFactory</code>
  * </p>
  * 
  * <p>
- * The file should contain a single line which gives the full name of the implementing class.
+ * The file should contain a single line which gives the full name of the
+ * implementing class.
  * </p>
  * 
  * <p>
- * Example:<br/>
- * <code>org.geotools.data.mytype.MyTypeDataAccessFacotry</code>
+ * Example:<br/><code>org.geotools.data.mytype.MyTypeDataAccessFacotry</code>
  * </p>
  * 
- * 
- * 
+ *
+ *
  * @source $URL$
  */
 public final class DataAccessFinder {
@@ -62,7 +64,8 @@ public final class DataAccessFinder {
             .getLogger("org.geotools.data");
 
     /**
-     * The service registry for this manager. Will be initialized only when first needed.
+     * The service registry for this manager. Will be initialized only when
+     * first needed.
      */
     private static FactoryRegistry registry;
 
@@ -71,20 +74,25 @@ public final class DataAccessFinder {
     }
 
     /**
-     * Checks each available datasource implementation in turn and returns the first one which claims to support the resource identified by the params
+     * Checks each available datasource implementation in turn and returns the
+     * first one which claims to support the resource identified by the params
      * object.
      * 
-     * @param params A Map object which contains a definition of the resource to connect to. for file based resources the property 'url' should be set
-     *        within this Map.
+     * @param params
+     *            A Map object which contains a definition of the resource to
+     *            connect to. for file based resources the property 'url' should
+     *            be set within this Map.
      * 
-     * @return The first datasource which claims to process the required resource, returns null if none can be found.
+     * @return The first datasource which claims to process the required
+     *         resource, returns null if none can be found.
      * 
-     * @throws IOException If a suitable loader can be found, but it can not be attached to the specified resource without errors.
+     * @throws IOException
+     *             If a suitable loader can be found, but it can not be attached
+     *             to the specified resource without errors.
      */
     public static synchronized DataAccess<FeatureType, Feature> getDataStore(
             Map<String, Serializable> params) throws IOException {
         Iterator<DataAccessFactory> ps = getAvailableDataStores();
-
         return (DataAccess<FeatureType, Feature>) getDataStore(params, ps);
     }
 
@@ -96,7 +104,6 @@ public final class DataAccessFinder {
         IOException canProcessButNotAvailable = null;
         while (ps.hasNext()) {
             fac = (DataAccessFactory) ps.next();
-
             boolean canProcess = false;
             try {
                 canProcess = fac.canProcess(params);
@@ -142,10 +149,12 @@ public final class DataAccessFinder {
     }
 
     /**
-     * Finds all implementations of DataAccessFactory which have registered using the services mechanism, regardless weather it has the appropriate
+     * Finds all implementations of DataAccessFactory which have registered using
+     * the services mechanism, regardless weather it has the appropriate
      * libraries on the classpath.
      * 
-     * @return An iterator over all discovered datastores which have registered factories
+     * @return An iterator over all discovered datastores which have registered
+     *         factories
      */
     public static synchronized Iterator<DataAccessFactory> getAllDataStores() {
         Set<DataAccessFactory> all = new HashSet<DataAccessFactory>();
@@ -170,10 +179,12 @@ public final class DataAccessFinder {
     }
 
     /**
-     * Finds all implementations of DataAccessFactory which have registered using the services mechanism, and that have the appropriate libraries on
-     * the classpath.
+     * Finds all implementations of DataAccessFactory which have registered using
+     * the services mechanism, and that have the appropriate libraries on the
+     * classpath.
      * 
-     * @return An iterator over all discovered datastores which have registered factories, and whose available method returns true.
+     * @return An iterator over all discovered datastores which have registered
+     *         factories, and whose available method returns true.
      */
     public static synchronized Iterator<DataAccessFactory> getAvailableDataStores() {
 
