@@ -57,10 +57,11 @@ public abstract class WFSRequest extends AbstractRequest implements Request {
         }
 
         this.outputFormat = strategy.getDefaultOutputFormat(operation);
-        
+
         setProperty(SERVICE, "WFS");
         setProperty(VERSION, strategy.getVersion());
         setProperty(REQUEST, operation.getName());
+
     }
 
     public String getOutputFormat() {

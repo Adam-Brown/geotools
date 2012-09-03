@@ -162,7 +162,7 @@ public class EmfAppSchemaReader {
         // schema location
         URL resolvedLocation = new URL(resolver.resolve(location.toExternalForm()));
         InputStream input = resolvedLocation.openStream();
-        
+
         // create stream parser
         XmlPullParser parser = null;
 
@@ -190,7 +190,7 @@ public class EmfAppSchemaReader {
         }
         if (targetNamespace == null) {
             throw new IllegalArgumentException(
-                    "Input document does not specifiy a targetNamespace.");
+                    "Input document does not specifies a targetNamespace");
         }
         return targetNamespace;
     }

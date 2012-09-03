@@ -82,6 +82,7 @@ public final class ContentEntry {
     public ContentEntry(ContentDataStore dataStore, Name typeName) {
         this.typeName = typeName;
         this.dataStore = dataStore;
+
         this.state = new HashMap<Transaction, ContentState>();
 
         //create a state for the auto commit transaction
@@ -147,7 +148,7 @@ public final class ContentEntry {
     void notifiyFeatureEvent( ContentState source, FeatureEvent notification){
         for(ContentState entry : state.values() ){
            if( entry == source ) {
-               continue;  // no notification required               
+               continue;  // no notificaiton required               
            }
            for( FeatureListener listener : source.listeners ){
                try {

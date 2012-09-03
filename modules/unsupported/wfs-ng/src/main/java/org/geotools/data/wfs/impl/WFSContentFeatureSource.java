@@ -203,7 +203,7 @@ class WFSContentFeatureSource extends ContentFeatureSource {
         }
 
         GetFeatureRequest request = createGetFeature(localQuery, ResultType.RESULTS);
-        
+
         final SimpleFeatureType contentType = getQueryType(localQuery);
         request.setQueryType(contentType);
 
@@ -235,7 +235,6 @@ class WFSContentFeatureSource extends ContentFeatureSource {
                 reader = new DiffFeatureReader<SimpleFeatureType, SimpleFeature>(reader, diff);
             }
         }
-
         return reader;
     }
 
@@ -366,7 +365,7 @@ class WFSContentFeatureSource extends ContentFeatureSource {
     // }
 
     /**
-     * Returns the feature type that shall result of issuing the given request, adapting the
+     * Returns the feature type that shall result of issueing the given request, adapting the
      * original feature type for the request's type name in terms of the query CRS and requested
      * attributes.
      * 

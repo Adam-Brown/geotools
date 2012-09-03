@@ -75,7 +75,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     protected Query query;
     
     /**
-     * feature (possibly retyped from feature source original) type
+     * feature (possibly retyped from feautre source original) type
      */
     protected SimpleFeatureType featureType;
     /**
@@ -90,7 +90,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     protected final Set open = new HashSet();
     
     /**
-     * feature listener which listens to the feature source and 
+     * feature listener which listens to the feautre source and 
      * forwards events to its listeners.
      */
     FeatureListener listener = new FeatureListener(){
@@ -499,7 +499,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     /**
      * Returns <tt>true</tt> if this collection contains the specified
      * element.
-     * <p>
+     * <tt></tt>.<p>
      *
      * This implementation iterates over the elements in the collection,
      * checking each element in turn for equality with the specified element.

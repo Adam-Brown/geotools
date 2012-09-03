@@ -18,6 +18,7 @@ package org.geotools.data.store;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +29,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.DefaultServiceInfo;
 import org.geotools.data.FeatureReader;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.InProcessLockingManager;
 import org.geotools.data.LockingManager;
@@ -38,6 +40,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.SchemaException;
 import org.opengis.feature.FeatureFactory;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -79,11 +82,11 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  *   <li>{@link #createTypeNames()}
  *   <li>{@link #createFeatureSource(ContentEntry)}
  * </ul>
- * The following methods may also be overridden:
+ * The following methods may also be overriden:
  * <ul>
  *   <li>{@link #createContentState(ContentEntry)}
  * </ul>
- * The following methods may be overridden but <b>only</b> to narrow the return 
+ * The following methods may be overriden but <b>only</b> to narrow the return 
  * type to a specific subclass of {@link ContentFeatureSource}.
  * <ul>
  *   <li>{@link #getFeatureSource(String)}

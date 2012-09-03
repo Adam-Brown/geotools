@@ -79,7 +79,7 @@ public final class DataAccessFinder {
      * object.
      * 
      * @param params
-     *            A Map object which contains a definition of the resource to
+     *            A Map object which contains a defenition of the resource to
      *            connect to. for file based resources the property 'url' should
      *            be set within this Map.
      * 
@@ -149,7 +149,7 @@ public final class DataAccessFinder {
     }
 
     /**
-     * Finds all implementations of DataAccessFactory which have registered using
+     * Finds all implemtaions of DataAccessFactory which have registered using
      * the services mechanism, regardless weather it has the appropriate
      * libraries on the classpath.
      * 
@@ -179,7 +179,7 @@ public final class DataAccessFinder {
     }
 
     /**
-     * Finds all implementations of DataAccessFactory which have registered using
+     * Finds all implemtaions of DataAccessFactory which have registered using
      * the services mechanism, and that have the appropriate libraries on the
      * classpath.
      * 
