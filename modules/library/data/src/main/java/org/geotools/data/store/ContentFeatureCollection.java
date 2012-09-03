@@ -207,7 +207,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             try {
                 return delegate.hasNext();    
             } 
-            catch ( IOException e ) {
+            catch( IOException e ) {
                 throw new RuntimeException( e );
             }
             
@@ -217,7 +217,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             try {
                 return delegate.next();    
             }
-            catch ( IOException e ) {
+            catch( IOException e ) {
                 throw new RuntimeException( e );
             }
         }
@@ -226,7 +226,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             try {
                 delegate.close();    
             } 
-            catch ( IOException e ) {
+            catch( IOException e ) {
                 throw new RuntimeException( e );
             }
             
@@ -237,7 +237,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         try {
             return new WrappingFeatureIterator( featureSource.getReader(query) );    
         }
-        catch ( IOException e ) {
+        catch( IOException e ) {
             throw new RuntimeException( e );
         }
     }
@@ -245,11 +245,11 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     public void close( FeatureIterator<SimpleFeature> iterator ) {
         iterator.close();
     }
-
+    
     public static class WrappingIterator implements Iterator {
 
          FeatureReader<SimpleFeatureType, SimpleFeature> delegate;
-
+        
         public  WrappingIterator(  FeatureReader<SimpleFeatureType, SimpleFeature> delegate ) {
             this.delegate = delegate;
         }
@@ -257,17 +257,18 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         public boolean hasNext() {
             try {
                 return delegate.hasNext();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch( IOException e ) {
+                throw new RuntimeException( e );
             }
             
         }
 
+    
         public Object next() {
             try {
                 return delegate.next();    
             }
-            catch ( IOException e ) {
+            catch( IOException e ) {
                 throw new RuntimeException( e );
             }
         }
@@ -276,7 +277,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
            throw new UnsupportedOperationException();
        }
     }
-
+    
     public Iterator iterator() {
         try {
             return new WrappingIterator(featureSource.getReader(query));
