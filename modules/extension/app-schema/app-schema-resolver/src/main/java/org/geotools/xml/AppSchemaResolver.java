@@ -369,7 +369,8 @@ public class AppSchemaResolver {
     /**
      * Convert a string into an MD5 digest.
      * 
-     * @param message The string whose MD5 digest you want to generate.
+     * @param message
+     *            The string whose MD5 digest you want to generate.
      * 
      * @return An MD5 digest generated from message, this string is always 32 characters long. Or
      *         returns null if there was an error.
