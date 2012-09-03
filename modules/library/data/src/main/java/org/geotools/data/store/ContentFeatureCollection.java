@@ -66,36 +66,35 @@ import com.vividsolutions.jts.geom.Point;
  * @source $URL$
  */
 public class ContentFeatureCollection implements SimpleFeatureCollection {
-
     protected static final Logger LOGGER = Logging.getLogger("org.geotools.data.store");
     /**
      * feature store the collection originated from.
      */
     protected ContentFeatureSource featureSource;
     protected Query query;
-
+    
     /**
      * feature (possibly retyped from feature source original) type
      */
     protected SimpleFeatureType featureType;
     /**
-     * state of the feature source
+     * state of the feature source 
      */
     protected ContentState state;
-
+    
     /** Internal listener storage list */
     protected List<CollectionListener> listeners = new ArrayList<CollectionListener>(2);
 
     /** Set of open resource iterators */
     protected final Set open = new HashSet();
-
+    
     /**
-     * feature listener which listens to the feature source and forwards events to its listeners.
+     * feature listener which listens to the feature source and 
+     * forwards events to its listeners.
      */
     FeatureListener listener = new FeatureListener() {
         public void changed(FeatureEvent featureEvent) {
-            if (listeners.isEmpty())
-                return;
+            if ( listeners.isEmpty() ) return;
 
             SimpleFeatureCollection collection;
             collection = (SimpleFeatureCollection) ContentFeatureCollection.this;
