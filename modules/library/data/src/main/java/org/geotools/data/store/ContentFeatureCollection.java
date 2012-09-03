@@ -281,46 +281,48 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     
     public Iterator iterator() {
         try {
-            return new WrappingIterator(featureSource.getReader(query));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return new WrappingIterator( featureSource.getReader(query) );    
+        }
+        catch( IOException e ) {
+            throw new RuntimeException( e );
         }
     }
 
     public void close(Iterator close) {
         try {
-            ((WrappingIterator) close).delegate.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            ((WrappingIterator)close).delegate.close();    
+        }
+        catch( IOException e ) {
+            throw new RuntimeException( e );
         }
     }
-
+    
     public ReferencedEnvelope getBounds() {
         FeatureReader<SimpleFeatureType, SimpleFeature> reader = null;
         try {
-            ReferencedEnvelope result = featureSource.getBounds(query);
-            if (result != null) {
-                return result;
-            }
-
-            // ops, we have to compute the results by hand. Let's load just the
-            // geometry attributes though
-            Query q = new Query(query);
-            List<String> geometries = new ArrayList<String>();
-            for (AttributeDescriptor ad : getSchema().getAttributeDescriptors()) {
-                if (ad instanceof GeometryDescriptor) {
-                    geometries.add(ad.getLocalName());
+             ReferencedEnvelope result = featureSource.getBounds(query);
+             if(result != null) {
+                 return result;
+             }
+             
+             // ops, we have to compute the results by hand. Let's load just the
+             // geometry attributes though
+             Query q = new Query(query);
+             List<String> geometries = new ArrayList<String>();
+             for (AttributeDescriptor ad : getSchema().getAttributeDescriptors()) {
+                 if(ad instanceof GeometryDescriptor) {
+                     geometries.add(ad.getLocalName());
                 }
             }
             // no geometries, no bounds
-            if (geometries.size() == 0) {
+            if(geometries.size() == 0) {
                 return new ReferencedEnvelope();
             } else {
                 q.setPropertyNames(geometries);
             }
             // grab the features and scan through them
             reader = featureSource.getReader(q);
-            while (reader.hasNext()) {
+            while(reader.hasNext()) {
                 SimpleFeature f = reader.next();
                 ReferencedEnvelope featureBounds = ReferencedEnvelope.reference(f.getBounds());
                 if (result == null) {
@@ -329,17 +331,16 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
                     result.expandToInclude(featureBounds);
                 }
             }
-            // return the results if we got any, or return an empty one
-            // otherwise
-            if (result != null) {
+            // return the results if we got any, or return an empty one otherwise
+            if(result != null) {
                 return result;
             } else {
                 return new ReferencedEnvelope(getSchema().getCoordinateReferenceSystem());
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch( IOException e ) {
+            throw new RuntimeException( e );
         } finally {
-            if (reader != null) {
+            if(reader != null) {
                 try {
                     reader.close();
                 } catch (IOException ex) {
@@ -348,36 +349,35 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             }
         }
     }
-
+    
     public int size() {
         FeatureReader fr = null;
         try {
-            int size = featureSource.getCount(query);
-            if (size >= 0) {
-                return size;
-            } else {
-                // we have to iterate, probably best if we do a minimal query
-                // that
-                // only loads a short attribute
-                AttributeDescriptor chosen = null;
-                for (AttributeDescriptor ad : getSchema().getAttributeDescriptors()) {
-                    if (chosen == null || size(ad) < size(chosen)) {
-                        chosen = ad;
-                    }
-                }
-                // build the minimal query
-                Query q = new Query(query);
-                if (chosen != null) {
-                    q.setPropertyNames(Collections.singletonList(chosen.getLocalName()));
-                }
-                // bean counting...
-                fr = featureSource.getReader(q);
-                int count = 0;
-                while (fr.hasNext()) {
-                    fr.next();
-                    count++;
-                }
-                return count;
+           int size = featureSource.getCount(query);
+           if (size >= 0) {
+               return size;
+           } else {
+               // we have to iterate, probably best if we do a minimal query that
+               // only loads a short attribute
+               AttributeDescriptor chosen = null;
+               for (AttributeDescriptor ad : getSchema().getAttributeDescriptors()) {
+                   if (chosen == null || size(ad) < size(chosen)) {
+                       chosen = ad;
+                   }
+               }
+               // build the minimal query
+               Query q = new Query(query);
+               if (chosen != null) {
+                   q.setPropertyNames(Collections.singletonList(chosen.getLocalName()));
+               }
+               // bean counting...
+               fr = featureSource.getReader(q);
+               int count = 0;
+               while (fr.hasNext()) {
+                   fr.next();
+                   count++;
+               }
+               return count;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
