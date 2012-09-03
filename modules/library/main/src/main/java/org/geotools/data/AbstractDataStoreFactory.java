@@ -45,12 +45,7 @@ package org.geotools.data;
  *
  * @source $URL$
  * 
- * @deprecated Unless you're planning on adding anything in here that is SimpleFeatures-specific you should
- *  use AbstractDataAccessFactory and implement DataStoreFactorSpi if need be. If you are putting something here
- *  that doesn't belong in AbstractDataAccessFactory then you can remove the deprecation.
  */
-@Deprecated
 public abstract class AbstractDataStoreFactory extends AbstractDataAccessFactory implements DataStoreFactorySpi {
     
 }
-
