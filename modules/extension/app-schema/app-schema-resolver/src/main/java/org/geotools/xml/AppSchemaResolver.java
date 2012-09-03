@@ -35,10 +35,11 @@ import java.util.logging.Logger;
  * 
  * <ol>
  * 
- * <li>In an <a href="http://www.oasis-open.org/committees/entity/spec-2001-08-06.html">OASIS Catalog</a> (with URI resolution semantics), which maps
- * URLs to arbitrary filesystem locations.</li>
+ * <li>In an <a href="http://www.oasis-open.org/committees/entity/spec-2001-08-06.html">OASIS
+ * Catalog</a> (with URI resolution semantics), which maps URLs to arbitrary filesystem locations.</li>
  * 
- * <li>On the classpath, where resources are located by their Simple HTTP Resource Path (see {@link #getSimpleHttpResourcePath(URI)}).
+ * <li>On the classpath, where resources are located by their Simple HTTP Resource Path (see
+ * {@link #getSimpleHttpResourcePath(URI)}).
  * 
  * <li>In a cache, with optional downloading support.
  * 
@@ -69,10 +70,11 @@ public class AppSchemaResolver {
     private AppSchemaCache cache;
 
     /**
-     * Maps a resolved location (a URL used to obtain a schema from a file or the classpath) to the original HTTP URL used to obtain it. This is
-     * required so that relative imports can be resolved if they cross resolution boundaries. For example, an import ../../../om/.. used to import om
-     * in a schema, where one is supplied locally and the other must be downloaded and cached. Another example is when the schemas are in different
-     * jar files.
+     * Maps a resolved location (a URL used to obtain a schema from a file or the classpath) to the 
+     * original HTTP URL used to obtain it. This is required so that relative imports can be
+     * resolved if they cross resolution boundaries. For example, an import ../../../om/.. used to
+     * import om in a schema, where one is supplied locally and the other must be downloaded and
+     * cached. Another example is when the schemas are in different jar files.
      */
     private Map<String, String> resolvedLocationToOriginalLocationMap = new HashMap<String, String>();
 
@@ -80,7 +82,8 @@ public class AppSchemaResolver {
      * Constructor.
      * 
      * @param catalog
-     * @param classpath whether schemas can be located on the classpath
+     * @param classpath 
+     *            whether schemas can be located on the classpath
      * @param cache
      */
     public AppSchemaResolver(AppSchemaCatalog catalog, boolean classpath, AppSchemaCache cache) {
@@ -125,12 +128,16 @@ public class AppSchemaResolver {
     }
 
     /**
-     * Resolve an absolute or relative URL to a local file or jar URL. Relative URLs are resolved against a context schema URL if provided.
+     * Resolve an absolute or relative URL to a local file or jar URL. Relative URLs are resolved 
+     * against a context schema URL if provided.
      * 
-     * @param location an absolute or relative URL for a schema
-     * @param context an absolute URL specifying the context schema of a relative location, or null if none
+     * @param location 
+     *            an absolute or relative URL for a schema
+     * @param context
+     *            an absolute URL specifying the context schema of a relative location, or null if none
      * @return the string representation of a file or jar URL
-     * @throws RuntimeException if a local resource could not be found
+     * @throws RuntimeException 
+     *            if a local resource could not be found
      */
     public String resolve(String location, String context) {
         URI locationUri;
@@ -145,18 +152,15 @@ public class AppSchemaResolver {
                 throw new RuntimeException("Could not determine absolute schema location for "
                         + location + " because context schema location is unknown");
             }
-            // Find the original absolute http/https (canonical) URL used to
-            // obtain the
-            // context schema, so relative imports can be honoured across
-            // resolution source
+            // Find the original absolute http/https (canonical) URL used to obtain the
+            // context schema, so relative imports can be honoured across resolution source
             // boundaries or jar file boundaries.
             String originalContext = resolvedLocationToOriginalLocationMap.get(context);
             if (originalContext == null) {
                 // Do not know any better context, so treat as original.
                 originalContext = context;
             }
-            // Resolve the location URI against the context URI to make it
-            // absolute.
+            // Resolve the location URI against the context URI to make it absolute.
             URI contextUri;
             try {
                 contextUri = new URI(originalContext);
@@ -171,9 +175,11 @@ public class AppSchemaResolver {
     /**
      * Resolve an absolute URL to a local file or jar URL.
      * 
-     * @param location an absolute URL
+     * @param location 
+     *            an absolute URL
      * @return the string representation of a file or jar URL
-     * @throws RuntimeException if a local resource could not be found
+     * @throws RuntimeException 
+     *            if a local resource could not be found
      */
     public String resolve(String location) {
         String resolvedLocation = null;
@@ -203,9 +209,11 @@ public class AppSchemaResolver {
     }
 
     /**
-     * Return the Simple HTTP Resource Path for an absolute http/https URL. Does not include query components in the path.
+     * Return the Simple HTTP Resource Path for an absolute http/https URL. Does not include query
+     * components in the path.
      * 
-     * @param location not null
+     * @param location 
+     *            not null
      * @return the resource path with a leading slash
      * @see #getSimpleHttpResourcePath(URI)
      */
@@ -216,7 +224,8 @@ public class AppSchemaResolver {
     /**
      * Return the Simple HTTP Resource Path for an absolute http/https URL.
      * 
-     * @param location not null
+     * @param location 
+     *            not null
      * @param keepQuery indicates whether or not the query components should be included in the path. If this is set to true then the query portion is
      *        converted to an MD5 message digest and that string is used to identify the file in the cache.
      * @return the resource path with a leading slash
@@ -252,7 +261,8 @@ public class AppSchemaResolver {
      * 
      * The Simple HTTP Resource Path always starts with a forward slash (if not null). Does not include query components in the path.
      * 
-     * @param location not null
+     * @param location 
+     *            not null
      * @return the Simple HTTP Resource Path as a string, or null if the URI is not an absolute HTTP/HTTPS URL.
      */
     public static String getSimpleHttpResourcePath(URI location) {
@@ -279,9 +289,12 @@ public class AppSchemaResolver {
      * 
      * The Simple HTTP Resource Path always starts with a forward slash (if not null). Does not include query components in the path.
      * 
-     * @param location not null
-     * @param keepQuery indicates whether or not the query components should be included in the path. If this is set to true then the query portion is
-     *        converted to an MD5 message digest and that string is used to identify the file in the cache.
+     * @param location 
+     *            not null
+     * @param keepQuery 
+     *            indicates whether or not the query components should be included in the path. If
+     *            this is set to true then the query portion is converted to an MD5 message digest
+     *            and that string is used to identify the file in the cache.
      * @return the Simple HTTP Resource Path as a string, or null if the URI is not an absolute HTTP/HTTPS URL.
      */
     public static String getSimpleHttpResourcePath(URI location, boolean keepQuery) {
