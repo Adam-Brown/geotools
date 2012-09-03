@@ -60,27 +60,24 @@ import com.vividsolutions.jts.geom.Point;
  * A FeatureCollection that completely delegates to a backing FetaureSource#getReader
  * 
  * @author Jody Garnett (Refractions Research, Inc.)
- * 
- * 
- * 
+ *
+ *
+ *
  * @source $URL$
  */
 public class ContentFeatureCollection implements SimpleFeatureCollection {
 
     protected static final Logger LOGGER = Logging.getLogger("org.geotools.data.store");
-
     /**
      * feature store the collection originated from.
      */
     protected ContentFeatureSource featureSource;
-
     protected Query query;
 
     /**
      * feature (possibly retyped from feature source original) type
      */
     protected SimpleFeatureType featureType;
-
     /**
      * state of the feature source
      */
