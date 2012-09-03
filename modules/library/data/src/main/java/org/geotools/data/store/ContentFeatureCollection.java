@@ -206,7 +206,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         public boolean hasNext() {
             try {
                 return delegate.hasNext();    
-            } 
+            }
             catch( IOException e ) {
                 throw new RuntimeException( e );
             }
@@ -225,7 +225,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         public void close() {
             try {
                 delegate.close();    
-            } 
+            }
             catch( IOException e ) {
                 throw new RuntimeException( e );
             }
@@ -247,7 +247,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     }
     
     public static class WrappingIterator implements Iterator {
-
+    
          FeatureReader<SimpleFeatureType, SimpleFeature> delegate;
         
         public  WrappingIterator(  FeatureReader<SimpleFeatureType, SimpleFeature> delegate ) {
@@ -256,14 +256,14 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         
         public boolean hasNext() {
             try {
-                return delegate.hasNext();
-            } catch( IOException e ) {
+                return delegate.hasNext();    
+            }
+            catch( IOException e ) {
                 throw new RuntimeException( e );
             }
             
         }
 
-    
         public Object next() {
             try {
                 return delegate.next();    
