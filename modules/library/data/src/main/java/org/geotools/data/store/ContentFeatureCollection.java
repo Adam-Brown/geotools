@@ -101,13 +101,13 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             collection = (SimpleFeatureCollection) ContentFeatureCollection.this;
             CollectionEvent event = new CollectionEvent( collection, featureEvent );
 
-            CollectionListener[] notify = (CollectionListener[]) listeners.toArray( new CollectionListener[listeners.size()] );
+            CollectionListener[] notify = (CollectionListener[]) listeners.toArray( new CollectionListener[ listeners.size() ]);
             for( int i=0; i<notify.length; i++ ){
                 CollectionListener listener = notify[i];
                 try {
                     listener.collectionChanged( event );
                 }
-                catch (Throwable t ) {
+                catch (Throwable t ){
                     LOGGER.log( Level.WARNING, "Problem encountered during notification of "+event, t );
                 }
             }
@@ -128,7 +128,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
 
         // Check for change in coordinate reference system
         // (Even if featureSource.canReproject the feature reader, we will need to adjust the
-        // featureType generated here to be correct)
+        //  featureType generated here to be correct)
         try {
             if (query.getCoordinateSystemReproject() != null){
                 this.featureType = FeatureTypes.transform(this.featureType, query.getCoordinateSystemReproject() );
@@ -137,7 +137,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
                 this.featureType = FeatureTypes.transform(this.featureType, query.getCoordinateSystem() );
             }
         } catch (SchemaException e) {
-            LOGGER.log(Level.FINER, "Problem handling Query change of CoordinateReferenceSystem:"+e,e);
+            LOGGER.log(Level.FINER,"Problem handling Query change of CoordinateReferenceSystem:"+e,e);
         }
 
         //check for join and expand attributes as necessary
@@ -151,7 +151,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             this.featureType = tb.buildFeatureType();
         }
     }
-
+    
     public SimpleFeatureType getSchema() {
         return featureType;
     }
@@ -159,7 +159,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     //Visitors
     public void accepts(org.opengis.feature.FeatureVisitor visitor,
             org.opengis.util.ProgressListener progress) throws IOException {
-        featureSource.accepts(query, visitor, progress);
+        featureSource.accepts( query, visitor, progress);
     }
     
     
@@ -189,28 +189,28 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         // as soon as the listeners are out we clean up
         synchronized (listeners) {
             listeners.remove(listener);
-            
-            if (listeners.size() == 0)
+        
+            if(listeners.size() == 0)
                 featureSource.removeFeatureListener(this.listener);
         }
     }
     
     // Iterators
     public static class WrappingFeatureIterator implements SimpleFeatureIterator {
-
+        
         FeatureReader<SimpleFeatureType, SimpleFeature> delegate;
-
-        public WrappingFeatureIterator(FeatureReader<SimpleFeatureType, SimpleFeature> delegate) {
+        
+        public WrappingFeatureIterator(  FeatureReader<SimpleFeatureType, SimpleFeature> delegate ) {
             this.delegate = delegate;
         }
-
+        
         public boolean hasNext() {
             try {
-                return delegate.hasNext();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                return delegate.hasNext();    
+            } catch ( IOException e ) {
+                throw new RuntimeException( e );
             }
-
+            
         }
 
         public SimpleFeature next() throws java.util.NoSuchElementException {
