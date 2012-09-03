@@ -32,8 +32,8 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
 /**
- * Enable programs to find all available DataAccess implementations,
- * including the DataStore ones.
+ * Enable programs to find all available DataAccess implementations, including
+ * the DataStore ones.
  * 
  * <p>
  * In order to be located by this finder datasources must provide an
@@ -218,7 +218,8 @@ public final class DataAccessFinder {
     }
 
     /**
-     * Returns the service registry. The registry will be created the first time this method is invoked.
+     * Returns the service registry. The registry will be created the first time
+     * this method is invoked.
      */
     private static FactoryRegistry getServiceRegistry() {
         assert Thread.holdsLock(DataAccessFinder.class);
@@ -229,23 +230,27 @@ public final class DataAccessFinder {
     }
 
     /**
-     * Scans for factory plug-ins on the application class path. This method is needed because the application class path can theoretically change, or
-     * additional plug-ins may become available. Rather than re-scanning the classpath on every invocation of the API, the class path is scanned
-     * automatically only on the first invocation. Clients can call this method to prompt a re-scan. Thus this method need only be invoked by
-     * sophisticated applications which dynamically make new plug-ins available at runtime.
+     * Scans for factory plug-ins on the application class path. This method is
+     * needed because the application class path can theoretically change, or
+     * additional plug-ins may become available. Rather than re-scanning the
+     * classpath on every invocation of the API, the class path is scanned
+     * automatically only on the first invocation. Clients can call this method
+     * to prompt a re-scan. Thus this method need only be invoked by
+     * sophisticated applications which dynamically make new plug-ins available at
+     * runtime.
      */
     public static synchronized void scanForPlugins() {
         DataStoreFinder.scanForPlugins();
         getServiceRegistry().scanForPlugins();
     }
-
+    
     /**
      * Resets the factory finder and prepares for a new full scan of the SPI subsystems
      */
     public static void reset() {
         FactoryRegistry copy = registry;
         registry = null;
-        if (copy != null) {
+        if(copy != null) {
             copy.deregisterAll();
         }
     }
