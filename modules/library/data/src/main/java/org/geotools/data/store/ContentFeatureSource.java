@@ -499,7 +499,7 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
                 }
             }
         }
-
+        
         return count;
     }
 
@@ -514,7 +514,7 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
      */
     public final ContentFeatureCollection getFeatures() throws IOException {
         Query query = joinQuery(Query.ALL);
-        return getFeatures(query );
+        return new ContentFeatureCollection( this, query );
     }
 
     /**
