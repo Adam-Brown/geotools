@@ -125,7 +125,6 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             this.featureType = 
                 SimpleFeatureTypeBuilder.retype(this.featureType, query.getPropertyNames() );
         }
-
         // Check for change in coordinate reference system
         // (Even if featureSource.canReproject the feature reader, we will need to adjust the
         //  featureType generated here to be correct)
@@ -197,7 +196,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     
     // Iterators
     public static class WrappingFeatureIterator implements SimpleFeatureIterator {
-        
+       
         FeatureReader<SimpleFeatureType, SimpleFeature> delegate;
         
         public WrappingFeatureIterator(  FeatureReader<SimpleFeatureType, SimpleFeature> delegate ) {
@@ -207,7 +206,8 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         public boolean hasNext() {
             try {
                 return delegate.hasNext();    
-            } catch ( IOException e ) {
+            } 
+            catch ( IOException e ) {
                 throw new RuntimeException( e );
             }
             
@@ -215,62 +215,66 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
 
         public SimpleFeature next() throws java.util.NoSuchElementException {
             try {
-                return delegate.next();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                return delegate.next();    
+            }
+            catch ( IOException e ) {
+                throw new RuntimeException( e );
             }
         }
 
         public void close() {
             try {
-                delegate.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                delegate.close();    
+            } 
+            catch ( IOException e ) {
+                throw new RuntimeException( e );
             }
-
+            
         }
     }
-
-    public SimpleFeatureIterator features() {
+    
+    public SimpleFeatureIterator features(){
         try {
-            return new WrappingFeatureIterator(featureSource.getReader(query));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return new WrappingFeatureIterator( featureSource.getReader(query) );    
+        }
+        catch ( IOException e ) {
+            throw new RuntimeException( e );
         }
     }
-
-    public void close(FeatureIterator<SimpleFeature> iterator) {
+    
+    public void close( FeatureIterator<SimpleFeature> iterator ) {
         iterator.close();
     }
 
     public static class WrappingIterator implements Iterator {
 
-        FeatureReader<SimpleFeatureType, SimpleFeature> delegate;
+         FeatureReader<SimpleFeatureType, SimpleFeature> delegate;
 
-        public WrappingIterator(FeatureReader<SimpleFeatureType, SimpleFeature> delegate) {
+        public  WrappingIterator(  FeatureReader<SimpleFeatureType, SimpleFeature> delegate ) {
             this.delegate = delegate;
         }
-
+        
         public boolean hasNext() {
             try {
                 return delegate.hasNext();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
+            
         }
 
         public Object next() {
             try {
-                return delegate.next();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                return delegate.next();    
+            }
+            catch ( IOException e ) {
+                throw new RuntimeException( e );
             }
         }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
+    
+       public void remove() {
+           throw new UnsupportedOperationException();
+       }
     }
 
     public Iterator iterator() {
