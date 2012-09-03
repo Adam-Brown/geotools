@@ -269,7 +269,8 @@ public class AppSchemaResolver {
      * 
      * @param location
      *            not null
-     * @return the Simple HTTP Resource Path as a string, or null if the URI is not an absolute HTTP/HTTPS URL.
+     * @return the Simple HTTP Resource Path as a string, or null if the URI is not an absolute
+     *         HTTP/HTTPS URL.
      */
     public static String getSimpleHttpResourcePath(URI location) {
         return getSimpleHttpResourcePath(location, false);
@@ -280,8 +281,8 @@ public class AppSchemaResolver {
      * 
      * <p>
      * 
-     * The Simple HTTP Resource Path maps an HTTP or HTTPS URL to a path on the classpath
-     * or relative to some other root. To form the Simple HTTP Resource Path from an http/https URL:
+     * The Simple HTTP Resource Path maps an HTTP or HTTPS URL to a path on the classpath or
+     * relative to some other root. To form the Simple HTTP Resource Path from an http/https URL:
      * 
      * <ol>
      * <li>Protocol, port, fragment, and query are ignored.</li>
@@ -300,12 +301,12 @@ public class AppSchemaResolver {
      * 
      * @param location
      *            not null
-     * @param keepQuery 
+     * @param keepQuery
      *            indicates whether or not the query components should be included in the path. If
      *            this is set to true then the query portion is converted to an MD5 message digest
      *            and that string is used to identify the file in the cache.
      * @return the Simple HTTP Resource Path as a string, or null if the URI is not an absolute
-     *            HTTP/HTTPS URL.
+     *         HTTP/HTTPS URL.
      */
     public static String getSimpleHttpResourcePath(URI location, boolean keepQuery) {
         String scheme = location.getScheme();
@@ -332,8 +333,9 @@ public class AppSchemaResolver {
     }
 
     /**
-     * Return the URL for a resource found on the classpath at the Simple HTTP Resource Path. This allows (for example) schema documents in jar files
-     * to be loaded from the classpath using their canonical HTTP URLs.
+     * Return the URL for a resource found on the classpath at the Simple HTTP Resource Path. This
+     * allows (for example) schema documents in jar files to be loaded from the classpath using
+     * their canonical HTTP URLs.
      * 
      * @param location
      * @return the URL or null if not found
@@ -348,8 +350,9 @@ public class AppSchemaResolver {
     }
 
     /**
-     * Return the string representation of URL for a resource found on the classpath at the Simple HTTP Resource Path. This allows (for example)
-     * schema documents in jar files to be loaded from the classpath using their canonical HTTP URLs.
+     * Return the string representation of URL for a resource found on the classpath at the Simple
+     * HTTP Resource Path. This allows (for example) schema documents in jar files to be loaded from
+     * the classpath using their canonical HTTP URLs.
      * 
      * @param location
      * @return the string representation of a classpath URL, or null if not found
@@ -368,7 +371,8 @@ public class AppSchemaResolver {
      * 
      * @param message The string whose MD5 digest you want to generate.
      * 
-     * @return An MD5 digest generated from message, this string is always 32 characters long. Or returns null if there was an error.
+     * @return An MD5 digest generated from message, this string is always 32 characters long. Or
+     *         returns null if there was an error.
      */
     private static String stringToMD5String(String message) {
         byte[] bytesOfMessage = null;
