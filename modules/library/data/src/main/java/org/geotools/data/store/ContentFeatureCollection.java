@@ -272,6 +272,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
                 throw new RuntimeException( e );
             }
         }
+
     
        public void remove() {
            throw new UnsupportedOperationException();
