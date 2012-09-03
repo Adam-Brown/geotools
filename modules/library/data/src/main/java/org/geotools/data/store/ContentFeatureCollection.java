@@ -66,6 +66,7 @@ import com.vividsolutions.jts.geom.Point;
  * @source $URL$
  */
 public class ContentFeatureCollection implements SimpleFeatureCollection {
+    
     protected static final Logger LOGGER = Logging.getLogger("org.geotools.data.store");
     /**
      * feature store the collection originated from.
@@ -94,36 +95,34 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
      */
     FeatureListener listener = new FeatureListener() {
         public void changed(FeatureEvent featureEvent) {
-            if ( listeners.isEmpty() ) return;
+            if( listeners.isEmpty() ) return;
 
             SimpleFeatureCollection collection;
             collection = (SimpleFeatureCollection) ContentFeatureCollection.this;
-            CollectionEvent event = new CollectionEvent(collection, featureEvent);
+            CollectionEvent event = new CollectionEvent( collection, featureEvent );
 
-            CollectionListener[] notify = (CollectionListener[]) listeners
-                    .toArray(new CollectionListener[listeners.size()]);
-            for (int i = 0; i < notify.length; i++) {
+            CollectionListener[] notify = (CollectionListener[]) listeners.toArray(new CollectionListener[listeners.size()]);
+            for( int i=0; i<notify.length; i++ ){
                 CollectionListener listener = notify[i];
                 try {
-                    listener.collectionChanged(event);
-                } catch (Throwable t) {
-                    LOGGER.log(Level.WARNING,
-                            "Problem encountered during notification of " + event, t);
+                    listener.collectionChanged( event );
+                } catch (Throwable t ) {
+                    LOGGER.log( Level.WARNING, "Problem encountered during notification of "+event, t );
                 }
             }
-        }
+        }           
     };
 
-    protected ContentFeatureCollection(ContentFeatureSource featureSource, Query query) {
+    protected ContentFeatureCollection( ContentFeatureSource featureSource, Query query ) {
         this.featureSource = featureSource;
         this.query = query;
-
+        
         this.featureType = featureSource.getSchema();
 
-        // retype feature type if necessary
-        if (query.getPropertyNames() != Query.ALL_NAMES) {
-            this.featureType = SimpleFeatureTypeBuilder.retype(this.featureType,
-                    query.getPropertyNames());
+        //retype feature type if necessary
+        if ( query.getPropertyNames() != Query.ALL_NAMES ) {
+            this.featureType = 
+                SimpleFeatureTypeBuilder.retype(this.featureType, query.getPropertyNames() );
         }
 
         // Check for change in coordinate reference system
