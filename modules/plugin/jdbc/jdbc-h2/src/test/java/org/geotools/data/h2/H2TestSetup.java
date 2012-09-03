@@ -29,7 +29,7 @@ import org.geotools.jdbc.SQLDialect;
 
 /**
  * Test harness for H2.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
  *
  *
@@ -58,7 +58,7 @@ public class H2TestSetup extends JDBCTestSetup {
         
         sql = "CALL AddGeometryColumn('geotools', 'ft1', 'geometry', 4326, 'POINT', 2)";
         run(sql);
-
+        
         sql = "INSERT INTO \"geotools\".\"ft1\" VALUES ("
             + "0,ST_GeomFromText('POINT(0 0)',4326), 0, 0.0,'zero');";
         run(sql);
@@ -70,7 +70,7 @@ public class H2TestSetup extends JDBCTestSetup {
         sql = "INSERT INTO \"geotools\".\"ft1\" VALUES ("
             + "2,ST_GeomFromText('POINT(2 2)',4326), 2, 2.2,'two');";
         run(sql);
-
+        
         sql = "CALL CreateSpatialIndex('geotools', 'ft1', 'geometry', 4326)";
         run(sql);
     }
@@ -79,15 +79,14 @@ public class H2TestSetup extends JDBCTestSetup {
     protected JDBCDataStoreFactory createDataStoreFactory() {
         return new H2DataStoreFactory();
     }
-
+    
     @Override
     protected Properties createOfflineFixture() {
         Properties fixture = new Properties();
-        fixture.put( "driver", "org.h2.Driver");
-        fixture.put( "url", "jdbc:h2:target/geotools");
-        fixture.put( "user", "geotools");
-        fixture.put( "password", "geotools");
-
+        fixture.put( "driver","org.h2.Driver");
+        fixture.put( "url","jdbc:h2:target/geotools");
+        fixture.put( "user","geotools");
+        fixture.put( "password","geotools");
         return fixture;
     }
 }
