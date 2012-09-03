@@ -391,11 +391,11 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             }
         }
     }
-
+    
     /**
-     * Quick heuristic used to find a small attribute to use when
-     * scanning over the entire collection just to get the size of the
-     * collection.
+     * Quick heuristic used to find a small attribute to use when 
+     * scanning over the entire collection just to get the size of the 
+     * collection. 
      * The result is indicative, just an heuristic to quickly compare attributes
      * in order to find a suitably small one,
      * it's not meant to be the actual size of an attribute in bytes.
@@ -404,22 +404,22 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
      */
     int size(AttributeDescriptor ad) {
          Class<?> binding = ad.getType().getBinding();
-         if (binding.isPrimitive() || Number.class.isAssignableFrom(binding)
-                 || Date.class.isAssignableFrom(binding)) {
+         if(binding.isPrimitive() || Number.class.isAssignableFrom(binding) || 
+                 Date.class.isAssignableFrom(binding)) {
              return 4;
-         } else if (binding.equals(String.class)) {
+         } else if(binding.equals(String.class)) {
              int fieldLen = FeatureTypes.getFieldLength(ad);
-             if (fieldLen > 0) {
+             if(fieldLen > 0) {
                  return fieldLen * 2;
              } else {
                  return Integer.MAX_VALUE;
              }
-         } else if (Point.class.isAssignableFrom(binding)) {
+         } else if(Point.class.isAssignableFrom(binding)) {
              return 4 * 3;
          } else {
              return Integer.MAX_VALUE;
          }
-     }
+    }
 
     public boolean isEmpty() {
         return size() == 0;
@@ -430,13 +430,12 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     }
 
     ContentFeatureStore ensureFeatureStore() {
-        if (featureSource instanceof ContentFeatureStore) {
+        if ( featureSource instanceof ContentFeatureStore ) {
             return (ContentFeatureStore) featureSource;
         }
         
         throw new UnsupportedOperationException( "read only" );
     }
-
     public boolean addAll(Collection c) {
         ContentFeatureStore featureStore = ensureFeatureStore();
         
@@ -460,7 +459,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     public void clear() {
         ContentFeatureStore featureStore = ensureFeatureStore();
         
-        try {
+        try { 
             featureStore.removeFeatures(query.getFilter());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -477,10 +476,10 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     
     public SimpleFeatureCollection sort(org.opengis.filter.sort.SortBy sort) {
         Query query = new DefaultQuery();
-        ((DefaultQuery)query).setSortBy(new org.opengis.filter.sort.SortBy[]{sort});
+        ((DefaultQuery)query).setSortBy( new org.opengis.filter.sort.SortBy[]{sort});
 
         query = DataUtilities.mixQueries( this.query, query, null );
-        return new ContentFeatureCollection( featureSource, query );
+        return new ContentFeatureCollection( featureSource, query );    
     }
     
     public SimpleFeatureCollection subCollection(Filter filter) {
@@ -488,7 +487,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         ((DefaultQuery)query).setFilter( filter );
 
         query = DataUtilities.mixQueries(this.query, query, null);
-        return new ContentFeatureCollection( featureSource, query );
+        return new ContentFeatureCollection( featureSource, query );    
     }
     
     //
@@ -501,7 +500,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
      * Returns <tt>true</tt> if this collection contains the specified
      * element.
      * <tt></tt>.<p>
-     * 
+     *
      * This implementation iterates over the elements in the collection,
      * checking each element in turn for equality with the specified element.
      * 
