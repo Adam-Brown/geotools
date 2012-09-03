@@ -30,68 +30,67 @@ import org.h2.tools.Server;
  * @source $URL$
  */
 public class H2DataStoreFactoryTest extends TestCase {
-H2DataStoreFactory factory;
+    H2DataStoreFactory factory;
 
-HashMap params;
+    HashMap params;
 
-protected void setUp() throws Exception {
-    factory = new H2DataStoreFactory();
-    params = new HashMap();
-    params.put(JDBCDataStoreFactory.NAMESPACE.key,
-            "http://www.geotools.org/test");
-    params.put(JDBCDataStoreFactory.DATABASE.key, "geotools");
-    params.put(JDBCDataStoreFactory.DBTYPE.key, "h2");
-}
-
-public void testCanProcess() throws Exception {
-    assertFalse(factory.canProcess(Collections.EMPTY_MAP));
-    assertTrue(factory.canProcess(params));
-}
-
-public void testCreateDataStore() throws Exception {
-    JDBCDataStore ds = factory.createDataStore(params);
-    assertNotNull(ds);
-}
-
-public void testTCP() throws Exception {
-    HashMap params = new HashMap();
-    params.put(H2DataStoreFactory.HOST.key, "localhost");
-    params.put(H2DataStoreFactory.DATABASE.key, "geotools");
-    params.put(H2DataStoreFactory.USER.key, "geotools");
-    params.put(H2DataStoreFactory.PASSWD.key, "geotools");
-
-    DataStore ds = factory.createDataStore(params);
-    try {
-        ds.getTypeNames();
-        fail("Should not have made a connection.");
-    } catch (Exception ok) {
+    protected void setUp() throws Exception {
+        factory = new H2DataStoreFactory();
+        params = new HashMap();
+        params.put(JDBCDataStoreFactory.NAMESPACE.key, "http://www.geotools.org/test");
+        params.put(JDBCDataStoreFactory.DATABASE.key, "geotools");
+        params.put(JDBCDataStoreFactory.DBTYPE.key, "h2");
     }
 
-    Server server = Server.createTcpServer("-baseDir", "target"); // ,
-                                                                  // "-tcpPort",
-                                                                  // "40001");
-                                                                  // Can't get
-                                                                  // this to
-                                                                  // work...
-                                                                  // default
-                                                                  // port causes
-                                                                  // a problem
-                                                                  // but
-                                                                  // specifying
-                                                                  // an unused
-                                                                  // port still
-                                                                  // doesn't
-                                                                  // work...
-    server.start();
-    try {
-        while (!server.isRunning(false)) {
-            Thread.sleep(100);
+    public void testCanProcess() throws Exception {
+        assertFalse(factory.canProcess(Collections.EMPTY_MAP));
+        assertTrue(factory.canProcess(params));
+    }
+
+    public void testCreateDataStore() throws Exception {
+        JDBCDataStore ds = factory.createDataStore(params);
+        assertNotNull(ds);
+    }
+
+    public void testTCP() throws Exception {
+        HashMap params = new HashMap();
+        params.put(H2DataStoreFactory.HOST.key, "localhost");
+        params.put(H2DataStoreFactory.DATABASE.key, "geotools");
+        params.put(H2DataStoreFactory.USER.key, "geotools");
+        params.put(H2DataStoreFactory.PASSWD.key, "geotools");
+
+        DataStore ds = factory.createDataStore(params);
+        try {
+            ds.getTypeNames();
+            fail("Should not have made a connection.");
+        } catch (Exception ok) {
         }
 
-        ds = factory.createDataStore(params);
-        ds.getTypeNames();
-    } finally {
-        server.shutdown();
+        Server server = Server.createTcpServer("-baseDir", "target"); // ,
+                                                                      // "-tcpPort",
+                                                                      // "40001");
+                                                                      // Can't get
+                                                                      // this to
+                                                                      // work...
+                                                                      // default
+                                                                      // port causes
+                                                                      // a problem
+                                                                      // but
+                                                                      // specifying
+                                                                      // an unused
+                                                                      // port still
+                                                                      // doesn't
+                                                                      // work...
+        server.start();
+        try {
+            while (!server.isRunning(false)) {
+                Thread.sleep(100);
+            }
+
+            ds = factory.createDataStore(params);
+            ds.getTypeNames();
+        } finally {
+            server.shutdown();
+        }
     }
-}
 }
