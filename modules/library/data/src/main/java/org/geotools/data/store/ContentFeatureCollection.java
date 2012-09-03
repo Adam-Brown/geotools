@@ -93,7 +93,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
      * feature listener which listens to the feature source and 
      * forwards events to its listeners.
      */
-    FeatureListener listener = new FeatureListener() {
+    FeatureListener listener = new FeatureListener(){
         public void changed(FeatureEvent featureEvent) {
             if( listeners.isEmpty() ) return;
 
@@ -101,18 +101,19 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             collection = (SimpleFeatureCollection) ContentFeatureCollection.this;
             CollectionEvent event = new CollectionEvent( collection, featureEvent );
 
-            CollectionListener[] notify = (CollectionListener[]) listeners.toArray(new CollectionListener[listeners.size()]);
+            CollectionListener[] notify = (CollectionListener[]) listeners.toArray( new CollectionListener[listeners.size()] );
             for( int i=0; i<notify.length; i++ ){
                 CollectionListener listener = notify[i];
                 try {
                     listener.collectionChanged( event );
-                } catch (Throwable t ) {
+                }
+                catch (Throwable t ) {
                     LOGGER.log( Level.WARNING, "Problem encountered during notification of "+event, t );
                 }
             }
         }           
     };
-
+    
     protected ContentFeatureCollection( ContentFeatureSource featureSource, Query query ) {
         this.featureSource = featureSource;
         this.query = query;
@@ -126,23 +127,20 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         }
 
         // Check for change in coordinate reference system
-        // (Even if featureSource.canReproject the feature reader, we will need
-        // to adjust the
+        // (Even if featureSource.canReproject the feature reader, we will need to adjust the
         // featureType generated here to be correct)
         try {
-            if (query.getCoordinateSystemReproject() != null) {
-                this.featureType = FeatureTypes.transform(this.featureType,
-                        query.getCoordinateSystemReproject());
-            } else if (query.getCoordinateSystem() != null) {
-                this.featureType = FeatureTypes.transform(this.featureType,
-                        query.getCoordinateSystem());
+            if (query.getCoordinateSystemReproject() != null){
+                this.featureType = FeatureTypes.transform(this.featureType, query.getCoordinateSystemReproject() );
+            }
+            else if (query.getCoordinateSystem() != null){
+                this.featureType = FeatureTypes.transform(this.featureType, query.getCoordinateSystem() );
             }
         } catch (SchemaException e) {
-            LOGGER.log(Level.FINER, "Problem handling Query change of CoordinateReferenceSystem:"
-                    + e, e);
+            LOGGER.log(Level.FINER, "Problem handling Query change of CoordinateReferenceSystem:"+e,e);
         }
 
-        // check for join and expand attributes as necessary
+        //check for join and expand attributes as necessary
         if (!query.getJoins().isEmpty()) {
             SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
             tb.init(this.featureType);
@@ -157,45 +155,46 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     public SimpleFeatureType getSchema() {
         return featureType;
     }
-
-    // Visitors
+    
+    //Visitors
     public void accepts(org.opengis.feature.FeatureVisitor visitor,
             org.opengis.util.ProgressListener progress) throws IOException {
         featureSource.accepts(query, visitor, progress);
     }
-
-    // Listeners
+    
+    
+    //Listeners
     /**
      * Adds a listener for collection events.
-     * 
+     *
      * @param listener The listener to add
      */
     public void addListener(CollectionListener listener) {
         // create the bridge only if we have collection listeners around
         synchronized (listeners) {
-            if (listeners.size() == 0) {
+            if(listeners.size() == 0) {
                 featureSource.addFeatureListener(this.listener);
             }
-
+            
             listeners.add(listener);
         }
     }
 
     /**
      * Removes a listener for collection events.
-     * 
+     *
      * @param listener The listener to remove
      */
     public void removeListener(CollectionListener listener) {
         // as soon as the listeners are out we clean up
         synchronized (listeners) {
             listeners.remove(listener);
-
+            
             if (listeners.size() == 0)
                 featureSource.removeFeatureListener(this.listener);
         }
     }
-
+    
     // Iterators
     public static class WrappingFeatureIterator implements SimpleFeatureIterator {
 
