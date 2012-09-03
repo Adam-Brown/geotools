@@ -43,12 +43,12 @@ public class H2DataStoreFactoryTest extends TestCase {
         params.put(JDBCDataStoreFactory.DATABASE.key, "geotools");
         params.put(JDBCDataStoreFactory.DBTYPE.key, "h2");
     }
-    
+
     public void testCanProcess() throws Exception {
         assertFalse(factory.canProcess(Collections.EMPTY_MAP));
         assertTrue(factory.canProcess(params));
     }
-    
+        
     public void testCreateDataStore() throws Exception {
         JDBCDataStore ds = factory.createDataStore( params );
         assertNotNull( ds );
@@ -65,16 +65,16 @@ public class H2DataStoreFactoryTest extends TestCase {
         try {
             ds.getTypeNames();
             fail("Should not have made a connection.");
-        } catch (Exception ok) {
         }
-
+        catch(Exception ok) {}
+        
         Server server = Server.createTcpServer(new String[]{"-baseDir", "target"});
         server.start();
         try {
             while(!server.isRunning(false)) {
                 Thread.sleep(100);
             }
-
+            
             ds = factory.createDataStore(params);
             ds.getTypeNames();
         }
