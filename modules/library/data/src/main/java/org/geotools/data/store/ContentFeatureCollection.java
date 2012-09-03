@@ -520,20 +520,19 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
                 }
             } else {
                 while (e.hasNext()){
-                    if (o.equals(e.next())){
-                        return true;
-                    }
+                if (o.equals(e.next())){
+                    return true;
+                }
                 }
             }
             return false;
         }
         finally {
-            if ( e != null ){
+            if( e != null ){
                 e.close();
             }
         }
     }
-
     /**
      * Returns <tt>true</tt> if this collection contains all of the elements
      * in the specified collection. <p>
@@ -550,7 +549,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         Iterator<?> e = c.iterator();
         try {
             while (e.hasNext()){
-                if(!contains(e.next())) {
+                if(!contains(e.next())){
                     return false;
                 }
             }
@@ -561,50 +560,50 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     }
 
     public boolean remove(Object o) {
-//        if (featureSource instanceof SimpleFeatureStore) {
+//        if( featureSource instanceof SimpleFeatureStore){
 //            SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
-//            if (o instanceof SimpleFeature) {
+//            if ( o instanceof SimpleFeature ) {
 //                SimpleFeature feature = (SimpleFeature) o;
 //                FeatureId fid = feature.getIdentifier();
 //                FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 //                Set<FeatureId> ids = Collections.singleton(fid);
 //                Filter remove = ff.id(ids);
 //                try {
-//                    featureStore.removeFeatures(remove);
+//                    featureStore.removeFeatures( remove );
 //                    return true;
 //                } catch (IOException e) {
-//                    // LOGGER.log(Level.FINER, e.getMessage(), e);
+//                    //LOGGER.log(Level.FINER, e.getMessage(), e);
 //                    return false; // unable to remove
 //                }
-//            } else {
+//            }
+//            else {
 //                return false; // nothing to do; we can only remove features
 //            }
 //        }
-        throw new UnsupportedOperationException(
-                "Content is not writable; FeatureStore not available");
+        throw new UnsupportedOperationException("Content is not writable; FeatureStore not available");
     }
 
     public boolean removeAll(Collection collection) {
-        // if( featureSource instanceof SimpleFeatureStore){
-        // SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
-        // FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        // Set<FeatureId> ids = new HashSet<FeatureId>();
-        // for( Object o : collection ){
-        // if( o instanceof SimpleFeature){
-        // SimpleFeature feature = (SimpleFeature) o;
-        // FeatureId fid = feature.getIdentifier();
-        // ids.add( fid );
-        // }
-        // }
-        // Filter remove = ff.id(ids);
-        // try {
-        // featureStore.removeFeatures( remove );
-        // return true;
-        // } catch (IOException e) {
-        // //LOGGER.log(Level.FINER, e.getMessage(), e);
-        // return false; // unable to remove
-        // }
-        // }
+//        if (featureSource instanceof SimpleFeatureStore) {
+//            SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
+//            FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+//            Set<FeatureId> ids = new HashSet<FeatureId>();
+//            for (Object o : collection) {
+//                if (o instanceof SimpleFeature) {
+//                    SimpleFeature feature = (SimpleFeature) o;
+//                    FeatureId fid = feature.getIdentifier();
+//                    ids.add(fid);
+//                }
+//            }
+//            Filter remove = ff.id(ids);
+//            try {
+//                featureStore.removeFeatures(remove);
+//                return true;
+//            } catch (IOException e) {
+//                // LOGGER.log(Level.FINER, e.getMessage(), e);
+//                return false; // unable to remove
+//            }
+//        }
         throw new UnsupportedOperationException();
     }
 
