@@ -499,7 +499,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     /**
      * Returns <tt>true</tt> if this collection contains the specified
      * element.
-     * <tt></tt>.<p>
+     * <p>
      *
      * This implementation iterates over the elements in the collection,
      * checking each element in turn for equality with the specified element.
@@ -562,7 +562,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     public boolean remove(Object o) {
 //        if( featureSource instanceof SimpleFeatureStore){
 //            SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
-//            if( o instanceof SimpleFeature ) {
+//            if( o instanceof SimpleFeature ){
 //                SimpleFeature feature = (SimpleFeature) o;
 //                FeatureId fid = feature.getIdentifier();
 //                FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
@@ -584,11 +584,11 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     }
 
     public boolean removeAll(Collection collection) {
-//        if( featureSource instanceof SimpleFeatureStore) {
+//        if( featureSource instanceof SimpleFeatureStore){
 //            SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
 //            FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 //            Set<FeatureId> ids = new HashSet<FeatureId>();
-//            for( Object o : collection ) {
+//            for( Object o : collection ){
 //                if( o instanceof SimpleFeature){
 //                    SimpleFeature feature = (SimpleFeature) o;
 //                    FeatureId fid = feature.getIdentifier();
@@ -622,7 +622,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         Iterator<SimpleFeature> e = null;
         try {
             e = iterator();
-            while ( e.hasNext() ){
+            while( e.hasNext() ){
                 array.add( e.next() );
             }
             return array.toArray( new SimpleFeature[array.size()]);
@@ -635,18 +635,19 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         int size = size();
         if (array.length < size){
             array = (T[])java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), size);
-        }
+         }
         Iterator<SimpleFeature> it = iterator();
         try {
             Object[] result = array;
-            for (int i=0; it.hasNext() && i < size; i++){
+            for (int i=0; it.hasNext() && i<size; i++){
                 result[i] = it.next();
             }
             if (array.length > size){
                 array[size] = null;
             }
             return array;
-        } finally {
+        }
+        finally {
             close( it );
         }
     }
