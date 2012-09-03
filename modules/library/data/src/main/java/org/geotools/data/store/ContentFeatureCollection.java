@@ -485,7 +485,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     public SimpleFeatureCollection subCollection(Filter filter) {
         Query query = new DefaultQuery();
         ((DefaultQuery)query).setFilter( filter );
-
+        
         query = DataUtilities.mixQueries(this.query, query, null);
         return new ContentFeatureCollection( featureSource, query );    
     }
@@ -503,7 +503,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
      *
      * This implementation iterates over the elements in the collection,
      * checking each element in turn for equality with the specified element.
-     * 
+     *
      * @param o object to be checked for containment in this collection.
      * @return <tt>true</tt> if this collection contains the specified element.
      */
@@ -514,7 +514,7 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
             e = this.features();
             if (o==null) {
                 while (e.hasNext()){
-                    if (e.next() == null){
+                    if (e.next()==null){
                         return true;
                     }
                 }
@@ -526,7 +526,8 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
                 }
             }
             return false;
-        } finally {
+        }
+        finally {
             if ( e != null ){
                 e.close();
             }
@@ -534,11 +535,12 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
     }
 
     /**
-     * Returns <tt>true</tt> if this collection contains all of the elements in the specified collection.
-     * <p>
+     * Returns <tt>true</tt> if this collection contains all of the elements
+     * in the specified collection. <p>
      * 
      * @param c collection to be checked for containment in this collection.
-     * @return <tt>true</tt> if this collection contains all of the elements in the specified collection.
+     * @return <tt>true</tt> if this collection contains all of the elements
+     *         in the specified collection.
      * @throws NullPointerException if the specified collection is null.
      * 
      * @see #contains(Object)
@@ -547,38 +549,37 @@ public class ContentFeatureCollection implements SimpleFeatureCollection {
         // TODO: base this on reader
         Iterator<?> e = c.iterator();
         try {
-            while (e.hasNext()) {
-                if (!contains(e.next())) {
+            while (e.hasNext()){
+                if(!contains(e.next())) {
                     return false;
                 }
             }
             return true;
         } finally {
-            close(e);
+            close( e );
         }
     }
 
     public boolean remove(Object o) {
-        // if( featureSource instanceof SimpleFeatureStore){
-        // SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
-        // if( o instanceof SimpleFeature ){
-        // SimpleFeature feature = (SimpleFeature) o;
-        // FeatureId fid = feature.getIdentifier();
-        // FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        // Set<FeatureId> ids = Collections.singleton(fid);
-        // Filter remove = ff.id(ids);
-        // try {
-        // featureStore.removeFeatures( remove );
-        // return true;
-        // } catch (IOException e) {
-        // //LOGGER.log(Level.FINER, e.getMessage(), e);
-        // return false; // unable to remove
-        // }
-        // }
-        // else {
-        // return false; // nothing to do; we can only remove features
-        // }
-        // }
+//        if (featureSource instanceof SimpleFeatureStore) {
+//            SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
+//            if (o instanceof SimpleFeature) {
+//                SimpleFeature feature = (SimpleFeature) o;
+//                FeatureId fid = feature.getIdentifier();
+//                FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+//                Set<FeatureId> ids = Collections.singleton(fid);
+//                Filter remove = ff.id(ids);
+//                try {
+//                    featureStore.removeFeatures(remove);
+//                    return true;
+//                } catch (IOException e) {
+//                    // LOGGER.log(Level.FINER, e.getMessage(), e);
+//                    return false; // unable to remove
+//                }
+//            } else {
+//                return false; // nothing to do; we can only remove features
+//            }
+//        }
         throw new UnsupportedOperationException(
                 "Content is not writable; FeatureStore not available");
     }
