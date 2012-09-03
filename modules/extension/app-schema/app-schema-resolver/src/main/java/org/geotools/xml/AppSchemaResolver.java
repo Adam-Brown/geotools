@@ -227,8 +227,10 @@ public class AppSchemaResolver {
      * 
      * @param location
      *            not null
-     * @param keepQuery indicates whether or not the query components should be included in the path. If this is set to true then the query portion is
-     *        converted to an MD5 message digest and that string is used to identify the file in the cache.
+     * @param keepQuery
+     *            indicates whether or not the query components should be included in the path. If
+     *            this is set to true then the query portion is converted to an MD5 message digest
+     *            and that string is used to identify the file in the cache.
      * @return the resource path with a leading slash
      * @see #getSimpleHttpResourcePath(URI, boolean)
      */
@@ -247,20 +249,23 @@ public class AppSchemaResolver {
      * 
      * <p>
      * 
-     * The Simple HTTP Resource Path maps an HTTP or HTTPS URL to a path on the classpath or relative to some other root. To form the Simple HTTP
-     * Resource Path from an http/https URL:
+     * The Simple HTTP Resource Path maps an HTTP or HTTPS URL to a path on the classpath or
+     * relative to some other root. To form the Simple HTTP Resource Path from an http/https URL:
      * 
      * <ol>
      * <li>Protocol, port, fragment, and query are ignored.</li>
-     * <li>Take the host name, split it into its components, reverse their order, prepend a forward slash to each, and concatenate them.</li>
+     * <li>Take the host name, split it into its components, reverse their order, prepend a forward
+     * slash to each, and concatenate them.</li>
      * <li>Append the path component of the URL.</li>
      * </ol>
      * 
-     * For example <code>http://schemas.example.org/exampleml/exml.xsd</code> becomes <code>/org/example/schemas/exampleml/exml.xsd</code> .
+     * For example <code>http://schemas.example.org/exampleml/exml.xsd</code> becomes
+     * <code>/org/example/schemas/exampleml/exml.xsd</code> .
      * 
      * <p>
      * 
-     * The Simple HTTP Resource Path always starts with a forward slash (if not null). Does not include query components in the path.
+     * The Simple HTTP Resource Path always starts with a forward slash (if not null). Does not
+     * include query components in the path.
      * 
      * @param location
      *            not null
@@ -275,20 +280,23 @@ public class AppSchemaResolver {
      * 
      * <p>
      * 
-     * The Simple HTTP Resource Path maps an HTTP or HTTPS URL to a path on the classpath or relative to some other root. To form the Simple HTTP
-     * Resource Path from an http/https URL:
+     * The Simple HTTP Resource Path maps an HTTP or HTTPS URL to a path on the classpath
+     * or relative to some other root. To form the Simple HTTP Resource Path from an http/https URL:
      * 
      * <ol>
      * <li>Protocol, port, fragment, and query are ignored.</li>
-     * <li>Take the host name, split it into its components, reverse their order, prepend a forward slash to each, and concatenate them.</li>
+     * <li>Take the host name, split it into its components, reverse their order, prepend a forward
+     * slash to each, and concatenate them.</li>
      * <li>Append the path component of the URL.</li>
      * </ol>
      * 
-     * For example <code>http://schemas.example.org/exampleml/exml.xsd</code> becomes <code>/org/example/schemas/exampleml/exml.xsd</code> .
+     * For example <code>http://schemas.example.org/exampleml/exml.xsd</code> becomes
+     * <code>/org/example/schemas/exampleml/exml.xsd</code> .
      * 
      * <p>
      * 
-     * The Simple HTTP Resource Path always starts with a forward slash (if not null). Does not include query components in the path.
+     * The Simple HTTP Resource Path always starts with a forward slash (if not null). Does not
+     * include query components in the path.
      * 
      * @param location
      *            not null
@@ -296,7 +304,8 @@ public class AppSchemaResolver {
      *            indicates whether or not the query components should be included in the path. If
      *            this is set to true then the query portion is converted to an MD5 message digest
      *            and that string is used to identify the file in the cache.
-     * @return the Simple HTTP Resource Path as a string, or null if the URI is not an absolute HTTP/HTTPS URL.
+     * @return the Simple HTTP Resource Path as a string, or null if the URI is not an absolute
+     *            HTTP/HTTPS URL.
      */
     public static String getSimpleHttpResourcePath(URI location, boolean keepQuery) {
         String scheme = location.getScheme();
