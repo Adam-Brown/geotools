@@ -368,6 +368,7 @@ public class ShapefileDataStoreTest extends TestCaseSupport {
         SimpleFeatureCollection features = featureSource.getFeatures( query );
         
         assertNotNull( "selection query worked", features );
+        assertFalse( "selection non empty", features.isEmpty() );        
         assertTrue( "selection non empty", features.size() > 0 );
         ReferencedEnvelope bounds = features.getBounds();
         
@@ -387,6 +388,7 @@ public class ShapefileDataStoreTest extends TestCaseSupport {
         features = featureSource.getFeatures( query );
         
         assertNotNull("selection query worked", features );
+        assertTrue( "selection non empty", !features.isEmpty() );        
         assertEquals(selection.size(), features.size());
         ds.dispose();
     }
@@ -438,11 +440,17 @@ public class ShapefileDataStoreTest extends TestCaseSupport {
         Set<String> actualFids = new HashSet<String>();
         {
             features = featureSource.getFeatures(fidFilter);
-            indexIter = features.features();
-            while (indexIter.hasNext()) {
-                SimpleFeature next = indexIter.next();
-                String id = next.getID();
-                actualFids.add(id);
+            try {
+	            indexIter = features.features();
+	            while (indexIter.hasNext()) {
+	                SimpleFeature next = indexIter.next();
+	                String id = next.getID();
+	                actualFids.add(id);
+	            }
+            } finally {
+            	if(indexIter != null) {
+            		indexIter.close();
+            	}
             }
         }
 
@@ -671,8 +679,16 @@ public class ShapefileDataStoreTest extends TestCaseSupport {
             SimpleFeatureCollection fc = loadFeatures(sds);
 
             assertEquals(10, fc.size());
-            for (SimpleFeatureIterator i = fc.features(); i.hasNext();) {
-                assertEquals(-1, ((Integer) i.next().getAttribute(1)).byteValue());
+            SimpleFeatureIterator features = null;
+            try {
+            	features = fc.features();
+				for (SimpleFeatureIterator i = features; i.hasNext();) {
+	                assertEquals(-1, ((Integer) i.next().getAttribute(1)).byteValue());
+	            }
+            } finally {
+            	if(features != null) {
+            		features.close();
+            	}
             }
             sds.dispose();
     }
@@ -1036,6 +1052,7 @@ public class ShapefileDataStoreTest extends TestCaseSupport {
                         + Arrays.asList(fromShape.getCoordinates()));
             }
         }
+        fci.close();
         tmpFile.delete();
         shapeDataStore.dispose();
     }
@@ -1054,6 +1071,42 @@ public class ShapefileDataStoreTest extends TestCaseSupport {
                 reader.next();
             }
             assertEquals(count, store.getCount(Query.ALL));
+            
+            // check SimpleFeatureCollection size
+            SimpleFeatureSource featureSource = store.getFeatureSource();
+            SimpleFeatureCollection features = featureSource.getFeatures();
+            assertEquals(count, features.size());
+            assertFalse(features.isEmpty());
+
+            
+            // execute Query that returns all features
+            
+            FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
+            SimpleFeatureType schema = featureSource.getSchema();
+            String geomName = schema.getGeometryDescriptor().getName().getLocalPart();
+            
+            Query query = new Query(schema.getTypeName());
+            query.setPropertyNames(Query.ALL_NAMES);            
+            ReferencedEnvelope bounds = features.getBounds();
+            query.setFilter(ff.bbox(ff.property(geomName), bounds));
+
+            features = featureSource.getFeatures(query);
+            // check SimpleFeatureCollection size
+            assertEquals(count, features.size());
+            assertFalse(features.isEmpty());
+
+            
+            // execute Query that doesn't return any feature
+            
+            bounds = new ReferencedEnvelope(bounds.getMaxX() + 1, bounds.getMaxX() + 2, 
+                    bounds.getMaxY() + 1, bounds.getMaxY() + 2, bounds.getCoordinateReferenceSystem());
+            query.setFilter(ff.bbox(ff.property(geomName), bounds));            
+
+            features = featureSource.getFeatures(query);
+            // check SimpleFeatureCollection size
+            assertEquals(0, features.size());
+            assertTrue(features.isEmpty());
+                        
         } finally {
             reader.close();
         }
@@ -1140,6 +1193,7 @@ public class ShapefileDataStoreTest extends TestCaseSupport {
         Transaction t= new DefaultTransaction();
         FeatureWriter<SimpleFeatureType, SimpleFeature> writer = s.getFeatureWriter(s.getTypeNames()[0], t);
         SimpleFeature feature1 = writer.next();
+        writer.close();
         s.dispose();
     }
     
@@ -1252,9 +1306,9 @@ public class ShapefileDataStoreTest extends TestCaseSupport {
         
         assertFalse(ds.indexManager.isIndexStale(fix));
         long fixMod = fixFile.lastModified();
-        shpFile.setLastModified(fixMod+1000);
+        shpFile.setLastModified(fixMod+1000000);
         assertTrue(ds.indexManager.isIndexStale(fix));
-        fixFile.setLastModified(shpFile.lastModified());
+        assertTrue(fixFile.setLastModified(shpFile.lastModified()));
         assertFalse(ds.indexManager.isIndexStale(fix));
         assertTrue(fixFile.delete());
         assertTrue(ds.indexManager.isIndexStale(fix));

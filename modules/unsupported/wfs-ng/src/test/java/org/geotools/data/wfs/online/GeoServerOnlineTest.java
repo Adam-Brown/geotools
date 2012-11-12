@@ -72,6 +72,7 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.spatial.BBOX;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.SAXException;
 
@@ -300,48 +301,64 @@ public class GeoServerOnlineTest {
          */
         final BBOX strictBBox = new BBOX() {
 
+            @Override
             public boolean evaluate(Object object) {
                 return bbox.evaluate(object);
             }
 
+            @Override
             public Object accept(FilterVisitor visitor, Object extraData) {
                 return bbox.accept(visitor, extraData);
             }
 
+            @Override
             public Expression getExpression2() {
                 return bbox.getExpression2();
             }
 
+            @Override
             public Expression getExpression1() {
                 return bbox.getExpression1();
             }
 
+            @Override
             public String getSRS() {
                 return bbox.getSRS();
             }
 
+            @Override
             public String getPropertyName() {
                 return bbox.getPropertyName();
             }
 
+            @Override
             public double getMinY() {
                 return bbox.getMinY();
             }
 
+            @Override
             public double getMinX() {
                 return bbox.getMinX();
             }
 
+            @Override
             public double getMaxY() {
                 return bbox.getMaxY();
             }
 
+            @Override
             public double getMaxX() {
                 return bbox.getMaxX();
             }
 
+            @Override
             public MatchAction getMatchAction() {
                 return MatchAction.ANY;
+            }
+
+            @Override
+            public BoundingBox getBounds() {
+                return bbox.getBounds();
             }
         };
 
